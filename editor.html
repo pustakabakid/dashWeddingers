@@ -2,46 +2,70 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Dashboard Manajemen Undangan &amp; WhatsApp Studio | Wevitation</title>
-  <link rel="icon" type="image/svg+xml" href="/assets/svg/wevitation-icon.svg">
-  <!-- Fonts -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wevitation Studio — Dashboard Pengaturan Undangan</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans, Philosopher, Great Vibes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Philosopher:ital,wght@0,400;0,700;1,400;1,700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
-  <!-- Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Philosopher:ital,wght@0,400;0,700;1,400;1,700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Supabase JS Client (CDN) -->
+  <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     :root {
-      --primary: #4B6B99;
-      --primary-hover: #3a547a;
-      --primary-light: #d6e1f1;
-      --primary-subtle: #f0f4fa;
-      --secondary: #BC97C9;
-      --success: #10b981;
-      --success-dark: #059669;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --wa-color: #25D366;
+      /* Nusantara Wedding Color Palette */
+      --primary: #2F5D62;
+      --primary-hover: #24494D;
+      --primary-light: #E8F1F2;
+      --primary-subtle: #F2F7F7;
+      
+      --accent: #B98B4E;
+      --accent-hover: #9E743D;
+      --accent-light: #F7F3EB;
+      --accent-subtle: #FAF7F2;
+
+      --bg: #FBF9F5;
+      --card-bg: #FFFFFF;
+      
+      --text: #2A2622;
+      --text-muted: #6B655D;
+      --text-light: #9C958B;
+      
+      --border: #E8E2D9;
+      --border-light: #F0ECE4;
+      --border-focus: #2F5D62;
+
+      --wa-green: #25D366;
       --wa-dark: #128C7E;
-      
-      --bg: #f8fafc;
-      --panel-bg: #ffffff;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --text-light: #94a3b8;
-      
-      --border: #e2e8f0;
+      --wa-light: #EBF8F2;
+
+      --danger: #C53030;
+      --danger-light: #FDE8E8;
+
+      --success: #2F855A;
+      --success-light: #E6FFFA;
+
+      /* Systematic Spacing Scale (Kelipatan 4px) */
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+
+      /* Tiered Radius System */
       --radius-sm: 8px;
       --radius-md: 14px;
       --radius-lg: 20px;
-      --radius-xl: 28px;
-      
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-      --shadow-md: 0 6px 16px -2px rgba(0,0,0,0.06), 0 2px 6px -1px rgba(0,0,0,0.04);
-      --shadow-lg: 0 14px 28px -4px rgba(0,0,0,0.09);
+
+      /* Purposeful Shadows */
+      --shadow-subtle: 0 1px 3px rgba(42, 38, 34, 0.04);
+      --shadow-card: 0 4px 16px rgba(42, 38, 34, 0.06);
+      --shadow-floating: 0 12px 36px rgba(42, 38, 34, 0.12), 0 2px 6px rgba(42, 38, 34, 0.04);
     }
 
     * {
@@ -54,328 +78,557 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      line-height: 1.5;
+      line-height: 1.55;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Top Studio Navigation Bar */
+    /* Typography Utilities */
+    .font-serif {
+      font-family: 'Philosopher', serif;
+    }
+
+    .font-script {
+      font-family: 'Great Vibes', cursive;
+    }
+
+    /* Login Lock Screen */
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: var(--space-5);
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s ease;
+    }
+
+    .login-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .login-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-top: 4px solid var(--accent);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6) var(--space-6) var(--space-5) var(--space-6);
+      width: 100%;
+      max-width: 400px;
+      box-shadow: var(--shadow-floating);
+      text-align: center;
+      position: relative;
+    }
+
+    .login-monogram {
+      font-size: 38px;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: var(--space-2);
+      user-select: none;
+    }
+
+    .login-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.2px;
+      margin-bottom: var(--space-1);
+    }
+
+    .login-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: var(--space-5);
+    }
+
+    .login-card.shake {
+      animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+
+    /* Top Studio Header */
     .top-nav {
-      min-height: 70px;
-      background: #ffffff;
+      background: var(--card-bg);
       border-bottom: 1px solid var(--border);
+      padding: var(--space-3) var(--space-5);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 32px;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: var(--shadow-sm);
-      gap: 12px;
+      gap: var(--space-4);
     }
 
     .brand-group {
       display: flex;
       align-items: center;
-      gap: 12px;
-      min-width: 0;
+      gap: var(--space-3);
+      cursor: pointer;
+      user-select: none;
     }
 
     .brand-icon {
-      width: 40px;
-      height: 40px;
-      min-width: 40px;
-      background: linear-gradient(135deg, var(--primary) 0%, #2f4565 100%);
-      border-radius: 12px;
+      width: 38px;
+      height: 38px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #ffffff;
-      box-shadow: 0 4px 12px rgba(75, 107, 153, 0.3);
+      transition: background 0.2s;
     }
 
-    .brand-text-wrapper {
-      min-width: 0;
+    .brand-group:hover .brand-icon {
+      background: var(--primary);
+      color: #ffffff;
     }
 
     .brand-title {
-      font-size: 17px;
-      font-weight: 800;
-      color: var(--text);
-      letter-spacing: -0.4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .brand-badge {
-      font-size: 11px;
+      font-size: 18px;
       font-weight: 700;
-      background: var(--primary-light);
-      color: var(--primary);
-      padding: 2px 8px;
-      border-radius: 20px;
-      margin-left: 6px;
-      white-space: nowrap;
+      color: var(--text);
+      letter-spacing: -0.2px;
+      line-height: 1.2;
     }
 
     .brand-subtitle {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .nav-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
+      gap: var(--space-2);
     }
 
+    /* Status Badges */
     .status-badge {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 8px 14px;
-      border-radius: 30px;
+      gap: var(--space-1);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
       white-space: nowrap;
-      min-height: 40px;
     }
 
     .status-badge.connected {
-      background: #ecfdf5;
-      color: var(--success-dark);
-      border: 1px solid #a7f3d0;
+      background: var(--success-light);
+      color: var(--success);
+      border: 1px solid #B2F5EA;
     }
 
     .status-badge.local {
-      background: #fef3c7;
-      color: #b45309;
-      border: 1px solid #fde68a;
+      background: var(--accent-light);
+      color: var(--accent-hover);
+      border: 1px solid #EADDC7;
     }
 
     /* Workspace Studio Layout */
     .studio-layout {
-      max-width: 1040px;
+      max-width: 820px;
       width: 100%;
       margin: 0 auto;
-      padding: 28px 24px 80px 24px;
+      padding: var(--space-5) var(--space-4) 110px var(--space-4);
       flex: 1;
       display: flex;
       flex-direction: column;
     }
 
-    /* Left Side: Form Panels */
     .editor-pane {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: var(--space-4);
       width: 100%;
     }
 
-    /* Tab Switcher with Smooth Scroll-Snap */
-    .tab-bar {
-      display: flex;
-      background: #ffffff;
-      padding: 6px;
-      border-radius: var(--radius-md);
+    /* Main Menu Hub Header */
+    .menu-hub-header {
+      margin-bottom: var(--space-5);
+      text-align: center;
+      padding: var(--space-1) 0;
+    }
+
+    .menu-hub-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.3px;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .menu-hub-subtitle {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-top: var(--space-1);
+    }
+
+    /* Minimalist App-Icon Grid (Balanced 3-Column Grid) */
+    .menu-icon-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-4);
+      width: 100%;
+    }
+
+    /* Center 7th tile on 3-column desktop */
+    .menu-icon-tile:last-child:nth-child(3n + 1) {
+      grid-column: 2;
+    }
+
+    @media (max-width: 640px) {
+      .menu-icon-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-3);
+      }
+      /* Center 7th tile on 2-column mobile */
+      .menu-icon-tile:last-child:nth-child(2n + 1) {
+        grid-column: 1 / span 2;
+        max-width: 320px;
+        margin: 0 auto;
+      }
+    }
+
+    .menu-icon-tile {
+      background: var(--card-bg);
       border: 1px solid var(--border);
-      gap: 6px;
-      box-shadow: var(--shadow-sm);
-      overflow-x: auto;
-      scroll-snap-type: x proximity;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin;
+      border-radius: var(--radius-md);
+      padding: var(--space-5) var(--space-3) var(--space-4) var(--space-3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: var(--shadow-subtle);
+      user-select: none;
+      width: 100%;
+      text-align: center;
     }
 
-    .tab-bar::-webkit-scrollbar {
-      height: 4px;
+    .menu-icon-tile:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary);
+      box-shadow: var(--shadow-card);
     }
 
-    .tab-bar::-webkit-scrollbar-thumb {
-      background-color: var(--border);
-      border-radius: 4px;
+    .menu-icon-tile:active {
+      transform: scale(0.98);
     }
 
-    .tab-btn {
-      flex: 0 0 auto;
-      scroll-snap-align: start;
+    .tile-icon-box {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 10px 16px;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-muted);
-      background: transparent;
-      border: none;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-      min-height: 42px;
-    }
-
-    .tab-btn:hover {
       color: var(--primary);
-      background: var(--primary-subtle);
+      background: var(--primary-light);
+      transition: all 0.2s;
     }
 
-    .tab-btn.active {
+    .menu-icon-tile:hover .tile-icon-box {
       background: var(--primary);
       color: #ffffff;
-      box-shadow: 0 4px 12px rgba(75, 107, 153, 0.25);
+    }
+
+    .tile-icon-box.accent-wa {
+      color: var(--wa-dark);
+      background: var(--wa-light);
+    }
+    .menu-icon-tile:hover .tile-icon-box.accent-wa {
+      background: var(--wa-dark);
+      color: #ffffff;
+    }
+
+    .tile-icon-box.accent-gold {
+      color: var(--accent-hover);
+      background: var(--accent-light);
+    }
+    .menu-icon-tile:hover .tile-icon-box.accent-gold {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .tile-label {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.25;
+    }
+
+    .tile-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    /* Subpage Module Navigation Bar */
+    .module-nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-4);
+      margin-bottom: var(--space-4);
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .btn-back-hub {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      background: var(--primary-subtle);
+      color: var(--primary);
+      border: 1px solid var(--primary-light);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-back-hub:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+
+    /* Visual Progress Dots */
+    .progress-dots {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .progress-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: all 0.2s;
+    }
+
+    .progress-dot.active {
+      width: 18px;
+      border-radius: 6px;
+      background: var(--primary);
     }
 
     /* Form Section Box */
     .panel-card {
-      background: #ffffff;
+      background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 26px;
-      box-shadow: var(--shadow-md);
+      border-radius: var(--radius-md);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-subtle);
     }
 
     .panel-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 22px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid var(--border);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--border-light);
     }
 
     .panel-header-info {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: var(--space-3);
     }
 
     .panel-header-icon {
-      width: 38px;
-      height: 38px;
-      min-width: 38px;
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
       background: var(--primary-light);
       color: var(--primary);
-      border-radius: 10px;
+      border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .panel-title {
-      font-size: 16px;
-      font-weight: 800;
+      font-size: 17px;
+      font-weight: 700;
       color: var(--text);
     }
 
     .panel-subtitle {
-      font-size: 12px;
+      font-size: 12.5px;
       color: var(--text-muted);
       margin-top: 2px;
+    }
+
+    /* Reusable Panel Footer Navigation */
+    .panel-footer-nav {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: var(--space-5);
+    }
+
+    /* Reusable Subsection Box */
+    .subsection-box {
+      background: var(--bg);
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      margin-bottom: var(--space-4);
+    }
+
+    .subsection-box.bg-white {
+      background: #FFFFFF;
+    }
+
+    .subsection-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-3);
+      flex-wrap: wrap;
+      gap: var(--space-2);
     }
 
     .form-grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      gap: var(--space-4);
+    }
+
+    @media (max-width: 768px) {
+      .form-grid-2 {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+      }
+      .panel-card {
+        padding: var(--space-4);
+      }
     }
 
     .form-group {
-      margin-bottom: 16px;
+      margin-bottom: var(--space-4);
     }
 
     label {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: var(--space-1);
       font-size: 12.5px;
       font-weight: 700;
-      color: #334155;
-      margin-bottom: 6px;
+      color: var(--text);
+      margin-bottom: var(--space-1);
     }
 
+    input[type="text"],
+    input[type="url"],
+    input[type="tel"],
+    input[type="datetime-local"],
+    input[type="password"],
+    textarea,
+    select {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 13.5px;
+      color: var(--text);
+      background: #FFFFFF;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(47, 93, 98, 0.15);
+    }
+
+    /* Inputs with specialized icon (URL, phone, social) */
     .input-wrapper {
       position: relative;
-      display: flex;
-      align-items: center;
+    }
+
+    .input-wrapper.has-icon input {
+      padding-left: 36px;
     }
 
     .input-icon {
       position: absolute;
-      left: 14px;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
       color: var(--text-light);
       pointer-events: none;
     }
 
-    input, textarea, select {
-      width: 100%;
-      padding: 11px 14px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      font-family: inherit;
-      font-size: 14px;
-      color: var(--text);
-      background-color: #fafbfc;
-      outline: none;
-      transition: all 0.2s;
-      min-height: 44px;
-    }
-
-    .has-icon input, .has-icon textarea {
-      padding-left: 38px;
-    }
-
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--primary);
-      background: #ffffff;
-      box-shadow: 0 0 0 3px rgba(75, 107, 153, 0.15);
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 84px;
-    }
-
-    /* Toggle Switches (Feature Flags) */
+    /* Switch Toggles */
     .switch-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: var(--space-3);
+    }
+
+    @media (max-width: 768px) {
+      .switch-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .switch-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: #f8fafc;
-      padding: 14px 18px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      transition: all 0.2s;
-      gap: 12px;
+      padding: var(--space-3) var(--space-4);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      transition: background 0.15s;
     }
 
     .switch-item:hover {
-      background: #ffffff;
-      border-color: var(--primary-light);
+      background: #FFFFFF;
+      border-color: var(--border);
     }
 
     .switch-info {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: var(--space-3);
     }
 
     .switch-label {
@@ -389,13 +642,12 @@
       color: var(--text-muted);
     }
 
-    /* Switch Component */
     .switch {
       position: relative;
       display: inline-block;
-      width: 48px;
-      height: 26px;
-      min-width: 48px;
+      width: 44px;
+      height: 24px;
+      min-width: 44px;
     }
 
     .switch input {
@@ -411,62 +663,239 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: #cbd5e1;
-      transition: .3s;
-      border-radius: 26px;
+      background-color: #D1D5DB;
+      transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 24px;
     }
 
     .slider:before {
       position: absolute;
       content: "";
-      height: 20px;
-      width: 20px;
+      height: 18px;
+      width: 18px;
       left: 3px;
       bottom: 3px;
       background-color: white;
-      transition: .3s;
+      transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
 
     input:checked + .slider {
-      background-color: var(--success);
+      background-color: var(--primary);
     }
 
     input:checked + .slider:before {
-      transform: translateX(22px);
+      transform: translateX(20px);
     }
 
-    /* Uploader Box */
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-4);
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #ffffff;
+    }
+    .btn-accent:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #ffffff;
+    }
+    .btn-success:hover {
+      background: #276749;
+    }
+
+    .btn-wa {
+      background: var(--wa-dark);
+      color: #ffffff;
+    }
+    .btn-wa:hover {
+      background: #0D6E63;
+    }
+
+    .btn-light {
+      background: #FFFFFF;
+      color: var(--text);
+      border-color: var(--border);
+    }
+    .btn-light:hover {
+      background: var(--bg);
+      border-color: var(--text-light);
+    }
+
+    .btn-clean {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      padding: var(--space-1) var(--space-2);
+      cursor: pointer;
+    }
+    .btn-clean:hover {
+      color: var(--text);
+    }
+
+    .btn-sm {
+      padding: 6px var(--space-3);
+      font-size: 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-danger {
+      background: var(--danger-light);
+      color: var(--danger);
+      border-color: #FEB2B2;
+    }
+    .btn-danger:hover {
+      background: #FED7D7;
+    }
+
+    /* Upload Zone */
     .upload-zone {
       display: flex;
       align-items: center;
-      gap: 16px;
-      padding: 14px;
-      background: #f8fafc;
-      border: 1.5px dashed var(--primary-light);
-      border-radius: 12px;
-      margin-top: 6px;
+      gap: var(--space-4);
+      padding: var(--space-3);
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-sm);
+      margin-top: var(--space-2);
     }
 
     .upload-preview-thumb {
-      width: 64px;
-      height: 64px;
-      min-width: 64px;
-      border-radius: 10px;
+      width: 50px;
+      height: 50px;
+      border-radius: var(--radius-sm);
       object-fit: cover;
-      border: 2px solid var(--primary);
-      background: #fff;
+      border: 1px solid var(--border);
+      background: #ffffff;
     }
 
-    /* Guest Table */
+    /* KPI Stat Cards */
+    .kpi-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    @media (max-width: 768px) {
+      .kpi-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .kpi-stat-card {
+      background: var(--bg);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .kpi-stat-card.accent-wa {
+      background: var(--wa-light);
+      border-color: #BEE3DB;
+    }
+
+    .kpi-stat-label {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .kpi-stat-card.accent-wa .kpi-stat-label {
+      color: var(--wa-dark);
+    }
+
+    .kpi-stat-number {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+      margin-top: 2px;
+    }
+
+    .kpi-stat-card.accent-wa .kpi-stat-number {
+      color: var(--wa-dark);
+    }
+
+    /* WhatsApp Tag Helper Chips */
+    .tag-chips-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: var(--space-2);
+    }
+
+    .tag-chip {
+      background: var(--primary-subtle);
+      color: var(--primary);
+      border: 1px solid var(--primary-light);
+      padding: var(--space-1) var(--space-2);
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .tag-chip:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+
+    .tag-chip.chip-required {
+      background: var(--accent-light);
+      color: var(--accent-hover);
+      border-color: #EADDC7;
+    }
+
+    .btn-reset-template {
+      background: transparent;
+      border: none;
+      color: var(--danger);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: auto;
+      padding: var(--space-1);
+    }
+
+    .btn-reset-template:hover {
+      text-decoration: underline;
+    }
+
+    /* Guest Table (CSS Column Sizing) */
     .guest-table-wrapper {
-      margin-top: 20px;
       overflow-x: auto;
-      border-radius: 12px;
       border: 1px solid var(--border);
-      -webkit-overflow-scrolling: touch;
-      position: relative;
+      border-radius: var(--radius-sm);
+      margin-top: var(--space-3);
+      background: #ffffff;
     }
 
     .guest-table {
@@ -477,356 +906,109 @@
     }
 
     .guest-table th {
-      background: #f1f5f9;
-      padding: 12px 16px;
+      background: var(--bg);
+      padding: var(--space-2) var(--space-3);
       font-weight: 700;
-      color: #334155;
+      color: var(--text-muted);
       border-bottom: 1px solid var(--border);
-      white-space: nowrap;
+      font-size: 12px;
     }
 
     .guest-table td {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
+      padding: var(--space-2) var(--space-3);
+      border-bottom: 1px solid var(--border-light);
       vertical-align: middle;
-      white-space: nowrap;
     }
 
-    .guest-table th:nth-child(1), .guest-table td:nth-child(1) { min-width: 36px; }
-    .guest-table th:nth-child(2), .guest-table td:nth-child(2) { min-width: 110px; }
-    .guest-table th:nth-child(3), .guest-table td:nth-child(3) { min-width: 110px; }
-    .guest-table th:nth-child(4), .guest-table td:nth-child(4) { min-width: 160px; }
-    .guest-table th:nth-child(5), .guest-table td:nth-child(5) { min-width: 150px; }
-
-    .guest-table tr:hover {
-      background: #f8fafc;
+    .guest-table tr:last-child td {
+      border-bottom: none;
     }
 
-    /* Buttons */
-    .btn {
-      display: inline-flex;
+    /* Systematic Column Widths */
+    .guest-table th:nth-child(1), .guest-table td:nth-child(1) { width: 44px; text-align: center; }
+    .guest-table th:nth-child(2), .guest-table td:nth-child(2) { width: 100px; }
+    .guest-table th:nth-child(3), .guest-table td:nth-child(3) { min-width: 120px; }
+    .guest-table th:nth-child(4), .guest-table td:nth-child(4) { width: 130px; }
+    .guest-table th:nth-child(5), .guest-table td:nth-child(5) { min-width: 170px; }
+    .guest-table th:nth-child(6), .guest-table td:nth-child(6) { width: 140px; text-align: right; }
+
+    /* Floating Bottom Action Bar */
+    .floating-bottom-bar {
+      position: fixed;
+      bottom: var(--space-4);
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 680px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-top: 2px solid var(--accent);
+      box-shadow: var(--shadow-floating);
+      border-radius: var(--radius-lg);
+      padding: var(--space-2) var(--space-3);
+      display: none; /* Controlled dynamically by switchTab */
       align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 10px 18px;
-      font-size: 13px;
-      font-weight: 700;
-      border-radius: var(--radius-sm);
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-      min-height: 42px;
-      white-space: nowrap;
+      justify-content: space-between;
+      gap: var(--space-3);
+      z-index: 990;
     }
 
-    .btn-sm {
-      padding: 6px 12px;
-      font-size: 12px;
-      border-radius: 6px;
-      min-height: 36px;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: #ffffff;
-      box-shadow: 0 4px 12px rgba(75, 107, 153, 0.25);
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-hover);
-      transform: translateY(-1px);
-    }
-
-    .btn-success {
-      background: var(--success);
-      color: #ffffff;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-    }
-
-    .btn-success:hover {
-      background: var(--success-dark);
-      transform: translateY(-1px);
-    }
-
-    .btn-wa {
-      background: var(--wa-color);
-      color: #ffffff;
-      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
-    }
-
-    .btn-wa:hover {
-      background: var(--wa-dark);
-    }
-
-    .btn-light {
-      background: #f1f5f9;
-      color: var(--text);
-    }
-
-    .btn-light:hover {
-      background: #e2e8f0;
-    }
-
-    .btn-danger {
-      background: #fee2e2;
-      color: #dc2626;
-    }
-
-    .btn-danger:hover {
-      background: #fecaca;
-    }
-
-    /* Toast */
+    /* Toast Notification */
     .toast {
       position: fixed;
-      bottom: 28px;
-      right: 28px;
-      background: #1e293b;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2A2622;
       color: #ffffff;
-      padding: 14px 24px;
-      border-radius: 30px;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 10px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
-      transform: translateY(120px);
+      gap: var(--space-2);
+      box-shadow: var(--shadow-floating);
+      z-index: 99999;
       opacity: 0;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 9999;
+      pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
     }
 
     .toast.show {
-      transform: translateY(0);
       opacity: 1;
-    }
-
-    /* ==========================================================================
-       RESPONSIVE BREAKPOINTS (Mobile, Tablet, Desktop)
-       ========================================================================== */
-
-    /* Tablet & Medium Screens (<= 768px) */
-    @media (max-width: 768px) {
-      .top-nav {
-        padding: 10px 16px;
-        min-height: 64px;
-        flex-wrap: wrap;
-      }
-
-      .brand-title {
-        font-size: 15px;
-      }
-
-      .studio-layout {
-        padding: 16px 12px 60px 12px;
-      }
-
-      .panel-card {
-        padding: 18px 16px;
-        border-radius: 16px;
-      }
-
-      .form-grid-2 {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-
-      .switch-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-      }
-
-      .tab-bar {
-        padding: 4px;
-        gap: 4px;
-      }
-
-      .tab-btn {
-        padding: 8px 12px;
-        font-size: 12px;
-      }
-
-      /* Touch targets on mobile / tablet */
-      input, textarea, select {
-        font-size: 16px; /* Prevents auto-zoom in Safari iOS */
-        padding: 12px 14px;
-      }
-
-      .btn-wa-full {
-        width: 100%;
-      }
-    }
-
-    /* Mobile Small Screen (<= 480px) */
-    @media (max-width: 480px) {
-      .top-nav {
-        padding: 8px 12px;
-      }
-
-      .brand-icon {
-        width: 34px;
-        height: 34px;
-        min-width: 34px;
-        border-radius: 8px;
-      }
-
-      .brand-title {
-        font-size: 14px;
-      }
-
-      .brand-badge {
-        display: none;
-      }
-
-      .brand-subtitle {
-        display: none;
-      }
-
-      /* Compact Top Nav Buttons */
-      .nav-btn-text {
-        display: none;
-      }
-
-      .btn-nav-icon {
-        padding: 8px 12px;
-        min-height: 38px;
-      }
-
-      .status-badge {
-        padding: 6px 10px;
-        font-size: 11px;
-        min-height: 36px;
-      }
-
-      .status-text-full {
-        display: none;
-      }
-
-      .status-text-short {
-        display: inline !important;
-      }
-
-      .panel-header-icon {
-        width: 32px;
-        height: 32px;
-        min-width: 32px;
-      }
-
-      .panel-title {
-        font-size: 14px;
-      }
-
-      .panel-subtitle {
-        font-size: 11px;
-        line-height: 1.4;
-      }
-
-      /* Vertical Upload Zone on Mobile */
-      .upload-zone {
-        flex-direction: column;
-        text-align: center;
-        align-items: center;
-        gap: 12px;
-        padding: 16px 12px;
-      }
-
-      .upload-preview-thumb {
-        margin: 0 auto;
-      }
-
-      .guest-table th, .guest-table td {
-        padding: 8px 10px;
-        font-size: 12px;
-      }
-
-      /* Mobile Centered Toast */
-      .toast {
-        left: 16px;
-        right: 16px;
-        bottom: 16px;
-        justify-content: center;
-        font-size: 12px;
-        padding: 12px 18px;
-      }
-    }
-
-    /* Studio Login Lock Screen */
-    .login-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 999999;
-      padding: 20px;
-      backdrop-filter: blur(14px);
-      transition: opacity 0.35s ease, visibility 0.35s ease;
-    }
-
-    .login-overlay.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .login-card {
-      background: #ffffff;
-      border-radius: 24px;
-      padding: 38px 32px;
-      max-width: 400px;
-      width: 100%;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-      text-align: center;
-      animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      border: 1px solid var(--border);
-    }
-
-    @keyframes popIn {
-      0% { transform: scale(0.92); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .login-card.shake {
-      animation: shakeErr 0.4s ease;
-    }
-
-    @keyframes shakeErr {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-8px); }
-      40%, 80% { transform: translateX(8px); }
+      transform: translate(-50%, -10px);
     }
   </style>
 </head>
 <body>
 
-  <!-- Studio Login Lock Screen -->
+  <!-- Login Lock Screen -->
   <div id="loginOverlay" class="login-overlay">
     <div id="loginCard" class="login-card">
-      <div style="width: 56px; height: 56px; background: var(--primary-light); color: var(--primary); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; box-shadow: 0 8px 16px rgba(75, 107, 153, 0.25);">
-        <i data-lucide="lock" style="width: 28px; height: 28px;"></i>
-      </div>
-      <h2 style="font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 6px;">Wevitation Studio</h2>
-      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">Masukkan kata sandi untuk mengedit dan mengelola undangan.</p>
-      
-      <form onsubmit="handleLoginSubmit(event)" style="display: flex; flex-direction: column; gap: 14px;">
-        <div style="position: relative;">
-          <input type="password" id="loginPasswordInput" placeholder="Masukkan password..." autofocus style="width: 100%; padding: 13px 44px 13px 16px; border-radius: 12px; font-size: 15px; border: 1.5px solid var(--border); outline: none;">
-          <button type="button" onclick="togglePasswordVisibility()" class="btn-clean" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); cursor: pointer; border: none; background: transparent; padding: 4px;">
-            <i data-lucide="eye" style="width: 18px; height: 18px;" id="eyeIcon"></i>
-          </button>
+      <div class="login-monogram font-script">W</div>
+      <div class="login-title font-serif">Wevitation Studio</div>
+      <div class="login-subtitle">Masukkan kata sandi untuk mengelola undangan</div>
+
+      <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+        <div class="form-group" style="text-align: left; margin-bottom: var(--space-4);">
+          <div class="input-wrapper has-icon">
+            <i data-lucide="lock" class="input-icon" style="width: 16px; height: 16px;"></i>
+            <input type="password" id="loginPasswordInput" placeholder="Kata sandi studio..." required autocomplete="current-password">
+            <button type="button" onclick="togglePasswordVisibility()" class="btn-clean" style="position: absolute; right: var(--space-2); top: 50%; transform: translateY(-50%); color: var(--text-light);" title="Tampilkan/Sembunyikan sandi">
+              <i data-lucide="eye" id="eyeIcon" style="width: 16px; height: 16px;"></i>
+            </button>
+          </div>
+          <div id="loginErrorMsg" style="color: var(--danger); font-size: 11.5px; font-weight: 600; margin-top: var(--space-1); display: none;">
+            Kata sandi salah. Silakan coba lagi.
+          </div>
         </div>
-        <div id="loginErrorMsg" style="display: none; font-size: 12px; color: var(--danger); font-weight: 700; text-align: left;">
-          Password salah. Silakan coba lagi!
-        </div>
-        <button type="submit" class="btn btn-primary" style="padding: 13px 20px; border-radius: 12px; font-size: 14px; font-weight: 700; width: 100%;">
-          <i data-lucide="key" style="width: 16px; height: 16px;"></i>
-          <span>Buka Dashboard</span>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: var(--space-3) var(--space-4);">
+          <i data-lucide="unlock" style="width: 15px; height: 15px;"></i>
+          <span>Buka Studio</span>
         </button>
       </form>
     </div>
@@ -834,39 +1016,26 @@
 
   <!-- Top Studio Header -->
   <nav class="top-nav">
-    <div class="brand-group">
+    <div class="brand-group" onclick="switchTab('tab-menu-grid')" title="Kembali ke Menu Utama">
       <div class="brand-icon">
-        <i data-lucide="sparkles" style="width: 18px; height: 18px;"></i>
+        <i data-lucide="layout-grid" style="width: 18px; height: 18px;"></i>
       </div>
-      <div class="brand-text-wrapper">
-        <div style="display: flex; align-items: center;">
-          <span class="brand-title">Wevitation Studio</span>
-          <span class="brand-badge">Supabase Cloud</span>
+      <div>
+        <div style="display: flex; align-items: center; gap: var(--space-2);">
+          <span class="brand-title font-serif">Wevitation Studio</span>
+          <div id="supabaseStatusBadge" class="status-badge local" onclick="event.stopPropagation(); switchTab('tab-cloud')" title="Status Database: Klik untuk atur Supabase">
+            <i data-lucide="cloud-off" style="width: 12px; height: 12px;" id="supabaseStatusIcon"></i>
+            <span id="supabaseStatusText">Lokal</span>
+          </div>
         </div>
-        <div class="brand-subtitle">Manajemen Undangan, Fitur &amp; WhatsApp Blast</div>
+        <div class="brand-subtitle">Dashboard Pengaturan Undangan Digital</div>
       </div>
     </div>
 
     <div class="nav-actions">
-      <div id="supabaseStatusBadge" class="status-badge local" onclick="switchTab('tab-cloud')" title="Klik untuk atur koneksi Supabase">
-        <i data-lucide="cloud-off" style="width: 14px; height: 14px;" id="supabaseStatusIcon"></i>
-        <span id="supabaseStatusText" class="status-text-full">Mode Lokal</span>
-        <span class="status-text-short" style="display: none;">Lokal</span>
-      </div>
-
-      <button onclick="saveAllToSupabase()" class="btn btn-success btn-nav-icon" title="Simpan ke Cloud Supabase">
-        <i data-lucide="cloud-upload" style="width: 16px; height: 16px;"></i>
-        <span class="nav-btn-text">Simpan ke Cloud</span>
-      </button>
-
-      <a href="/" id="navInvitationLink" target="_blank" class="btn btn-primary btn-nav-icon" title="Buka Web Undangan">
-        <i data-lucide="external-link" style="width: 16px; height: 16px;"></i>
-        <span class="nav-btn-text">Buka Undangan</span>
-      </a>
-
-      <button onclick="handleStudioLogout()" class="btn btn-light btn-nav-icon" title="Kunci / Logout Dashboard">
-        <i data-lucide="lock" style="width: 15px; height: 15px;"></i>
-        <span class="nav-btn-text">Kunci</span>
+      <button onclick="handleStudioLogout()" class="btn btn-light btn-sm" title="Kunci Dashboard">
+        <i data-lucide="lock" style="width: 14px; height: 14px;"></i>
+        <span>Kunci</span>
       </button>
     </div>
   </nav>
@@ -876,48 +1045,124 @@
     
     <!-- Form & Configuration Panels -->
     <div class="editor-pane">
-      
-      <!-- Studio Tabs -->
-      <div class="tab-bar">
-        <button class="tab-btn active" onclick="switchTab('tab-features')">
-          <i data-lucide="sliders" style="width: 15px; height: 15px;"></i>
-          <span>1. Visibilitas Fitur</span>
-        </button>
-        <button class="tab-btn" onclick="switchTab('tab-couple')">
-          <i data-lucide="heart" style="width: 15px; height: 15px;"></i>
-          <span>2. Mempelai &amp; Foto</span>
-        </button>
-        <button class="tab-btn" onclick="switchTab('tab-schedule')">
-          <i data-lucide="calendar" style="width: 15px; height: 15px;"></i>
-          <span>3. Acara &amp; Waktu</span>
-        </button>
-        <button class="tab-btn" onclick="switchTab('tab-gift')">
-          <i data-lucide="credit-card" style="width: 15px; height: 15px;"></i>
-          <span>4. Kado &amp; QRIS</span>
-        </button>
-        <button class="tab-btn" onclick="switchTab('tab-story')">
-          <i data-lucide="image" style="width: 15px; height: 15px;"></i>
-          <span>5. Cerita &amp; Galeri</span>
-        </button>
-        <button class="tab-btn" onclick="switchTab('tab-guests')">
-          <i data-lucide="users" style="width: 15px; height: 15px;"></i>
-          <span>6. Tamu &amp; WhatsApp</span>
-        </button>
-        <button class="tab-btn" onclick="switchTab('tab-cloud')">
-          <i data-lucide="database" style="width: 15px; height: 15px;"></i>
-          <span>7. Supabase</span>
-        </button>
+
+      <!-- MAIN MENU GRID HUB (MINIMALIST APP-ICON TILES) -->
+      <div id="tab-menu-grid" class="tab-content" style="display: block;">
+        <div class="menu-hub-header">
+          <div class="menu-hub-title font-serif">
+            <span>Menu Pengaturan Undangan</span>
+          </div>
+          <div class="menu-hub-subtitle">Pilih modul di bawah untuk mulai mengelola data dan konten undangan.</div>
+        </div>
+
+        <!-- 7 Minimalist App-Icon Tiles Grid (Balanced 3-Column Grid) -->
+        <div class="menu-icon-grid">
+          
+          <!-- Tile 1: Visibilitas Fitur -->
+          <div class="menu-icon-tile" onclick="switchTab('tab-features')">
+            <div class="tile-icon-box">
+              <i data-lucide="sliders" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div>
+              <div class="tile-label">Visibilitas Fitur</div>
+              <div class="tile-desc">Saklar seksi &amp; fitur</div>
+            </div>
+          </div>
+
+          <!-- Tile 2: Mempelai & Foto -->
+          <div class="menu-icon-tile" onclick="switchTab('tab-couple')">
+            <div class="tile-icon-box">
+              <i data-lucide="heart" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div>
+              <div class="tile-label">Mempelai &amp; Foto</div>
+              <div class="tile-desc">Profil &amp; avatar pengantin</div>
+            </div>
+          </div>
+
+          <!-- Tile 3: Acara & Lokasi -->
+          <div class="menu-icon-tile" onclick="switchTab('tab-schedule')">
+            <div class="tile-icon-box">
+              <i data-lucide="calendar-days" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div>
+              <div class="tile-label">Acara &amp; Lokasi</div>
+              <div class="tile-desc">Jadwal akad, resepsi, maps</div>
+            </div>
+          </div>
+
+          <!-- Tile 4: Kado & QRIS -->
+          <div class="menu-icon-tile" onclick="switchTab('tab-gift')">
+            <div class="tile-icon-box accent-gold">
+              <i data-lucide="credit-card" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div>
+              <div class="tile-label">Kado &amp; QRIS</div>
+              <div class="tile-desc">Rekening &amp; amplop digital</div>
+            </div>
+          </div>
+
+          <!-- Tile 5: Cerita & Musik -->
+          <div class="menu-icon-tile" onclick="switchTab('tab-story')">
+            <div class="tile-icon-box">
+              <i data-lucide="music-2" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div>
+              <div class="tile-label">Cerita &amp; Musik</div>
+              <div class="tile-desc">Kisah cinta &amp; lagu latar</div>
+            </div>
+          </div>
+
+          <!-- Tile 6: Tamu & WhatsApp -->
+          <div class="menu-icon-tile" onclick="switchTab('tab-guests')">
+            <div class="tile-icon-box accent-wa">
+              <i data-lucide="users" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div>
+              <div class="tile-label">Tamu &amp; WhatsApp</div>
+              <div class="tile-desc">Broadcast WA &amp; RSVP</div>
+            </div>
+          </div>
+
+          <!-- Tile 7: Supabase Cloud -->
+          <div class="menu-icon-tile" onclick="switchTab('tab-cloud')">
+            <div class="tile-icon-box">
+              <i data-lucide="database" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div>
+              <div class="tile-label">Supabase Cloud</div>
+              <div class="tile-desc">Database &amp; penyimpanan</div>
+            </div>
+          </div>
+
+        </div>
       </div>
 
       <!-- TAB 1: KONTROL VISIBILITAS FITUR -->
-      <div id="tab-features" class="tab-content">
+      <div id="tab-features" class="tab-content" style="display: none;">
+        <div class="module-nav-bar">
+          <button onclick="switchTab('tab-menu-grid')" class="btn-back-hub">
+            <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
+            <span>Kembali</span>
+          </button>
+          <div class="progress-dots" title="Langkah 1 dari 7">
+            <span class="progress-dot active"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+          </div>
+        </div>
+
         <div class="panel-card">
           <div class="panel-header">
             <div class="panel-header-info">
-              <div class="panel-header-icon"><i data-lucide="toggle-right"></i></div>
+              <div class="panel-header-icon"><i data-lucide="sliders"></i></div>
               <div>
-                <div class="panel-title">Kontrol Visibilitas Fitur &amp; Seksi</div>
-                <div class="panel-subtitle">Aktifkan atau nonaktifkan seksi mana saja yang dapat dilihat tamu di website undangan</div>
+                <div class="panel-title font-serif">Kontrol Visibilitas Fitur &amp; Seksi</div>
+                <div class="panel-subtitle">Aktifkan atau nonaktifkan seksi yang tampil di website undangan</div>
               </div>
             </div>
           </div>
@@ -925,10 +1170,10 @@
           <div class="switch-grid">
             <div class="switch-item">
               <div class="switch-info">
-                <i data-lucide="mail-open" style="color: var(--primary);"></i>
+                <i data-lucide="mail" style="color: var(--primary); width: 18px; height: 18px;"></i>
                 <div>
-                  <div class="switch-label">Gate Cover ("Buka Undangan")</div>
-                  <div class="switch-desc">Sampul pembuka amplop kartu nama</div>
+                  <div class="switch-label">Gate Cover</div>
+                  <div class="switch-desc">Sampul pembuka amplop</div>
                 </div>
               </div>
               <label class="switch">
@@ -939,10 +1184,10 @@
 
             <div class="switch-item">
               <div class="switch-info">
-                <i data-lucide="clock" style="color: var(--primary);"></i>
+                <i data-lucide="clock" style="color: var(--primary); width: 18px; height: 18px;"></i>
                 <div>
                   <div class="switch-label">Countdown Timer</div>
-                  <div class="switch-desc">Hitung mundur 4 kolom waktu</div>
+                  <div class="switch-desc">Hitung mundur hari bahagia</div>
                 </div>
               </div>
               <label class="switch">
@@ -953,10 +1198,10 @@
 
             <div class="switch-item">
               <div class="switch-info">
-                <i data-lucide="quote" style="color: var(--primary);"></i>
+                <i data-lucide="quote" style="color: var(--primary); width: 18px; height: 18px;"></i>
                 <div>
-                  <div class="switch-label">Kutipan Ayat (Quote)</div>
-                  <div class="switch-desc">Surah Ar-Rum ayat 21 &amp; terjemahan</div>
+                  <div class="switch-label">Kutipan Ayat Suci</div>
+                  <div class="switch-desc">Surah Ar-Rum ayat 21</div>
                 </div>
               </div>
               <label class="switch">
@@ -967,10 +1212,10 @@
 
             <div class="switch-item">
               <div class="switch-info">
-                <i data-lucide="users" style="color: var(--primary);"></i>
+                <i data-lucide="users" style="color: var(--primary); width: 18px; height: 18px;"></i>
                 <div>
                   <div class="switch-label">Profil Mempelai</div>
-                  <div class="switch-desc">Foto portrait, orang tua, &amp; IG</div>
+                  <div class="switch-desc">Foto, nama orang tua, &amp; IG</div>
                 </div>
               </div>
               <label class="switch">
@@ -981,10 +1226,10 @@
 
             <div class="switch-item">
               <div class="switch-info">
-                <i data-lucide="calendar" style="color: var(--primary);"></i>
+                <i data-lucide="calendar" style="color: var(--primary); width: 18px; height: 18px;"></i>
                 <div>
                   <div class="switch-label">Jadwal Acara &amp; Maps</div>
-                  <div class="switch-desc">Seksi Akad &amp; Resepsi serta Maps</div>
+                  <div class="switch-desc">Akad, Resepsi, dan rute map</div>
                 </div>
               </div>
               <label class="switch">
@@ -995,10 +1240,10 @@
 
             <div class="switch-item">
               <div class="switch-info">
-                <i data-lucide="book-open" style="color: var(--primary);"></i>
+                <i data-lucide="book-open" style="color: var(--primary); width: 18px; height: 18px;"></i>
                 <div>
                   <div class="switch-label">Kisah Cinta (Love Story)</div>
-                  <div class="switch-desc">Timeline momen pertemuan &amp; lamaran</div>
+                  <div class="switch-desc">Timeline pertemuan &amp; lamaran</div>
                 </div>
               </div>
               <label class="switch">
@@ -1009,10 +1254,10 @@
 
             <div class="switch-item">
               <div class="switch-info">
-                <i data-lucide="image" style="color: var(--primary);"></i>
+                <i data-lucide="image" style="color: var(--primary); width: 18px; height: 18px;"></i>
                 <div>
-                  <div class="switch-label">Galeri Foto Prewedding</div>
-                  <div class="switch-desc">Slider foto dan zoom interaktif</div>
+                  <div class="switch-label">Galeri Foto</div>
+                  <div class="switch-desc">Slider foto prewedding</div>
                 </div>
               </div>
               <label class="switch">
@@ -1023,10 +1268,10 @@
 
             <div class="switch-item">
               <div class="switch-info">
-                <i data-lucide="credit-card" style="color: var(--primary);"></i>
+                <i data-lucide="credit-card" style="color: var(--primary); width: 18px; height: 18px;"></i>
                 <div>
                   <div class="switch-label">Kado Digital &amp; QRIS</div>
-                  <div class="switch-desc">Amplop digital &amp; QRIS transfer</div>
+                  <div class="switch-desc">Amplop kado &amp; rekening</div>
                 </div>
               </div>
               <label class="switch">
@@ -1037,10 +1282,10 @@
 
             <div class="switch-item">
               <div class="switch-info">
-                <i data-lucide="message-square" style="color: var(--primary);"></i>
+                <i data-lucide="message-square" style="color: var(--primary); width: 18px; height: 18px;"></i>
                 <div>
-                  <div class="switch-label">Buku Tamu &amp; RSVP</div>
-                  <div class="switch-desc">Konfirmasi kehadiran &amp; ucapan</div>
+                  <div class="switch-label">Buku Tamu &amp; Ucapan</div>
+                  <div class="switch-desc">Doa restu &amp; RSVP online</div>
                 </div>
               </div>
               <label class="switch">
@@ -1051,10 +1296,10 @@
 
             <div class="switch-item">
               <div class="switch-info">
-                <i data-lucide="instagram" style="color: var(--primary);"></i>
+                <i data-lucide="instagram" style="color: var(--primary); width: 18px; height: 18px;"></i>
                 <div>
                   <div class="switch-label">IG Story Generator</div>
-                  <div class="switch-desc">Export kartu ucapan 9:16 medsos</div>
+                  <div class="switch-desc">Export kartu ucapan 9:16</div>
                 </div>
               </div>
               <label class="switch">
@@ -1065,10 +1310,10 @@
 
             <div class="switch-item">
               <div class="switch-info">
-                <i data-lucide="music" style="color: var(--primary);"></i>
+                <i data-lucide="music" style="color: var(--primary); width: 18px; height: 18px;"></i>
                 <div>
                   <div class="switch-label">Musik Latar (Audio)</div>
-                  <div class="switch-desc">Pemutar musik melayang otomatis</div>
+                  <div class="switch-desc">Pemutar lagu otomatis</div>
                 </div>
               </div>
               <label class="switch">
@@ -1077,19 +1322,42 @@
               </label>
             </div>
           </div>
+
+          <div class="panel-footer-nav">
+            <button onclick="switchTab('tab-couple')" class="btn btn-primary">
+              <span>Lanjut ke Mempelai</span>
+              <i data-lucide="chevron-right" style="width: 15px; height: 15px;"></i>
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- TAB 2: MEMPELAI & UPLOAD FOTO -->
       <div id="tab-couple" class="tab-content" style="display: none;">
+        <div class="module-nav-bar">
+          <button onclick="switchTab('tab-menu-grid')" class="btn-back-hub">
+            <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
+            <span>Kembali</span>
+          </button>
+          <div class="progress-dots" title="Langkah 2 dari 7">
+            <span class="progress-dot"></span>
+            <span class="progress-dot active"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+          </div>
+        </div>
+
         <!-- Bride Card -->
-        <div class="panel-card" style="margin-bottom: 20px;">
+        <div class="panel-card" style="margin-bottom: var(--space-4);">
           <div class="panel-header">
             <div class="panel-header-info">
-              <div class="panel-header-icon"><i data-lucide="smile"></i></div>
+              <div class="panel-header-icon"><i data-lucide="heart"></i></div>
               <div>
-                <div class="panel-title">Mempelai Wanita (The Bride)</div>
-                <div class="panel-subtitle">Data profil dan pengunggahan foto mempelai wanita</div>
+                <div class="panel-title font-serif">Mempelai Wanita</div>
+                <div class="panel-subtitle">Profil dan foto mempelai wanita</div>
               </div>
             </div>
           </div>
@@ -1110,26 +1378,21 @@
             <input type="text" id="brideParents" value="Putri Bapak Danang Hendra & Ibu Siti Laela" oninput="updateAll()">
           </div>
 
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label>Username Instagram</label>
-              <div class="input-wrapper has-icon">
-                <i data-lucide="instagram" class="input-icon" style="width: 16px; height: 16px;"></i>
-                <input type="text" id="brideIg" value="wevitation" oninput="updateAll()">
-              </div>
-            </div>
-            <div class="form-group">
-              <label>URL Foto Avatar</label>
-              <input type="text" id="brideAvatar" value="/assets/images/bride-eviana.jpg" oninput="updateAll()">
+          <div class="form-group">
+            <label>Username Instagram</label>
+            <div class="input-wrapper has-icon">
+              <i data-lucide="instagram" class="input-icon" style="width: 15px; height: 15px;"></i>
+              <input type="text" id="brideIg" value="wevitation" oninput="updateAll()">
             </div>
           </div>
+          <input type="hidden" id="brideAvatar" value="/assets/images/bride-eviana.jpg">
 
           <!-- Bride Upload Box -->
           <div class="upload-zone">
             <img id="brideAvatarPreview" src="/assets/images/bride-eviana.jpg" class="upload-preview-thumb" alt="Preview">
             <div style="flex: 1; width: 100%;">
-              <div style="font-size: 13px; font-weight: 700;">Ganti Foto Mempelai Wanita</div>
-              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Foto lama di Supabase Storage otomatis diganti untuk hemat ruang.</div>
+              <div style="font-size: 12.5px; font-weight: 700;">Ganti Foto Mempelai Wanita</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: var(--space-1);">Penyimpanan cloud otomatis menimpa file lama.</div>
               <input type="file" id="fileBrideAvatar" accept="image/*" style="font-size: 12px; width: 100%;" onchange="handleMediaUpload(this, 'avatars', 'brideAvatar', 'brideAvatarPreview')">
             </div>
           </div>
@@ -1141,8 +1404,8 @@
             <div class="panel-header-info">
               <div class="panel-header-icon"><i data-lucide="user"></i></div>
               <div>
-                <div class="panel-title">Mempelai Pria (The Groom)</div>
-                <div class="panel-subtitle">Data profil dan pengunggahan foto mempelai pria</div>
+                <div class="panel-title font-serif">Mempelai Pria</div>
+                <div class="panel-subtitle">Profil dan foto mempelai pria</div>
               </div>
             </div>
           </div>
@@ -1163,41 +1426,59 @@
             <input type="text" id="groomParents" value="Putra Bapak Arya Gunawan & Ibu Djenar Widiati" oninput="updateAll()">
           </div>
 
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label>Username Instagram</label>
-              <div class="input-wrapper has-icon">
-                <i data-lucide="instagram" class="input-icon" style="width: 16px; height: 16px;"></i>
-                <input type="text" id="groomIg" value="wevitation" oninput="updateAll()">
-              </div>
-            </div>
-            <div class="form-group">
-              <label>URL Foto Avatar</label>
-              <input type="text" id="groomAvatar" value="/assets/images/groom-andra.jpg" oninput="updateAll()">
+          <div class="form-group">
+            <label>Username Instagram</label>
+            <div class="input-wrapper has-icon">
+              <i data-lucide="instagram" class="input-icon" style="width: 15px; height: 15px;"></i>
+              <input type="text" id="groomIg" value="wevitation" oninput="updateAll()">
             </div>
           </div>
+          <input type="hidden" id="groomAvatar" value="/assets/images/groom-andra.jpg">
 
           <!-- Groom Upload Box -->
           <div class="upload-zone">
             <img id="groomAvatarPreview" src="/assets/images/groom-andra.jpg" class="upload-preview-thumb" alt="Preview">
             <div style="flex: 1; width: 100%;">
-              <div style="font-size: 13px; font-weight: 700;">Ganti Foto Mempelai Pria</div>
-              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Foto lama di Supabase Storage otomatis diganti untuk hemat ruang.</div>
+              <div style="font-size: 12.5px; font-weight: 700;">Ganti Foto Mempelai Pria</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: var(--space-1);">Penyimpanan cloud otomatis menimpa file lama.</div>
               <input type="file" id="fileGroomAvatar" accept="image/*" style="font-size: 12px; width: 100%;" onchange="handleMediaUpload(this, 'avatars', 'groomAvatar', 'groomAvatarPreview')">
             </div>
+          </div>
+
+          <div class="panel-footer-nav">
+            <button onclick="switchTab('tab-schedule')" class="btn btn-primary">
+              <span>Lanjut ke Acara</span>
+              <i data-lucide="chevron-right" style="width: 15px; height: 15px;"></i>
+            </button>
           </div>
         </div>
       </div>
 
       <!-- TAB 3: ACARA & WAKTU -->
       <div id="tab-schedule" class="tab-content" style="display: none;">
+        <div class="module-nav-bar">
+          <button onclick="switchTab('tab-menu-grid')" class="btn-back-hub">
+            <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
+            <span>Kembali</span>
+          </button>
+          <div class="progress-dots" title="Langkah 3 dari 7">
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot active"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+          </div>
+        </div>
+
         <div class="panel-card">
           <div class="panel-header">
             <div class="panel-header-info">
-              <div class="panel-header-icon"><i data-lucide="calendar-heart"></i></div>
+              <div class="panel-header-icon"><i data-lucide="calendar-days"></i></div>
               <div>
-                <div class="panel-title">Waktu, Lokasi &amp; Google Maps</div>
-                <div class="panel-subtitle">Jadwal Akad Nikah, Resepsi, alamat dan tautan lokasi</div>
+                <div class="panel-title font-serif">Waktu, Lokasi &amp; Peta Navigasi</div>
+                <div class="panel-subtitle">Jadwal Akad Nikah, Resepsi, alamat dan rute maps</div>
               </div>
             </div>
           </div>
@@ -1219,25 +1500,25 @@
               <input type="text" id="formattedDate" value="Senin, 21 September 2026" oninput="updateAll()">
             </div>
             <div class="form-group">
-              <label>Format Tanggal Singkat</label>
+              <label>Format Tanggal Ringkas</label>
               <input type="text" id="formattedDateShort" value="21 • 09 • 2026" oninput="updateAll()">
             </div>
           </div>
 
           <div class="form-grid-2">
             <div class="form-group">
-              <label>Waktu Akad Nikah</label>
+              <label>Jam Akad Nikah</label>
               <input type="text" id="akadTime" value="16:00 - 17:00" oninput="updateAll()">
             </div>
             <div class="form-group">
-              <label>Waktu Resepsi</label>
+              <label>Jam Resepsi</label>
               <input type="text" id="resepsiTime" value="18:30 - 20:30" oninput="updateAll()">
             </div>
           </div>
 
           <div class="form-group">
-            <label>Nama Gedung / Venue</label>
-            <input type="text" id="venueName" value="Maximo Resto & Garden" oninput="updateAll()">
+            <label>Nama Tempat / Gedung</label>
+            <input type="text" id="venueName" value="Maximo Resto &amp; Garden" oninput="updateAll()">
           </div>
 
           <div class="form-group">
@@ -1246,24 +1527,47 @@
           </div>
 
           <div class="form-group">
-            <label>Tautan Lokasi Google Maps</label>
+            <label>Tautan Google Maps</label>
             <div class="input-wrapper has-icon">
-              <i data-lucide="map-pin" class="input-icon" style="width: 16px; height: 16px;"></i>
-              <input type="text" id="mapsUrl" value="https://maps.app.goo.gl/vwB5zqwGS2P4cPaY9?g_st=ipc" oninput="updateAll()">
+              <i data-lucide="map-pin" class="input-icon" style="width: 15px; height: 15px;"></i>
+              <input type="url" id="mapsUrl" value="https://maps.app.goo.gl/vwB5zqwGS2P4cPaY9" oninput="updateAll()">
             </div>
+          </div>
+
+          <div class="panel-footer-nav">
+            <button onclick="switchTab('tab-gift')" class="btn btn-primary">
+              <span>Lanjut ke Kado &amp; QRIS</span>
+              <i data-lucide="chevron-right" style="width: 15px; height: 15px;"></i>
+            </button>
           </div>
         </div>
       </div>
 
       <!-- TAB 4: KADO & QRIS -->
       <div id="tab-gift" class="tab-content" style="display: none;">
+        <div class="module-nav-bar">
+          <button onclick="switchTab('tab-menu-grid')" class="btn-back-hub">
+            <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
+            <span>Kembali</span>
+          </button>
+          <div class="progress-dots" title="Langkah 4 dari 7">
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot active"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+          </div>
+        </div>
+
         <div class="panel-card">
           <div class="panel-header">
             <div class="panel-header-info">
-              <div class="panel-header-icon"><i data-lucide="wallet"></i></div>
+              <div class="panel-header-icon" style="background: var(--accent-light); color: var(--accent-hover);"><i data-lucide="credit-card"></i></div>
               <div>
-                <div class="panel-title">Kado Digital &amp; Upload QRIS</div>
-                <div class="panel-subtitle">Nomor rekening transfer bank dan upload gambar barcode QRIS</div>
+                <div class="panel-title font-serif">Kado Digital &amp; Barcode QRIS</div>
+                <div class="panel-subtitle">Nomor rekening transfer bank dan upload gambar QRIS</div>
               </div>
             </div>
           </div>
@@ -1283,45 +1587,64 @@
             <label>Nama Pemilik Rekening</label>
             <input type="text" id="bankHolder" value="Eviana Saskia" oninput="updateAll()">
           </div>
-
-          <div class="form-group">
-            <label>URL Gambar QRIS</label>
-            <input type="text" id="qrisImage" value="/assets/images/qris-bca.jpg" oninput="updateAll()">
-          </div>
+          <input type="hidden" id="qrisImage" value="/assets/images/qris-bca.jpg">
 
           <!-- QRIS Upload Box -->
           <div class="upload-zone">
             <img id="qrisPreview" src="/assets/images/qris-bca.jpg" class="upload-preview-thumb" alt="QRIS">
             <div style="flex: 1; width: 100%;">
-              <div style="font-size: 13px; font-weight: 700;">Upload Gambar QRIS Baru</div>
-              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">File QRIS lama di Supabase Storage otomatis diganti.</div>
+              <div style="font-size: 12.5px; font-weight: 700;">Upload Gambar QRIS Baru</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: var(--space-1);">File QRIS lama di penyimpanan cloud otomatis diganti.</div>
               <input type="file" id="fileQris" accept="image/*" style="font-size: 12px; width: 100%;" onchange="handleMediaUpload(this, 'qris', 'qrisImage', 'qrisPreview')">
             </div>
+          </div>
+
+          <div class="panel-footer-nav">
+            <button onclick="switchTab('tab-story')" class="btn btn-primary">
+              <span>Lanjut ke Cerita &amp; Musik</span>
+              <i data-lucide="chevron-right" style="width: 15px; height: 15px;"></i>
+            </button>
           </div>
         </div>
       </div>
 
       <!-- TAB 5: CERITA & GALERI -->
       <div id="tab-story" class="tab-content" style="display: none;">
-        <div class="panel-card" style="margin-bottom: 20px;">
+        <div class="module-nav-bar">
+          <button onclick="switchTab('tab-menu-grid')" class="btn-back-hub">
+            <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
+            <span>Kembali</span>
+          </button>
+          <div class="progress-dots" title="Langkah 5 dari 7">
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot active"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+          </div>
+        </div>
+
+        <div class="panel-card" style="margin-bottom: var(--space-4);">
           <div class="panel-header">
             <div class="panel-header-info">
-              <div class="panel-header-icon"><i data-lucide="book-heart"></i></div>
+              <div class="panel-header-icon"><i data-lucide="book-open"></i></div>
               <div>
-                <div class="panel-title">Kisah Cinta (Love Story)</div>
+                <div class="panel-title font-serif">Kisah Cinta (Love Story)</div>
                 <div class="panel-subtitle">Tuliskan momen pertemuan pertama dan lamaran Anda</div>
               </div>
             </div>
           </div>
 
-          <div style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px dashed var(--border);">
+          <div style="margin-bottom: var(--space-4); padding-bottom: var(--space-4); border-bottom: 1px dashed var(--border);">
             <div class="form-group">
               <label>Cerita 1 - Judul</label>
               <input type="text" id="story1Title" value="Pertemuan Pertama" oninput="updateAll()">
             </div>
             <div class="form-group">
               <label>Cerita 1 - Isi</label>
-              <textarea id="story1Desc" oninput="updateAll()">Pertama kali kami bertemu saat menjadi anggota sebuah organisasi di kampus. Kebetulan kami berada di divisi yang sama, yang menjadikan kami lebih akrab. Dari diskusi yang serius hingga tawa lepas karena lelucon yang garing, momen-momen itu perlahan menumbuhkan benih cinta yang tak terduga di antara kami.</textarea>
+              <textarea id="story1Desc" rows="3" oninput="updateAll()">Pertama kali kami bertemu saat menjadi anggota sebuah organisasi di kampus. Kebetulan kami berada di divisi yang sama, yang menjadikan kami lebih akrab. Dari diskusi yang serius hingga tawa lepas karena lelucon yang garing, momen-momen itu perlahan menumbuhkan benih cinta yang tak terduga di antara kami.</textarea>
             </div>
           </div>
 
@@ -1332,7 +1655,7 @@
             </div>
             <div class="form-group">
               <label>Cerita 2 - Isi</label>
-              <textarea id="story2Desc" oninput="updateAll()">Walaupun kami sempat menjalani hubungan jarak jauh selama 2 tahun terakhir, namun hal itu bukan menjadi halangan untuk hubungan kami. Justru kami menjadi semakin yakin satu sama lain. Oleh karena itu kami memutuskan untuk menjalin hubungan lebih serius.</textarea>
+              <textarea id="story2Desc" rows="3" oninput="updateAll()">Walaupun kami sempat menjalani hubungan jarak jauh selama 2 tahun terakhir, namun hal itu bukan menjadi halangan untuk hubungan kami. Justru kami menjadi semakin yakin satu sama lain. Oleh karena itu kami memutuskan untuk menjalin hubungan lebih serius.</textarea>
             </div>
           </div>
         </div>
@@ -1340,113 +1663,123 @@
         <div class="panel-card">
           <div class="panel-header">
             <div class="panel-header-info">
-              <div class="panel-header-icon"><i data-lucide="images"></i></div>
+              <div class="panel-header-icon"><i data-lucide="music-2"></i></div>
               <div>
-                <div class="panel-title">Upload Musik Backsound &amp; Audio</div>
+                <div class="panel-title font-serif">Musik Backsound &amp; Audio</div>
                 <div class="panel-subtitle">Unggah file lagu mp3 ke cloud storage</div>
               </div>
             </div>
           </div>
 
-          <div class="form-group">
-            <label>URL / Path File MP3</label>
-            <input type="text" id="audioUrl" value="/assets/audio/romantic-wedding-soundtrack.mp3" oninput="updateAll()">
-          </div>
+          <input type="hidden" id="audioUrl" value="/assets/audio/romantic-wedding-soundtrack.mp3">
 
           <div class="upload-zone">
-            <div style="width: 54px; height: 54px; min-width: 54px; background: var(--primary-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary);">
-              <i data-lucide="music-4" style="width: 24px; height: 24px;"></i>
+            <div style="width: 44px; height: 44px; min-width: 44px; background: var(--primary-light); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: var(--primary);">
+              <i data-lucide="music" style="width: 20px; height: 20px;"></i>
             </div>
             <div style="flex: 1; width: 100%;">
-              <div style="font-size: 13px; font-weight: 700;">Upload Lagu Backsound Baru (.mp3)</div>
-              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Audio lama di Supabase Storage otomatis diganti.</div>
+              <div style="font-size: 12.5px; font-weight: 700;">Upload Lagu Backsound Baru (.mp3)</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: var(--space-1);">Audio lama di penyimpanan cloud otomatis diganti.</div>
               <input type="file" id="fileAudio" accept="audio/mp3,audio/*" style="font-size: 12px; width: 100%;" onchange="handleMediaUpload(this, 'audio', 'audioUrl')">
             </div>
+          </div>
+
+          <div class="panel-footer-nav">
+            <button onclick="switchTab('tab-guests')" class="btn btn-primary">
+              <span>Lanjut ke Tamu &amp; WhatsApp</span>
+              <i data-lucide="chevron-right" style="width: 15px; height: 15px;"></i>
+            </button>
           </div>
         </div>
       </div>
 
       <!-- TAB 6: PENERIMA UNDANGAN (WHATSAPP BLAST) -->
       <div id="tab-guests" class="tab-content" style="display: none;">
+        <div class="module-nav-bar">
+          <button onclick="switchTab('tab-menu-grid')" class="btn-back-hub">
+            <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
+            <span>Kembali</span>
+          </button>
+          <div class="progress-dots" title="Langkah 6 dari 7">
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot active"></span>
+            <span class="progress-dot"></span>
+          </div>
+        </div>
+
         <div class="panel-card">
           <div class="panel-header">
             <div class="panel-header-info">
-              <div class="panel-header-icon" style="background: #dcfce7; color: var(--wa-dark);"><i data-lucide="user-plus"></i></div>
+              <div class="panel-header-icon" style="background: var(--wa-light); color: var(--wa-dark);"><i data-lucide="users"></i></div>
               <div>
-                <div class="panel-title">Manajemen Tamu &amp; Broadcast WhatsApp</div>
-                <div class="panel-subtitle">Kelola daftar tamu, broadcast WA 1-klik, import/export Excel, dan pantau statistik RSVP</div>
+                <div class="panel-title font-serif">Manajemen Tamu &amp; Broadcast WhatsApp</div>
+                <div class="panel-subtitle">Daftar penerima, broadcast WA personal, import/export data, &amp; statistik kehadiran</div>
               </div>
             </div>
           </div>
 
-          <!-- KPI Analytics Cards -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px;">
-            <div style="background: #f8fafc; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border);">
-              <div style="font-size: 11.5px; color: var(--text-muted); font-weight: 600;">Total Tamu Diundang</div>
-              <div style="font-size: 22px; font-weight: 800; color: var(--text); margin-top: 2px;" id="statTotalGuests">0</div>
+          <!-- KPI Analytics Cards (Neutral + 1 Accent) -->
+          <div class="kpi-stats-grid">
+            <div class="kpi-stat-card">
+              <div class="kpi-stat-label">Total Diundang</div>
+              <div class="kpi-stat-number" id="statTotalGuests">0</div>
             </div>
 
-            <div style="background: #f0fdf4; padding: 14px 16px; border-radius: 12px; border: 1px solid #bbf7d0;">
-              <div style="font-size: 11.5px; color: #166534; font-weight: 600;">Undangan Terkirim WA</div>
-              <div style="font-size: 22px; font-weight: 800; color: #15803d; margin-top: 2px;" id="statSentGuests">0</div>
+            <div class="kpi-stat-card accent-wa">
+              <div class="kpi-stat-label">Terkirim WhatsApp</div>
+              <div class="kpi-stat-number" id="statSentGuests">0</div>
             </div>
 
-            <div style="background: #eff6ff; padding: 14px 16px; border-radius: 12px; border: 1px solid #bfdbfe;">
-              <div style="font-size: 11.5px; color: #1e40af; font-weight: 600;">Konfirmasi Hadir</div>
-              <div style="font-size: 22px; font-weight: 800; color: #1d4ed8; margin-top: 2px;" id="statAttendingCount">0</div>
+            <div class="kpi-stat-card">
+              <div class="kpi-stat-label">Konfirmasi Hadir</div>
+              <div class="kpi-stat-number" id="statAttendingCount">0</div>
             </div>
 
-            <div style="background: #faf5ff; padding: 14px 16px; border-radius: 12px; border: 1px solid #e9d5ff;">
-              <div style="font-size: 11.5px; color: #6b21a8; font-weight: 600;">Total Ucapan Doa</div>
-              <div style="font-size: 22px; font-weight: 800; color: #7e22ce; margin-top: 2px;" id="statTotalWishes">0</div>
+            <div class="kpi-stat-card">
+              <div class="kpi-stat-label">Ucapan Masuk</div>
+              <div class="kpi-stat-number" id="statTotalWishes">0</div>
             </div>
           </div>
 
           <!-- URL Domain Website Undangan -->
-          <div style="background: #ffffff; padding: 16px; border-radius: 14px; border: 1.5px solid var(--primary-light); margin-bottom: 20px; box-shadow: var(--shadow-sm);">
-            <label style="font-size: 13px; font-weight: 800; color: var(--primary); margin-bottom: 6px;">
-              <i data-lucide="globe" style="width: 16px; height: 16px;"></i>
-              <span>URL Domain Website Undangan (Production / Cloudflare URL)</span>
+          <div class="subsection-box">
+            <label style="margin-bottom: var(--space-1);">
+              <i data-lucide="globe" style="width: 14px; height: 14px;"></i>
+              <span>URL Domain Website Undangan (Production URL)</span>
             </label>
             <div class="input-wrapper has-icon">
-              <i data-lucide="link-2" class="input-icon" style="width: 16px; height: 16px;"></i>
-              <input type="url" id="invitationBaseUrl" placeholder="Contoh: https://wedding24.pages.dev atau https://undangananda.com" oninput="handleBaseUrlChange()" style="font-weight: 600;">
+              <i data-lucide="link" class="input-icon" style="width: 15px; height: 15px;"></i>
+              <input type="url" id="invitationBaseUrl" placeholder="Contoh: https://wedding24.pages.dev" oninput="handleBaseUrlChange()" style="font-weight: 600;">
             </div>
-            <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">
-              Tautan WhatsApp dan tombol "Buka Undangan" akan otomatis menggunakan domain ini. Jika dikosongkan, akan menggunakan domain saat ini.
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: var(--space-1);">
+              Tautan WhatsApp dan tombol Buka Undangan akan otomatis mengarah ke domain ini.
             </div>
           </div>
 
           <!-- Custom WhatsApp Message Template Editor with Tag Helpers -->
-          <div style="background: #ffffff; padding: 16px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
-              <label style="font-size: 13px; font-weight: 800; color: var(--wa-dark); margin: 0;">
-                <i data-lucide="message-circle" style="width: 16px; height: 16px;"></i>
-                <span>Template Pesan WhatsApp Broadcast</span>
+          <div class="subsection-box bg-white">
+            <div class="subsection-header">
+              <label style="margin: 0;">
+                <i data-lucide="message-square" style="width: 14px; height: 14px; color: var(--wa-dark);"></i>
+                <span>Template Pesan Broadcast WhatsApp</span>
               </label>
-              <div style="font-size: 11px; color: var(--text-muted);">Klik tombol tag di bawah untuk menyisipkan:</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Klik tag untuk menyisipkan:</div>
             </div>
 
-            <!-- Tag Helper Buttons -->
-            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;">
-              <button type="button" onclick="insertWaTag('[NAMA]')" class="btn btn-sm btn-light" style="font-size: 11px; padding: 4px 8px;">
-                + [NAMA]
-              </button>
-              <button type="button" onclick="insertWaTag('[LINK]')" class="btn btn-sm btn-light" style="font-size: 11px; padding: 4px 8px; color: var(--primary); font-weight: 700;">
-                + [LINK] (Wajib)
-              </button>
-              <button type="button" onclick="insertWaTag('[PASANGAN]')" class="btn btn-sm btn-light" style="font-size: 11px; padding: 4px 8px;">
-                + [PASANGAN]
-              </button>
-              <button type="button" onclick="insertWaTag('[TANGGAL]')" class="btn btn-sm btn-light" style="font-size: 11px; padding: 4px 8px;">
-                + [TANGGAL]
-              </button>
-              <button type="button" onclick="resetDefaultWaTemplate()" class="btn btn-sm btn-clean" style="font-size: 11px; color: var(--danger); margin-left: auto;">
-                Reset Default
-              </button>
+            <!-- Tag Helper Chips -->
+            <div class="tag-chips-container">
+              <button type="button" onclick="insertWaTag('[NAMA]')" class="tag-chip">+ [NAMA]</button>
+              <button type="button" onclick="insertWaTag('[LINK]')" class="tag-chip chip-required">+ [LINK] (Wajib)</button>
+              <button type="button" onclick="insertWaTag('[PASANGAN]')" class="tag-chip">+ [PASANGAN]</button>
+              <button type="button" onclick="insertWaTag('[TANGGAL]')" class="tag-chip">+ [TANGGAL]</button>
+              <button type="button" onclick="resetDefaultWaTemplate()" class="btn-reset-template">Reset ke Template Awal</button>
             </div>
 
-            <textarea id="waMessageTemplate" rows="5" style="font-size: 13px; font-family: inherit; line-height: 1.5;" oninput="updateAll()">Kepada Yth. Bapak/Ibu/Saudara/i *[NAMA]*
+            <textarea id="waMessageTemplate" rows="5" style="font-size: 13px; line-height: 1.45;" oninput="updateAll()">Kepada Yth. Bapak/Ibu/Saudara/i *[NAMA]*
 
 Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara pernikahan kami:
 
@@ -1462,17 +1795,17 @@ Terima kasih.</textarea>
           </div>
 
           <!-- Add Guest Form & Import / Export Controls -->
-          <div style="background: #f8fafc; padding: 16px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px;">
-            <div style="font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-              <span>➕ Tambah Tamu Manual</span>
-              <div style="display: flex; gap: 8px;">
+          <div class="subsection-box">
+            <div class="subsection-header">
+              <span style="font-size: 12.5px; font-weight: 700; color: var(--text);">Tambah Tamu Undangan</span>
+              <div style="display: flex; gap: var(--space-1);">
                 <input type="file" id="csvFileInput" accept=".csv, .txt" style="display: none;" onchange="handleImportCSV(event)">
-                <button type="button" onclick="document.getElementById('csvFileInput').click()" class="btn btn-sm btn-light" title="Import daftar nama & no WA dari file CSV">
-                  <i data-lucide="file-up" style="width: 14px; height: 14px;"></i>
+                <button type="button" onclick="document.getElementById('csvFileInput').click()" class="btn btn-sm btn-light" title="Import daftar tamu dari file CSV">
+                  <i data-lucide="upload" style="width: 13px; height: 13px;"></i>
                   <span>Import CSV</span>
                 </button>
-                <button type="button" onclick="handleExportCSV()" class="btn btn-sm btn-light" title="Download daftar tamu & status kirim ke CSV">
-                  <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                <button type="button" onclick="handleExportCSV()" class="btn btn-sm btn-light" title="Download daftar tamu ke file CSV">
+                  <i data-lucide="download" style="width: 13px; height: 13px;"></i>
                   <span>Export CSV</span>
                 </button>
               </div>
@@ -1480,36 +1813,33 @@ Terima kasih.</textarea>
 
             <div class="form-grid-2">
               <div class="form-group" style="margin-bottom: 0;">
-                <label>Nama Penerima Undangan</label>
-                <div class="input-wrapper has-icon">
-                  <i data-lucide="user" class="input-icon" style="width: 16px; height: 16px;"></i>
-                  <input type="text" id="guestInputName" placeholder="Contoh: Bapak Ahmad / Sahabat Lia">
-                </div>
+                <label>Nama Penerima</label>
+                <input type="text" id="guestInputName" placeholder="Contoh: Bapak Ahmad / Sahabat Lia">
               </div>
               <div class="form-group" style="margin-bottom: 0;">
-                <label>Nomor WhatsApp (Contoh: 08123456789 atau 628123456789)</label>
+                <label>Nomor WhatsApp</label>
                 <div class="input-wrapper has-icon">
-                  <i data-lucide="phone" class="input-icon" style="width: 16px; height: 16px;"></i>
-                  <input type="tel" id="guestInputPhone" placeholder="081234567890">
+                  <i data-lucide="phone" class="input-icon" style="width: 15px; height: 15px;"></i>
+                  <input type="tel" id="guestInputPhone" placeholder="081234567890 / 6281234567890">
                 </div>
               </div>
             </div>
 
-            <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
-              <button onclick="handleAddGuest()" class="btn btn-wa btn-wa-full">
-                <i data-lucide="plus-circle" style="width: 16px; height: 16px;"></i>
-                <span>Tambahkan Tamu &amp; Buat Link</span>
+            <div style="display: flex; justify-content: flex-end; margin-top: var(--space-3);">
+              <button onclick="handleAddGuest()" class="btn btn-wa btn-sm">
+                <i data-lucide="user-plus" style="width: 14px; height: 14px;"></i>
+                <span>Tambahkan Tamu</span>
               </button>
             </div>
           </div>
 
           <!-- Guest Filter Bar & List Table -->
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
-            <div style="display: flex; gap: 6px; align-items: center;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2); flex-wrap: wrap; gap: var(--space-2);">
+            <div style="display: flex; gap: var(--space-1); align-items: center;">
               <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Filter:</span>
               <button onclick="setGuestTableFilter('all')" id="btnFilterAll" class="btn btn-sm btn-primary">Semua (<span id="countGuestAll">0</span>)</button>
-              <button onclick="setGuestTableFilter('pending')" id="btnFilterPending" class="btn btn-sm btn-light">Belum Dikirim (<span id="countGuestPending">0</span>)</button>
-              <button onclick="setGuestTableFilter('sent')" id="btnFilterSent" class="btn btn-sm btn-light">Sudah Dikirim (<span id="countGuestSent">0</span>)</button>
+              <button onclick="setGuestTableFilter('pending')" id="btnFilterPending" class="btn btn-sm btn-light">Belum Terkirim (<span id="countGuestPending">0</span>)</button>
+              <button onclick="setGuestTableFilter('sent')" id="btnFilterSent" class="btn btn-sm btn-light">Terkirim (<span id="countGuestSent">0</span>)</button>
             </div>
           </div>
 
@@ -1522,67 +1852,97 @@ Terima kasih.</textarea>
                   <th>Status WA</th>
                   <th>Nama Tamu</th>
                   <th>Nomor WhatsApp</th>
-                  <th>Tautan Undangan Khusus</th>
-                  <th style="text-align: right;">Aksi Kirim</th>
+                  <th>Tautan Undangan</th>
+                  <th>Aksi</th>
                 </tr>
               </thead>
               <tbody id="guestTableBody">
                 <tr>
-                  <td colspan="6" style="text-align: center; color: #94a3b8; padding: 24px;">Belum ada daftar tamu. Tambahkan tamu di atas!</td>
+                  <td colspan="6" style="text-align: center; color: var(--text-muted); padding: var(--space-5);">Belum ada daftar tamu. Tambahkan tamu di atas.</td>
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <div class="panel-footer-nav">
+            <button onclick="switchTab('tab-cloud')" class="btn btn-primary">
+              <span>Lanjut ke Supabase Cloud</span>
+              <i data-lucide="chevron-right" style="width: 15px; height: 15px;"></i>
+            </button>
           </div>
         </div>
       </div>
 
       <!-- TAB 7: KONEKSI SUPABASE -->
       <div id="tab-cloud" class="tab-content" style="display: none;">
+        <div class="module-nav-bar">
+          <button onclick="switchTab('tab-menu-grid')" class="btn-back-hub">
+            <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
+            <span>Kembali</span>
+          </button>
+          <div class="progress-dots" title="Langkah 7 dari 7">
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot active"></span>
+          </div>
+        </div>
+
         <div class="panel-card">
           <div class="panel-header">
             <div class="panel-header-info">
-              <div class="panel-header-icon" style="background: #ecfdf5; color: var(--success-dark);"><i data-lucide="database"></i></div>
+              <div class="panel-header-icon"><i data-lucide="database"></i></div>
               <div>
-                <div class="panel-title">Koneksi Database &amp; Storage Supabase</div>
-                <div class="panel-subtitle">Hubungkan dashboard ke proyek Supabase untuk penyimpanan online permanen</div>
+                <div class="panel-title font-serif">Koneksi Database &amp; Storage Supabase</div>
+                <div class="panel-subtitle">Hubungkan dashboard ke proyek Supabase untuk penyimpanan online</div>
               </div>
             </div>
           </div>
 
           <div class="form-group">
             <label>Supabase Project URL</label>
-            <input type="text" id="supabaseUrlInput" placeholder="https://xyzcompany.supabase.co">
+            <div class="input-wrapper has-icon">
+              <i data-lucide="globe" class="input-icon" style="width: 15px; height: 15px;"></i>
+              <input type="text" id="supabaseUrlInput" placeholder="https://xyzcompany.supabase.co">
+            </div>
           </div>
 
           <div class="form-group">
             <label>Supabase Anon Public API Key</label>
-            <input type="password" id="supabaseKeyInput" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+            <div class="input-wrapper has-icon">
+              <i data-lucide="key" class="input-icon" style="width: 15px; height: 15px;"></i>
+              <input type="password" id="supabaseKeyInput" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+            </div>
           </div>
 
-          <div style="display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap;">
-            <button onclick="handleSaveSupabaseConfig()" class="btn btn-primary" style="flex: 1; min-width: 200px;">
-              <i data-lucide="save" style="width: 16px; height: 16px;"></i>
-              <span>Hubungkan &amp; Simpan Konfigurasi</span>
+          <div style="display: flex; gap: var(--space-2); margin-top: var(--space-4); flex-wrap: wrap;">
+            <button onclick="handleSaveSupabaseConfig()" class="btn btn-primary" style="flex: 1; min-width: 180px;">
+              <i data-lucide="save" style="width: 15px; height: 15px;"></i>
+              <span>Hubungkan &amp; Simpan</span>
             </button>
-            <button onclick="handleTestConnection()" class="btn btn-light" style="flex: 1; min-width: 140px;">
-              <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
+            <button onclick="handleTestConnection()" class="btn btn-light" style="flex: 1; min-width: 130px;">
+              <i data-lucide="refresh-cw" style="width: 15px; height: 15px;"></i>
               <span>Uji Koneksi</span>
             </button>
           </div>
 
           <!-- SQL Schema Guide -->
-          <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border);">
-            <div style="font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 6px;">
-              📄 Skrip SQL Schema Supabase
+          <div style="margin-top: var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--border-light);">
+            <div style="font-size: 13.5px; font-weight: 700; color: var(--text); margin-bottom: var(--space-1); display: flex; align-items: center; gap: var(--space-1);">
+              <i data-lucide="file-text" style="width: 15px; height: 15px; color: var(--primary);"></i>
+              <span>Skrip SQL Schema Database</span>
             </div>
-            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
-              Jika baru pertama kali membuat proyek di Supabase, buka menu <strong>SQL Editor</strong> di dashboard Supabase Anda, lalu jalankan skrip di bawah ini:
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: var(--space-2);">
+              Jalankan skrip ini di <strong>SQL Editor</strong> dashboard Supabase Anda jika baru pertama kali menyiapkan database:
             </div>
-            <button onclick="copySQLSchema()" class="btn btn-light btn-sm" style="margin-bottom: 10px;">
-              <i data-lucide="copy" style="width: 14px; height: 14px;"></i>
-              <span>Salin Skrip SQL Schema</span>
+            <button onclick="copySQLSchema()" class="btn btn-light btn-sm" style="margin-bottom: var(--space-2);">
+              <i data-lucide="copy" style="width: 13px; height: 13px;"></i>
+              <span>Salin Skrip SQL</span>
             </button>
-            <div style="background: #0f172a; color: #e2e8f0; padding: 14px; border-radius: 10px; font-family: monospace; font-size: 11px; max-height: 200px; overflow-y: auto;" id="sqlBoxPreview">
+            <div style="background: #1E293B; color: #E2E8F0; padding: var(--space-3); border-radius: var(--radius-sm); font-family: monospace; font-size: 11px; max-height: 180px; overflow-y: auto;" id="sqlBoxPreview">
 -- Menyiapkan tabel dan bucket di Supabase...
             </div>
           </div>
@@ -1593,9 +1953,26 @@ Terima kasih.</textarea>
 
   </div>
 
+  <!-- Floating Bottom Action Bar for [Cloud] and [Undangan] (Hidden on Hub Screen) -->
+  <div class="floating-bottom-bar" id="floatingBottomBar">
+    <div style="flex: 1;">
+      <button onclick="saveAllToSupabase()" class="btn btn-primary" style="width: 100%; padding: var(--space-2) var(--space-4);">
+        <i data-lucide="cloud-upload" style="width: 16px; height: 16px;"></i>
+        <span>Simpan ke Cloud</span>
+      </button>
+    </div>
+    <div style="flex: 1;">
+      <a href="/" id="navInvitationLink" target="_blank" class="btn btn-accent" style="width: 100%; padding: var(--space-2) var(--space-4);">
+        <i data-lucide="external-link" style="width: 16px; height: 16px;"></i>
+        <span>Buka Undangan</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Toast Notification with dynamic Lucide Icon -->
   <div id="toast" class="toast">
-    <i data-lucide="check-circle" style="width: 18px; height: 18px; color: #10b981;"></i>
-    <span id="toastMsg">Berhasil disimpan!</span>
+    <i data-lucide="check-circle" id="toastIcon" style="width: 16px; height: 16px; color: #48BB78;"></i>
+    <span id="toastMsg">Tersimpan</span>
   </div>
 
   <script>
@@ -1606,6 +1983,26 @@ Terima kasih.</textarea>
 
     const DEFAULT_SUPABASE_URL = 'https://mxqhvfopceusvbmewkwn.supabase.co';
     const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14cWh2Zm9wY2V1c3ZibWV3a3duIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxOTQyNzIsImV4cCI6MjEwMzc3MDI3Mn0.hE6npPiRrj4pQOmKHq9ITDJwwecTkmnMMK1a2akoJK0';
+
+    // Tab & Menu Hub Switching with Bottom Bar Visibility Control
+    function switchTab(tabId) {
+      const allTabs = document.querySelectorAll('.tab-content');
+      allTabs.forEach(t => t.style.display = 'none');
+
+      const target = document.getElementById(tabId);
+      if (target) {
+        target.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      // Hide floating bottom bar on Menu Grid Hub screen, show in other 7 modules
+      const bottomBar = document.getElementById('floatingBottomBar');
+      if (bottomBar) {
+        bottomBar.style.display = (tabId === 'tab-menu-grid') ? 'none' : 'flex';
+      }
+
+      lucide.createIcons();
+    }
 
     // Check & Handle Studio Authentication
     function checkStudioAuth() {
@@ -1630,7 +2027,7 @@ Terima kasih.</textarea>
         sessionStorage.setItem('wevitation_studio_auth', STUDIO_PASSWORD);
         err.style.display = 'none';
         document.getElementById('loginOverlay').classList.add('hidden');
-        showToast('🔓 Berhasil masuk ke Wevitation Studio!');
+        showToast('Berhasil masuk ke Wevitation Studio', 'success');
       } else {
         err.style.display = 'block';
         card.classList.remove('shake');
@@ -1659,7 +2056,7 @@ Terima kasih.</textarea>
       document.getElementById('loginPasswordInput').value = '';
       document.getElementById('loginErrorMsg').style.display = 'none';
       document.getElementById('loginOverlay').classList.remove('hidden');
-      showToast('🔒 Dashboard terkunci');
+      showToast('Dashboard terkunci', 'lock');
       setTimeout(() => document.getElementById('loginPasswordInput')?.focus(), 250);
     }
 
@@ -1677,16 +2074,16 @@ Terima kasih.</textarea>
           supabaseClient = window.supabase.createClient(url, key);
           statusBadge.className = 'status-badge connected';
           statusIcon.setAttribute('data-lucide', 'cloud');
-          statusText.innerText = 'Terhubung ke Supabase Cloud';
+          statusText.innerText = 'Cloud';
         } catch (e) {
           statusBadge.className = 'status-badge local';
           statusIcon.setAttribute('data-lucide', 'cloud-off');
-          statusText.innerText = 'Mode Lokal';
+          statusText.innerText = 'Lokal';
         }
       } else {
         statusBadge.className = 'status-badge local';
         statusIcon.setAttribute('data-lucide', 'cloud-off');
-        statusText.innerText = 'Mode Lokal (Klik untuk Hubungkan)';
+        statusText.innerText = 'Lokal';
       }
       lucide.createIcons();
     }
@@ -1729,7 +2126,7 @@ Terima kasih.</textarea>
           },
           combinedTitle: `${document.getElementById('brideNick').value} & ${document.getElementById('groomNick').value}`
         },
-        weddingDate: document.getElementById('weddingDateTime').value ? `${document.getElementById('weddingDateTime').value}:00+07:00` : '2026-09-21T16:00:00+07:00',
+        weddingDate: document.getElementById('weddingDateTime').value + ':00+07:00',
         dayName: document.getElementById('dayName').value,
         formattedDate: document.getElementById('formattedDate').value,
         formattedDateShort: document.getElementById('formattedDateShort').value,
@@ -1800,7 +2197,6 @@ Terima kasih.</textarea>
 
     function updateAll() {
       const data = getFormValues();
-      // Save to localStorage automatically
       localStorage.setItem('wedding_settings_data', JSON.stringify(data));
     }
 
@@ -1810,11 +2206,11 @@ Terima kasih.</textarea>
       localStorage.setItem('wedding_settings_data', JSON.stringify(data));
 
       if (!supabaseClient) {
-        showToast('Data tersimpan di penyimpanan lokal! Hubungkan Supabase untuk simpan ke cloud.');
+        showToast('Tersimpan di memori lokal', 'success');
         return;
       }
 
-      showToast('Menyimpan ke Supabase Cloud...');
+      showToast('Menyimpan ke Cloud Supabase...', 'info');
       try {
         const payload = {
           id: 'default',
@@ -1825,53 +2221,48 @@ Terima kasih.</textarea>
           day_name: data.dayName,
           formatted_date: data.formattedDate,
           formatted_date_short: data.formattedDateShort,
-          default_guest: 'Lia',
+          default_guest: data.defaultGuest,
           audio_url: data.audioUrl,
           live_stream_url: data.liveStreamUrl,
           schedules: data.schedules,
           love_stories: data.loveStories,
           bank_accounts: data.bankAccounts,
-          gallery_images: [
-            {"id": "1", "src": "/assets/images/gallery-1.jpg", "alt": "Gallery 1"},
-            {"id": "2", "src": "/assets/images/gallery-2.jpg", "alt": "Gallery 2"},
-            {"id": "3", "src": "/assets/images/gallery-3.jpg", "alt": "Gallery 3"},
-            {"id": "4", "src": "/assets/images/gallery-4.jpg", "alt": "Gallery 4"}
-          ],
           feature_flags: data.featureFlags,
           updated_at: new Date().toISOString()
         };
 
-        const { error } = await supabaseClient.from('invitation_settings').upsert(payload, { onConflict: 'id' });
+        const { error } = await supabaseClient
+          .from('invitation_settings')
+          .upsert(payload, { onConflict: 'id' });
+
         if (error) {
-          showToast('Gagal menyimpan ke Supabase: ' + error.message);
+          showToast('Gagal menyimpan: ' + error.message, 'error');
         } else {
-          showToast('✅ Berhasil disimpan ke Supabase Cloud!');
+          showToast('Berhasil tersimpan ke Cloud Supabase', 'success');
         }
       } catch (err) {
-        showToast('Error: ' + err.message);
+        showToast('Error koneksi: ' + err.message, 'error');
       }
     }
 
-    // Media Uploader with Smart Old File Cleanup
-    async function handleMediaUpload(input, folder, targetFieldId, previewId) {
-      if (!input.files || input.files.length === 0) return;
-      const file = input.files[0];
-      const oldUrl = document.getElementById(targetFieldId).value;
+    // Handle File Upload to Supabase Storage with Old File Replacement
+    async function handleMediaUpload(inputElem, folder, targetFieldId, previewId) {
+      const file = inputElem.files?.[0];
+      if (!file) return;
 
-      showToast(`Mengunggah ${file.name}...`);
+      const oldUrl = document.getElementById(targetFieldId)?.value || '';
 
       if (!supabaseClient) {
         const localBlob = URL.createObjectURL(file);
         document.getElementById(targetFieldId).value = localBlob;
         if (previewId) document.getElementById(previewId).src = localBlob;
         updateAll();
-        showToast('Foto dipratinjau secara lokal. Hubungkan Supabase untuk simpan ke cloud.');
+        showToast('File dipratinjau secara lokal', 'info');
         return;
       }
 
       try {
         const bucket = 'wedding-media';
-        // 1. Delete previous file if in supabase storage to prevent wasted space
         if (oldUrl && oldUrl.includes('/storage/v1/object/public/wedding-media/')) {
           const parts = oldUrl.split('/storage/v1/object/public/wedding-media/');
           if (parts.length > 1) {
@@ -1879,13 +2270,12 @@ Terima kasih.</textarea>
           }
         }
 
-        // 2. Upload replacement
         const ext = file.name.split('.').pop() || 'jpg';
         const newFilePath = `${folder}/${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
 
         const { error: uploadErr } = await supabaseClient.storage.from(bucket).upload(newFilePath, file, { upsert: true });
         if (uploadErr) {
-          showToast('Gagal upload: ' + uploadErr.message);
+          showToast('Gagal unggah: ' + uploadErr.message, 'error');
           return;
         }
 
@@ -1894,9 +2284,9 @@ Terima kasih.</textarea>
         if (previewId) document.getElementById(previewId).src = pubData.publicUrl;
         updateAll();
         await saveAllToSupabase();
-        showToast('✅ Berhasil diunggah ke Supabase & file lama diganti!');
+        showToast('File berhasil diunggah ke Cloud', 'success');
       } catch (err) {
-        showToast('Error upload: ' + err.message);
+        showToast('Error unggah: ' + err.message, 'error');
       }
     }
 
@@ -1927,10 +2317,10 @@ Terima kasih.`;
     }
 
     function resetDefaultWaTemplate() {
-      if (confirm('Kembalikan template pesan WhatsApp ke default?')) {
+      if (confirm('Kembalikan template pesan WhatsApp ke format default?')) {
         document.getElementById('waMessageTemplate').value = DEFAULT_WA_TEMPLATE;
         updateAll();
-        showToast('Template WA dikembalikan ke default');
+        showToast('Template WhatsApp dikembalikan ke default', 'info');
       }
     }
 
@@ -1947,7 +2337,6 @@ Terima kasih.`;
       if (msg.includes('[LINK]')) {
         msg = msg.replace(/\[LINK\]/g, guestLink);
       } else {
-        // Fallback to guarantee link is never missing
         msg += `\n\nLink Undangan:\n${guestLink}`;
       }
 
@@ -1986,7 +2375,7 @@ Terima kasih.`;
     // Export Guests to CSV
     function handleExportCSV() {
       if (guestsList.length === 0) {
-        showToast('Daftar tamu masih kosong!');
+        showToast('Daftar tamu masih kosong', 'info');
         return;
       }
 
@@ -1996,7 +2385,7 @@ Terima kasih.`;
         idx + 1,
         `"${g.name.replace(/"/g, '""')}"`,
         `"${g.phone}"`,
-        g.is_sent ? 'Sudah Terkirim' : 'Belum Dikirim',
+        g.is_sent ? 'Terkirim' : 'Belum',
         `"${baseUrl}/?to=${encodeURIComponent(g.name)}"`
       ]);
 
@@ -2008,7 +2397,7 @@ Terima kasih.`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      showToast('✅ Berhasil mendownload file CSV tamu!');
+      showToast('File CSV berhasil diunduh', 'success');
     }
 
     // Import Guests from CSV
@@ -2026,7 +2415,6 @@ Terima kasih.`;
           const line = lines[i].trim();
           if (!line) continue;
           
-          // Skip header line if contains 'Nama' or 'Phone'
           if (i === 0 && (line.toLowerCase().includes('nama') || line.toLowerCase().includes('name'))) {
             continue;
           }
@@ -2057,7 +2445,7 @@ Terima kasih.`;
         localStorage.setItem('wedding_guests_data', JSON.stringify(guestsList));
         renderGuestTable();
         updateDashboardStats();
-        showToast(`✅ Berhasil mengimpor ${importedCount} tamu dari file!`);
+        showToast(`Berhasil mengimpor ${importedCount} tamu`, 'success');
         event.target.value = '';
       };
 
@@ -2075,14 +2463,13 @@ Terima kasih.`;
       document.getElementById('countGuestPending').innerText = totalGuests - sentGuests;
       document.getElementById('countGuestSent').innerText = sentGuests;
 
-      // Fetch wishes stats
       if (supabaseClient) {
         try {
           const { data: wishesData } = await supabaseClient.from('wishes').select('attending, attendance_status');
           if (wishesData) {
             document.getElementById('statTotalWishes').innerText = wishesData.length;
             const attending = wishesData.filter(w => w.attendance_status === 'hadir' || w.attending).length;
-            document.getElementById('statAttendingCount').innerText = `${attending} Tamu`;
+            document.getElementById('statAttendingCount').innerText = attending;
           }
         } catch (e) {}
       } else {
@@ -2092,7 +2479,7 @@ Terima kasih.`;
             const list = JSON.parse(localWishes);
             document.getElementById('statTotalWishes').innerText = list.length;
             const attending = list.filter(w => w.attendance_status === 'hadir' || w.attending).length;
-            document.getElementById('statAttendingCount').innerText = `${attending} Tamu`;
+            document.getElementById('statAttendingCount').innerText = attending;
           } catch (e) {}
         }
       }
@@ -2124,7 +2511,7 @@ Terima kasih.`;
     function renderGuestTable() {
       const tbody = document.getElementById('guestTableBody');
       if (guestsList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 24px;">Belum ada daftar tamu. Tambahkan tamu di atas!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: var(--space-5);">Belum ada daftar tamu. Tambahkan tamu di atas.</td></tr>`;
         return;
       }
 
@@ -2136,7 +2523,7 @@ Terima kasih.`;
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 24px;">Tidak ada tamu pada filter ini.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: var(--space-5);">Tidak ada tamu pada filter ini.</td></tr>`;
         return;
       }
 
@@ -2147,11 +2534,11 @@ Terima kasih.`;
         const isSent = !!g.is_sent;
 
         return `
-          <tr style="${isSent ? 'background: #fcfdfc;' : ''}">
+          <tr style="${isSent ? 'background: #FAFDFB;' : ''}">
             <td>${idx + 1}</td>
             <td>
-              <button onclick="toggleGuestSentStatus('${g.id}', ${!isSent})" class="btn-clean" style="display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; cursor: pointer; padding: 3px 8px; border-radius: 12px; background: ${isSent ? '#dcfce7' : '#f1f5f9'}; color: ${isSent ? '#15803d' : '#64748b'};">
-                <i data-lucide="${isSent ? 'check-circle-2' : 'clock'}" style="width: 13px; height: 13px;"></i>
+              <button onclick="toggleGuestSentStatus('${g.id}', ${!isSent})" class="btn-clean" style="display: inline-flex; align-items: center; gap: var(--space-1); font-size: 11px; font-weight: 700; cursor: pointer; padding: 2px 7px; border-radius: 4px; background: ${isSent ? 'var(--wa-light)' : 'var(--bg)'}; color: ${isSent ? 'var(--wa-dark)' : 'var(--text-muted)'};">
+                <i data-lucide="${isSent ? 'check' : 'clock'}" style="width: 12px; height: 12px;"></i>
                 <span>${isSent ? 'Terkirim' : 'Belum'}</span>
               </button>
             </td>
@@ -2159,15 +2546,15 @@ Terima kasih.`;
             <td><code>${g.phone}</code></td>
             <td><a href="${guestLink}" target="_blank" style="color: var(--primary); text-decoration: none; font-size: 11.5px;">${guestLink}</a></td>
             <td style="text-align: right; white-space: nowrap;">
-              <button onclick="handleSendWaClick('${g.id}', '${waUrl}')" class="btn btn-wa btn-sm" style="margin-right: 4px;" title="Buka WhatsApp & tandai terkirim">
-                <i data-lucide="send" style="width: 13px; height: 13px;"></i>
-                <span>Kirim ke WA</span>
+              <button onclick="handleSendWaClick('${g.id}', '${waUrl}')" class="btn btn-wa btn-sm" style="margin-right: var(--space-1);" title="Kirim WhatsApp">
+                <i data-lucide="send" style="width: 12px; height: 12px;"></i>
+                <span>Kirim</span>
               </button>
-              <button onclick="copyToClipboard('${guestLink}')" class="btn btn-light btn-sm" title="Salin link" style="margin-right: 4px;">
-                <i data-lucide="copy" style="width: 13px; height: 13px;"></i>
+              <button onclick="copyToClipboard('${guestLink}')" class="btn btn-light btn-sm" title="Salin tautan" style="margin-right: var(--space-1);">
+                <i data-lucide="copy" style="width: 12px; height: 12px;"></i>
               </button>
               <button onclick="handleDeleteGuest('${g.id}')" class="btn btn-danger btn-sm" title="Hapus tamu">
-                <i data-lucide="trash-2" style="width: 13px; height: 13px;"></i>
+                <i data-lucide="trash-2" style="width: 12px; height: 12px;"></i>
               </button>
             </td>
           </tr>
@@ -2177,19 +2564,22 @@ Terima kasih.`;
     }
 
     function formatPhoneWA(phone) {
-      let clean = phone.replace(/[^0-9]/g, '');
-      if (clean.startsWith('0')) {
-        clean = '62' + clean.slice(1);
+      let cleaned = phone.replace(/\D/g, '');
+      if (cleaned.startsWith('0')) {
+        cleaned = '62' + cleaned.substring(1);
       }
-      return clean;
+      return cleaned;
     }
 
     async function handleAddGuest() {
-      const name = document.getElementById('guestInputName').value.trim();
-      const phone = document.getElementById('guestInputPhone').value.trim();
+      const nameInput = document.getElementById('guestInputName');
+      const phoneInput = document.getElementById('guestInputPhone');
+
+      const name = nameInput.value.trim();
+      const phone = phoneInput.value.trim();
 
       if (!name || !phone) {
-        showToast('Mohon isi nama tamu dan nomor WhatsApp!');
+        showToast('Mohon lengkapi nama dan nomor WhatsApp tamu', 'error');
         return;
       }
 
@@ -2204,85 +2594,119 @@ Terima kasih.`;
 
       guestsList.unshift(newGuest);
       localStorage.setItem('wedding_guests_data', JSON.stringify(guestsList));
+      renderGuestTable();
+      updateDashboardStats();
+
+      nameInput.value = '';
+      phoneInput.value = '';
+      showToast('Tamu berhasil ditambahkan', 'success');
 
       if (supabaseClient) {
         try {
           await supabaseClient.from('guests').insert(newGuest);
-        } catch (e) {}
+        } catch (err) {
+          console.warn('Gagal simpan tamu ke Supabase:', err);
+        }
       }
-
-      document.getElementById('guestInputName').value = '';
-      document.getElementById('guestInputPhone').value = '';
-      renderGuestTable();
-      showToast(`✅ Tamu "${name}" berhasil ditambahkan!`);
     }
 
     async function handleDeleteGuest(id) {
+      if (!confirm('Hapus tamu ini dari daftar?')) return;
+
       guestsList = guestsList.filter(g => g.id !== id);
       localStorage.setItem('wedding_guests_data', JSON.stringify(guestsList));
+      renderGuestTable();
+      updateDashboardStats();
+      showToast('Tamu dihapus dari daftar', 'info');
 
       if (supabaseClient) {
         try {
           await supabaseClient.from('guests').delete().eq('id', id);
-        } catch (e) {}
+        } catch (err) {}
       }
-
-      renderGuestTable();
-      showToast('Tamu berhasil dihapus');
-    }
-
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.getElementById(tabId).style.display = 'block';
-      event.currentTarget.classList.add('active');
-    }
-
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toastMsg').innerText = msg;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2800);
     }
 
     function copyToClipboard(text) {
       navigator.clipboard.writeText(text).then(() => {
-        showToast('Tautan berhasil disalin ke clipboard!');
+        showToast('Tautan berhasil disalin ke clipboard', 'success');
       });
     }
 
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      const textElem = document.getElementById('toastMsg');
+      const iconElem = document.getElementById('toastIcon');
+
+      textElem.innerText = msg;
+
+      if (type === 'error') {
+        iconElem.setAttribute('data-lucide', 'alert-circle');
+        iconElem.style.color = '#F56565';
+      } else if (type === 'lock') {
+        iconElem.setAttribute('data-lucide', 'lock');
+        iconElem.style.color = '#ECC94B';
+      } else if (type === 'info') {
+        iconElem.setAttribute('data-lucide', 'info');
+        iconElem.style.color = '#63B3ED';
+      } else {
+        iconElem.setAttribute('data-lucide', 'check-circle');
+        iconElem.style.color = '#48BB78';
+      }
+
+      lucide.createIcons();
+
+      t.classList.add('show');
+      setTimeout(() => {
+        t.classList.remove('show');
+      }, 3200);
+    }
+
+    // Handle Supabase Configuration
     function handleSaveSupabaseConfig() {
       const url = document.getElementById('supabaseUrlInput').value.trim();
       const key = document.getElementById('supabaseKeyInput').value.trim();
 
-      localStorage.setItem('supabase_project_url', url);
-      localStorage.setItem('supabase_anon_key', key);
-      initSupabase();
-      showToast('Konfigurasi Supabase berhasil disimpan!');
-    }
-
-    async function handleTestConnection() {
-      initSupabase();
-      if (!supabaseClient) {
-        showToast('Gagal: Masukkan Project URL dan Anon Key terlebih dahulu!');
+      if (!url || !key) {
+        showToast('Mohon masukkan URL dan Public Key Supabase', 'error');
         return;
       }
 
+      localStorage.setItem('supabase_project_url', url);
+      localStorage.setItem('supabase_anon_key', key);
+
+      initSupabase();
+      saveAllToSupabase();
+      showToast('Konfigurasi Supabase berhasil disimpan', 'success');
+    }
+
+    async function handleTestConnection() {
+      const url = document.getElementById('supabaseUrlInput').value.trim();
+      const key = document.getElementById('supabaseKeyInput').value.trim();
+
+      if (!url || !key) {
+        showToast('Mohon masukkan URL dan Key terlebih dahulu', 'error');
+        return;
+      }
+
+      showToast('Menguji koneksi ke Supabase...', 'info');
+
       try {
-        const { data, error } = await supabaseClient.from('invitation_settings').select('id').limit(1);
+        const client = window.supabase.createClient(url, key);
+        const { data, error } = await client.from('invitation_settings').select('id').limit(1);
+
         if (error) {
-          showToast('Koneksi gagal: ' + error.message);
+          showToast('Koneksi gagal: ' + error.message, 'error');
         } else {
-          showToast('✅ Berhasil terhubung ke Supabase Database & Storage!');
+          showToast('Koneksi ke database Supabase berhasil', 'success');
         }
-      } catch (err) {
-        showToast('Error koneksi: ' + err.message);
+      } catch (e) {
+        showToast('Gagal menghubungi server: ' + e.message, 'error');
       }
     }
 
     function copySQLSchema() {
       navigator.clipboard.writeText(sqlSchemaCode).then(() => {
-        showToast('✅ Skrip SQL Schema berhasil disalin!');
+        showToast('Skrip SQL berhasil disalin', 'success');
       });
     }
 
