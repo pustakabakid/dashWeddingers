@@ -2437,7 +2437,15 @@ Terima kasih.`;
             importedCount++;
 
             if (supabaseClient) {
-              try { await supabaseClient.from('guests').insert(newGuest); } catch (err) {}
+              try {
+                const { data } = await supabaseClient.from('guests').insert({
+                  name: guestName,
+                  phone: guestPhone,
+                  slug: encodeURIComponent(guestName),
+                  is_sent: false
+                }).select().single();
+                if (data && data.id) newGuest.id = data.id;
+              } catch (err) {}
             }
           }
         }
@@ -2603,7 +2611,17 @@ Terima kasih.`;
 
       if (supabaseClient) {
         try {
-          await supabaseClient.from('guests').insert(newGuest);
+          const { data, error } = await supabaseClient.from('guests').insert({
+            name: newGuest.name,
+            phone: newGuest.phone,
+            slug: newGuest.slug,
+            is_sent: false
+          }).select().single();
+          if (data && data.id) {
+            newGuest.id = data.id;
+            localStorage.setItem('wedding_guests_data', JSON.stringify(guestsList));
+            renderGuestTable();
+          }
         } catch (err) {
           console.warn('Gagal simpan tamu ke Supabase:', err);
         }
