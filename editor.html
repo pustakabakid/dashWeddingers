@@ -2213,7 +2213,6 @@ Terima kasih.</textarea>
       showToast('Menyimpan ke Cloud Supabase...', 'info');
       try {
         const payload = {
-          id: 'default',
           couple: data.couple,
           wedding_date: data.weddingDate,
           day_name: data.dayName,
@@ -2231,15 +2230,25 @@ Terima kasih.</textarea>
           updated_at: new Date().toISOString()
         };
 
-        let { error } = await supabaseClient
+        // Try UPDATE first
+        let { data: updatedRows, error } = await supabaseClient
           .from('invitation_settings')
-          .upsert(payload, { onConflict: 'id' });
+          .update(payload)
+          .eq('id', 'default')
+          .select();
 
-        // Fallback if newly introduced columns (invitation_url / wa_template) are not in user database yet
-        if (error && (error.message?.includes('invitation_url') || error.message?.includes('wa_template') || error.code === 'PGRST204' || error.code === '42703' || error.status === 400 || error.message?.includes('column'))) {
+        // If row does not exist yet in database, do INSERT
+        if (!error && (!updatedRows || updatedRows.length === 0)) {
+          payload.id = 'default';
+          const insertRes = await supabaseClient.from('invitation_settings').insert(payload);
+          error = insertRes.error;
+        }
+
+        // Graceful column fallback if newly introduced columns don't exist yet
+        if (error && (error.message?.includes('invitation_url') || error.message?.includes('wa_template') || error.code === 'PGRST204' || error.code === '42703' || error.status === 400)) {
           delete payload.invitation_url;
           delete payload.wa_template;
-          const retry = await supabaseClient.from('invitation_settings').upsert(payload, { onConflict: 'id' });
+          const retry = await supabaseClient.from('invitation_settings').update(payload).eq('id', 'default');
           error = retry.error;
         }
 
