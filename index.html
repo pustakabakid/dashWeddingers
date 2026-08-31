@@ -1,0 +1,2389 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dashboard Manajemen Undangan &amp; WhatsApp Studio | Wevitation</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/svg/wevitation-icon.svg">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Philosopher:ital,wght@0,400;0,700;1,400;1,700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Supabase JS Client (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --primary: #4B6B99;
+      --primary-hover: #3a547a;
+      --primary-light: #d6e1f1;
+      --primary-subtle: #f0f4fa;
+      --secondary: #BC97C9;
+      --success: #10b981;
+      --success-dark: #059669;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --wa-color: #25D366;
+      --wa-dark: #128C7E;
+      
+      --bg: #f8fafc;
+      --panel-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      
+      --border: #e2e8f0;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 6px 16px -2px rgba(0,0,0,0.06), 0 2px 6px -1px rgba(0,0,0,0.04);
+      --shadow-lg: 0 14px 28px -4px rgba(0,0,0,0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Studio Navigation Bar */
+    .top-nav {
+      min-height: 70px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+      gap: 12px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      background: linear-gradient(135deg, var(--primary) 0%, #2f4565 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(75, 107, 153, 0.3);
+    }
+
+    .brand-text-wrapper {
+      min-width: 0;
+    }
+
+    .brand-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-badge {
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-left: 6px;
+      white-space: nowrap;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      min-height: 40px;
+    }
+
+    .status-badge.connected {
+      background: #ecfdf5;
+      color: var(--success-dark);
+      border: 1px solid #a7f3d0;
+    }
+
+    .status-badge.local {
+      background: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    /* Workspace Studio Layout */
+    .studio-layout {
+      max-width: 1040px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 28px 24px 80px 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Left Side: Form Panels */
+    .editor-pane {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+    }
+
+    /* Tab Switcher with Smooth Scroll-Snap */
+    .tab-bar {
+      display: flex;
+      background: #ffffff;
+      padding: 6px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .tab-bar::-webkit-scrollbar-thumb {
+      background-color: var(--border);
+      border-radius: 4px;
+    }
+
+    .tab-btn {
+      flex: 0 0 auto;
+      scroll-snap-align: start;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      min-height: 42px;
+    }
+
+    .tab-btn:hover {
+      color: var(--primary);
+      background: var(--primary-subtle);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(75, 107, 153, 0.25);
+    }
+
+    /* Form Section Box */
+    .panel-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-header-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .panel-header-icon {
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .panel-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      color: var(--text-light);
+      pointer-events: none;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background-color: #fafbfc;
+      outline: none;
+      transition: all 0.2s;
+      min-height: 44px;
+    }
+
+    .has-icon input, .has-icon textarea {
+      padding-left: 38px;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(75, 107, 153, 0.15);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 84px;
+    }
+
+    /* Toggle Switches (Feature Flags) */
+    .switch-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .switch-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8fafc;
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+      gap: 12px;
+    }
+
+    .switch-item:hover {
+      background: #ffffff;
+      border-color: var(--primary-light);
+    }
+
+    .switch-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .switch-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .switch-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Switch Component */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 26px;
+      min-width: 48px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #cbd5e1;
+      transition: .3s;
+      border-radius: 26px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    input:checked + .slider {
+      background-color: var(--success);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+
+    /* Uploader Box */
+    .upload-zone {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px;
+      background: #f8fafc;
+      border: 1.5px dashed var(--primary-light);
+      border-radius: 12px;
+      margin-top: 6px;
+    }
+
+    .upload-preview-thumb {
+      width: 64px;
+      height: 64px;
+      min-width: 64px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+      background: #fff;
+    }
+
+    /* Guest Table */
+    .guest-table-wrapper {
+      margin-top: 20px;
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+    }
+
+    .guest-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .guest-table th {
+      background: #f1f5f9;
+      padding: 12px 16px;
+      font-weight: 700;
+      color: #334155;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .guest-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .guest-table th:nth-child(1), .guest-table td:nth-child(1) { min-width: 36px; }
+    .guest-table th:nth-child(2), .guest-table td:nth-child(2) { min-width: 110px; }
+    .guest-table th:nth-child(3), .guest-table td:nth-child(3) { min-width: 110px; }
+    .guest-table th:nth-child(4), .guest-table td:nth-child(4) { min-width: 160px; }
+    .guest-table th:nth-child(5), .guest-table td:nth-child(5) { min-width: 150px; }
+
+    .guest-table tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      min-height: 42px;
+      white-space: nowrap;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+      min-height: 36px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(75, 107, 153, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+    }
+
+    .btn-success:hover {
+      background: var(--success-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-wa {
+      background: var(--wa-color);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+    }
+
+    .btn-wa:hover {
+      background: var(--wa-dark);
+    }
+
+    .btn-light {
+      background: #f1f5f9;
+      color: var(--text);
+    }
+
+    .btn-light:hover {
+      background: #e2e8f0;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .btn-danger:hover {
+      background: #fecaca;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: #1e293b;
+      color: #ffffff;
+      padding: 14px 24px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      transform: translateY(120px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 9999;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS (Mobile, Tablet, Desktop)
+       ========================================================================== */
+
+    /* Tablet & Medium Screens (<= 768px) */
+    @media (max-width: 768px) {
+      .top-nav {
+        padding: 10px 16px;
+        min-height: 64px;
+        flex-wrap: wrap;
+      }
+
+      .brand-title {
+        font-size: 15px;
+      }
+
+      .studio-layout {
+        padding: 16px 12px 60px 12px;
+      }
+
+      .panel-card {
+        padding: 18px 16px;
+        border-radius: 16px;
+      }
+
+      .form-grid-2 {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .switch-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .tab-bar {
+        padding: 4px;
+        gap: 4px;
+      }
+
+      .tab-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+
+      /* Touch targets on mobile / tablet */
+      input, textarea, select {
+        font-size: 16px; /* Prevents auto-zoom in Safari iOS */
+        padding: 12px 14px;
+      }
+
+      .btn-wa-full {
+        width: 100%;
+      }
+    }
+
+    /* Mobile Small Screen (<= 480px) */
+    @media (max-width: 480px) {
+      .top-nav {
+        padding: 8px 12px;
+      }
+
+      .brand-icon {
+        width: 34px;
+        height: 34px;
+        min-width: 34px;
+        border-radius: 8px;
+      }
+
+      .brand-title {
+        font-size: 14px;
+      }
+
+      .brand-badge {
+        display: none;
+      }
+
+      .brand-subtitle {
+        display: none;
+      }
+
+      /* Compact Top Nav Buttons */
+      .nav-btn-text {
+        display: none;
+      }
+
+      .btn-nav-icon {
+        padding: 8px 12px;
+        min-height: 38px;
+      }
+
+      .status-badge {
+        padding: 6px 10px;
+        font-size: 11px;
+        min-height: 36px;
+      }
+
+      .status-text-full {
+        display: none;
+      }
+
+      .status-text-short {
+        display: inline !important;
+      }
+
+      .panel-header-icon {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+      }
+
+      .panel-title {
+        font-size: 14px;
+      }
+
+      .panel-subtitle {
+        font-size: 11px;
+        line-height: 1.4;
+      }
+
+      /* Vertical Upload Zone on Mobile */
+      .upload-zone {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 12px;
+      }
+
+      .upload-preview-thumb {
+        margin: 0 auto;
+      }
+
+      .guest-table th, .guest-table td {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+
+      /* Mobile Centered Toast */
+      .toast {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        justify-content: center;
+        font-size: 12px;
+        padding: 12px 18px;
+      }
+    }
+
+    /* Studio Login Lock Screen */
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999999;
+      padding: 20px;
+      backdrop-filter: blur(14px);
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+    }
+
+    .login-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .login-card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 38px 32px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid var(--border);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.92); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .login-card.shake {
+      animation: shakeErr 0.4s ease;
+    }
+
+    @keyframes shakeErr {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Studio Login Lock Screen -->
+  <div id="loginOverlay" class="login-overlay">
+    <div id="loginCard" class="login-card">
+      <div style="width: 56px; height: 56px; background: var(--primary-light); color: var(--primary); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; box-shadow: 0 8px 16px rgba(75, 107, 153, 0.25);">
+        <i data-lucide="lock" style="width: 28px; height: 28px;"></i>
+      </div>
+      <h2 style="font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 6px;">Wevitation Studio</h2>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">Masukkan kata sandi untuk mengedit dan mengelola undangan.</p>
+      
+      <form onsubmit="handleLoginSubmit(event)" style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="position: relative;">
+          <input type="password" id="loginPasswordInput" placeholder="Masukkan password..." autofocus style="width: 100%; padding: 13px 44px 13px 16px; border-radius: 12px; font-size: 15px; border: 1.5px solid var(--border); outline: none;">
+          <button type="button" onclick="togglePasswordVisibility()" class="btn-clean" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); cursor: pointer; border: none; background: transparent; padding: 4px;">
+            <i data-lucide="eye" style="width: 18px; height: 18px;" id="eyeIcon"></i>
+          </button>
+        </div>
+        <div id="loginErrorMsg" style="display: none; font-size: 12px; color: var(--danger); font-weight: 700; text-align: left;">
+          Password salah. Silakan coba lagi!
+        </div>
+        <button type="submit" class="btn btn-primary" style="padding: 13px 20px; border-radius: 12px; font-size: 14px; font-weight: 700; width: 100%;">
+          <i data-lucide="key" style="width: 16px; height: 16px;"></i>
+          <span>Buka Dashboard</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Top Studio Header -->
+  <nav class="top-nav">
+    <div class="brand-group">
+      <div class="brand-icon">
+        <i data-lucide="sparkles" style="width: 18px; height: 18px;"></i>
+      </div>
+      <div class="brand-text-wrapper">
+        <div style="display: flex; align-items: center;">
+          <span class="brand-title">Wevitation Studio</span>
+          <span class="brand-badge">Supabase Cloud</span>
+        </div>
+        <div class="brand-subtitle">Manajemen Undangan, Fitur &amp; WhatsApp Blast</div>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <div id="supabaseStatusBadge" class="status-badge local" onclick="switchTab('tab-cloud')" title="Klik untuk atur koneksi Supabase">
+        <i data-lucide="cloud-off" style="width: 14px; height: 14px;" id="supabaseStatusIcon"></i>
+        <span id="supabaseStatusText" class="status-text-full">Mode Lokal</span>
+        <span class="status-text-short" style="display: none;">Lokal</span>
+      </div>
+
+      <button onclick="saveAllToSupabase()" class="btn btn-success btn-nav-icon" title="Simpan ke Cloud Supabase">
+        <i data-lucide="cloud-upload" style="width: 16px; height: 16px;"></i>
+        <span class="nav-btn-text">Simpan ke Cloud</span>
+      </button>
+
+      <a href="/" id="navInvitationLink" target="_blank" class="btn btn-primary btn-nav-icon" title="Buka Web Undangan">
+        <i data-lucide="external-link" style="width: 16px; height: 16px;"></i>
+        <span class="nav-btn-text">Buka Undangan</span>
+      </a>
+
+      <button onclick="handleStudioLogout()" class="btn btn-light btn-nav-icon" title="Kunci / Logout Dashboard">
+        <i data-lucide="lock" style="width: 15px; height: 15px;"></i>
+        <span class="nav-btn-text">Kunci</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Workspace Studio Layout -->
+  <div class="studio-layout">
+    
+    <!-- Form & Configuration Panels -->
+    <div class="editor-pane">
+      
+      <!-- Studio Tabs -->
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('tab-features')">
+          <i data-lucide="sliders" style="width: 15px; height: 15px;"></i>
+          <span>1. Visibilitas Fitur</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-couple')">
+          <i data-lucide="heart" style="width: 15px; height: 15px;"></i>
+          <span>2. Mempelai &amp; Foto</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-schedule')">
+          <i data-lucide="calendar" style="width: 15px; height: 15px;"></i>
+          <span>3. Acara &amp; Waktu</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-gift')">
+          <i data-lucide="credit-card" style="width: 15px; height: 15px;"></i>
+          <span>4. Kado &amp; QRIS</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-story')">
+          <i data-lucide="image" style="width: 15px; height: 15px;"></i>
+          <span>5. Cerita &amp; Galeri</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-guests')">
+          <i data-lucide="users" style="width: 15px; height: 15px;"></i>
+          <span>6. Tamu &amp; WhatsApp</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-cloud')">
+          <i data-lucide="database" style="width: 15px; height: 15px;"></i>
+          <span>7. Supabase</span>
+        </button>
+      </div>
+
+      <!-- TAB 1: KONTROL VISIBILITAS FITUR -->
+      <div id="tab-features" class="tab-content">
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-header-info">
+              <div class="panel-header-icon"><i data-lucide="toggle-right"></i></div>
+              <div>
+                <div class="panel-title">Kontrol Visibilitas Fitur &amp; Seksi</div>
+                <div class="panel-subtitle">Aktifkan atau nonaktifkan seksi mana saja yang dapat dilihat tamu di website undangan</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="switch-grid">
+            <div class="switch-item">
+              <div class="switch-info">
+                <i data-lucide="mail-open" style="color: var(--primary);"></i>
+                <div>
+                  <div class="switch-label">Gate Cover ("Buka Undangan")</div>
+                  <div class="switch-desc">Sampul pembuka amplop kartu nama</div>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="flagGateCover" checked onchange="updateAll()">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="switch-item">
+              <div class="switch-info">
+                <i data-lucide="clock" style="color: var(--primary);"></i>
+                <div>
+                  <div class="switch-label">Countdown Timer</div>
+                  <div class="switch-desc">Hitung mundur 4 kolom waktu</div>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="flagCountdown" checked onchange="updateAll()">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="switch-item">
+              <div class="switch-info">
+                <i data-lucide="quote" style="color: var(--primary);"></i>
+                <div>
+                  <div class="switch-label">Kutipan Ayat (Quote)</div>
+                  <div class="switch-desc">Surah Ar-Rum ayat 21 &amp; terjemahan</div>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="flagQuote" checked onchange="updateAll()">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="switch-item">
+              <div class="switch-info">
+                <i data-lucide="users" style="color: var(--primary);"></i>
+                <div>
+                  <div class="switch-label">Profil Mempelai</div>
+                  <div class="switch-desc">Foto portrait, orang tua, &amp; IG</div>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="flagCoupleProfile" checked onchange="updateAll()">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="switch-item">
+              <div class="switch-info">
+                <i data-lucide="calendar" style="color: var(--primary);"></i>
+                <div>
+                  <div class="switch-label">Jadwal Acara &amp; Maps</div>
+                  <div class="switch-desc">Seksi Akad &amp; Resepsi serta Maps</div>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="flagEventSchedule" checked onchange="updateAll()">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="switch-item">
+              <div class="switch-info">
+                <i data-lucide="book-open" style="color: var(--primary);"></i>
+                <div>
+                  <div class="switch-label">Kisah Cinta (Love Story)</div>
+                  <div class="switch-desc">Timeline momen pertemuan &amp; lamaran</div>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="flagLoveStory" checked onchange="updateAll()">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="switch-item">
+              <div class="switch-info">
+                <i data-lucide="image" style="color: var(--primary);"></i>
+                <div>
+                  <div class="switch-label">Galeri Foto Prewedding</div>
+                  <div class="switch-desc">Slider foto dan zoom interaktif</div>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="flagGallery" checked onchange="updateAll()">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="switch-item">
+              <div class="switch-info">
+                <i data-lucide="credit-card" style="color: var(--primary);"></i>
+                <div>
+                  <div class="switch-label">Kado Digital &amp; QRIS</div>
+                  <div class="switch-desc">Amplop digital &amp; QRIS transfer</div>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="flagGift" checked onchange="updateAll()">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="switch-item">
+              <div class="switch-info">
+                <i data-lucide="message-square" style="color: var(--primary);"></i>
+                <div>
+                  <div class="switch-label">Buku Tamu &amp; RSVP</div>
+                  <div class="switch-desc">Konfirmasi kehadiran &amp; ucapan</div>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="flagGuestbook" checked onchange="updateAll()">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="switch-item">
+              <div class="switch-info">
+                <i data-lucide="instagram" style="color: var(--primary);"></i>
+                <div>
+                  <div class="switch-label">IG Story Generator</div>
+                  <div class="switch-desc">Export kartu ucapan 9:16 medsos</div>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="flagIGStory" checked onchange="updateAll()">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="switch-item">
+              <div class="switch-info">
+                <i data-lucide="music" style="color: var(--primary);"></i>
+                <div>
+                  <div class="switch-label">Musik Latar (Audio)</div>
+                  <div class="switch-desc">Pemutar musik melayang otomatis</div>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="flagMusic" checked onchange="updateAll()">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: MEMPELAI & UPLOAD FOTO -->
+      <div id="tab-couple" class="tab-content" style="display: none;">
+        <!-- Bride Card -->
+        <div class="panel-card" style="margin-bottom: 20px;">
+          <div class="panel-header">
+            <div class="panel-header-info">
+              <div class="panel-header-icon"><i data-lucide="smile"></i></div>
+              <div>
+                <div class="panel-title">Mempelai Wanita (The Bride)</div>
+                <div class="panel-subtitle">Data profil dan pengunggahan foto mempelai wanita</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Nama Lengkap</label>
+              <input type="text" id="brideName" value="Eviana Saskia" oninput="updateAll()">
+            </div>
+            <div class="form-group">
+              <label>Nama Panggilan</label>
+              <input type="text" id="brideNick" value="Via" oninput="updateAll()">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Nama Orang Tua</label>
+            <input type="text" id="brideParents" value="Putri Bapak Danang Hendra & Ibu Siti Laela" oninput="updateAll()">
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Username Instagram</label>
+              <div class="input-wrapper has-icon">
+                <i data-lucide="instagram" class="input-icon" style="width: 16px; height: 16px;"></i>
+                <input type="text" id="brideIg" value="wevitation" oninput="updateAll()">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>URL Foto Avatar</label>
+              <input type="text" id="brideAvatar" value="/assets/images/bride-eviana.jpg" oninput="updateAll()">
+            </div>
+          </div>
+
+          <!-- Bride Upload Box -->
+          <div class="upload-zone">
+            <img id="brideAvatarPreview" src="/assets/images/bride-eviana.jpg" class="upload-preview-thumb" alt="Preview">
+            <div style="flex: 1; width: 100%;">
+              <div style="font-size: 13px; font-weight: 700;">Ganti Foto Mempelai Wanita</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Foto lama di Supabase Storage otomatis diganti untuk hemat ruang.</div>
+              <input type="file" id="fileBrideAvatar" accept="image/*" style="font-size: 12px; width: 100%;" onchange="handleMediaUpload(this, 'avatars', 'brideAvatar', 'brideAvatarPreview')">
+            </div>
+          </div>
+        </div>
+
+        <!-- Groom Card -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-header-info">
+              <div class="panel-header-icon"><i data-lucide="user"></i></div>
+              <div>
+                <div class="panel-title">Mempelai Pria (The Groom)</div>
+                <div class="panel-subtitle">Data profil dan pengunggahan foto mempelai pria</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Nama Lengkap</label>
+              <input type="text" id="groomName" value="Andra Gunawan" oninput="updateAll()">
+            </div>
+            <div class="form-group">
+              <label>Nama Panggilan</label>
+              <input type="text" id="groomNick" value="Andra" oninput="updateAll()">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Nama Orang Tua</label>
+            <input type="text" id="groomParents" value="Putra Bapak Arya Gunawan & Ibu Djenar Widiati" oninput="updateAll()">
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Username Instagram</label>
+              <div class="input-wrapper has-icon">
+                <i data-lucide="instagram" class="input-icon" style="width: 16px; height: 16px;"></i>
+                <input type="text" id="groomIg" value="wevitation" oninput="updateAll()">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>URL Foto Avatar</label>
+              <input type="text" id="groomAvatar" value="/assets/images/groom-andra.jpg" oninput="updateAll()">
+            </div>
+          </div>
+
+          <!-- Groom Upload Box -->
+          <div class="upload-zone">
+            <img id="groomAvatarPreview" src="/assets/images/groom-andra.jpg" class="upload-preview-thumb" alt="Preview">
+            <div style="flex: 1; width: 100%;">
+              <div style="font-size: 13px; font-weight: 700;">Ganti Foto Mempelai Pria</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Foto lama di Supabase Storage otomatis diganti untuk hemat ruang.</div>
+              <input type="file" id="fileGroomAvatar" accept="image/*" style="font-size: 12px; width: 100%;" onchange="handleMediaUpload(this, 'avatars', 'groomAvatar', 'groomAvatarPreview')">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: ACARA & WAKTU -->
+      <div id="tab-schedule" class="tab-content" style="display: none;">
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-header-info">
+              <div class="panel-header-icon"><i data-lucide="calendar-heart"></i></div>
+              <div>
+                <div class="panel-title">Waktu, Lokasi &amp; Google Maps</div>
+                <div class="panel-subtitle">Jadwal Akad Nikah, Resepsi, alamat dan tautan lokasi</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Tanggal Target (Countdown)</label>
+              <input type="datetime-local" id="weddingDateTime" value="2026-09-21T16:00" oninput="updateAll()">
+            </div>
+            <div class="form-group">
+              <label>Hari</label>
+              <input type="text" id="dayName" value="Senin" oninput="updateAll()">
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Format Tanggal Lengkap</label>
+              <input type="text" id="formattedDate" value="Senin, 21 September 2026" oninput="updateAll()">
+            </div>
+            <div class="form-group">
+              <label>Format Tanggal Singkat</label>
+              <input type="text" id="formattedDateShort" value="21 • 09 • 2026" oninput="updateAll()">
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Waktu Akad Nikah</label>
+              <input type="text" id="akadTime" value="16:00 - 17:00" oninput="updateAll()">
+            </div>
+            <div class="form-group">
+              <label>Waktu Resepsi</label>
+              <input type="text" id="resepsiTime" value="18:30 - 20:30" oninput="updateAll()">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Nama Gedung / Venue</label>
+            <input type="text" id="venueName" value="Maximo Resto & Garden" oninput="updateAll()">
+          </div>
+
+          <div class="form-group">
+            <label>Alamat Lengkap</label>
+            <input type="text" id="venueAddress" value="Jl. Dr. Setiabudi No. 378" oninput="updateAll()">
+          </div>
+
+          <div class="form-group">
+            <label>Tautan Lokasi Google Maps</label>
+            <div class="input-wrapper has-icon">
+              <i data-lucide="map-pin" class="input-icon" style="width: 16px; height: 16px;"></i>
+              <input type="text" id="mapsUrl" value="https://maps.app.goo.gl/vwB5zqwGS2P4cPaY9?g_st=ipc" oninput="updateAll()">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: KADO & QRIS -->
+      <div id="tab-gift" class="tab-content" style="display: none;">
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-header-info">
+              <div class="panel-header-icon"><i data-lucide="wallet"></i></div>
+              <div>
+                <div class="panel-title">Kado Digital &amp; Upload QRIS</div>
+                <div class="panel-subtitle">Nomor rekening transfer bank dan upload gambar barcode QRIS</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Nama Bank / E-Wallet</label>
+              <input type="text" id="bankName" value="Bank BCA" oninput="updateAll()">
+            </div>
+            <div class="form-group">
+              <label>Nomor Rekening</label>
+              <input type="text" id="bankAccount" value="12345678" oninput="updateAll()">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Nama Pemilik Rekening</label>
+            <input type="text" id="bankHolder" value="Eviana Saskia" oninput="updateAll()">
+          </div>
+
+          <div class="form-group">
+            <label>URL Gambar QRIS</label>
+            <input type="text" id="qrisImage" value="/assets/images/qris-bca.jpg" oninput="updateAll()">
+          </div>
+
+          <!-- QRIS Upload Box -->
+          <div class="upload-zone">
+            <img id="qrisPreview" src="/assets/images/qris-bca.jpg" class="upload-preview-thumb" alt="QRIS">
+            <div style="flex: 1; width: 100%;">
+              <div style="font-size: 13px; font-weight: 700;">Upload Gambar QRIS Baru</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">File QRIS lama di Supabase Storage otomatis diganti.</div>
+              <input type="file" id="fileQris" accept="image/*" style="font-size: 12px; width: 100%;" onchange="handleMediaUpload(this, 'qris', 'qrisImage', 'qrisPreview')">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: CERITA & GALERI -->
+      <div id="tab-story" class="tab-content" style="display: none;">
+        <div class="panel-card" style="margin-bottom: 20px;">
+          <div class="panel-header">
+            <div class="panel-header-info">
+              <div class="panel-header-icon"><i data-lucide="book-heart"></i></div>
+              <div>
+                <div class="panel-title">Kisah Cinta (Love Story)</div>
+                <div class="panel-subtitle">Tuliskan momen pertemuan pertama dan lamaran Anda</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px dashed var(--border);">
+            <div class="form-group">
+              <label>Cerita 1 - Judul</label>
+              <input type="text" id="story1Title" value="Pertemuan Pertama" oninput="updateAll()">
+            </div>
+            <div class="form-group">
+              <label>Cerita 1 - Isi</label>
+              <textarea id="story1Desc" oninput="updateAll()">Pertama kali kami bertemu saat menjadi anggota sebuah organisasi di kampus. Kebetulan kami berada di divisi yang sama, yang menjadikan kami lebih akrab. Dari diskusi yang serius hingga tawa lepas karena lelucon yang garing, momen-momen itu perlahan menumbuhkan benih cinta yang tak terduga di antara kami.</textarea>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <label>Cerita 2 - Judul</label>
+              <input type="text" id="story2Title" value="Lamaran" oninput="updateAll()">
+            </div>
+            <div class="form-group">
+              <label>Cerita 2 - Isi</label>
+              <textarea id="story2Desc" oninput="updateAll()">Walaupun kami sempat menjalani hubungan jarak jauh selama 2 tahun terakhir, namun hal itu bukan menjadi halangan untuk hubungan kami. Justru kami menjadi semakin yakin satu sama lain. Oleh karena itu kami memutuskan untuk menjalin hubungan lebih serius.</textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-header-info">
+              <div class="panel-header-icon"><i data-lucide="images"></i></div>
+              <div>
+                <div class="panel-title">Upload Musik Backsound &amp; Audio</div>
+                <div class="panel-subtitle">Unggah file lagu mp3 ke cloud storage</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>URL / Path File MP3</label>
+            <input type="text" id="audioUrl" value="/assets/audio/romantic-wedding-soundtrack.mp3" oninput="updateAll()">
+          </div>
+
+          <div class="upload-zone">
+            <div style="width: 54px; height: 54px; min-width: 54px; background: var(--primary-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary);">
+              <i data-lucide="music-4" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div style="flex: 1; width: 100%;">
+              <div style="font-size: 13px; font-weight: 700;">Upload Lagu Backsound Baru (.mp3)</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Audio lama di Supabase Storage otomatis diganti.</div>
+              <input type="file" id="fileAudio" accept="audio/mp3,audio/*" style="font-size: 12px; width: 100%;" onchange="handleMediaUpload(this, 'audio', 'audioUrl')">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 6: PENERIMA UNDANGAN (WHATSAPP BLAST) -->
+      <div id="tab-guests" class="tab-content" style="display: none;">
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-header-info">
+              <div class="panel-header-icon" style="background: #dcfce7; color: var(--wa-dark);"><i data-lucide="user-plus"></i></div>
+              <div>
+                <div class="panel-title">Manajemen Tamu &amp; Broadcast WhatsApp</div>
+                <div class="panel-subtitle">Kelola daftar tamu, broadcast WA 1-klik, import/export Excel, dan pantau statistik RSVP</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- KPI Analytics Cards -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px;">
+            <div style="background: #f8fafc; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border);">
+              <div style="font-size: 11.5px; color: var(--text-muted); font-weight: 600;">Total Tamu Diundang</div>
+              <div style="font-size: 22px; font-weight: 800; color: var(--text); margin-top: 2px;" id="statTotalGuests">0</div>
+            </div>
+
+            <div style="background: #f0fdf4; padding: 14px 16px; border-radius: 12px; border: 1px solid #bbf7d0;">
+              <div style="font-size: 11.5px; color: #166534; font-weight: 600;">Undangan Terkirim WA</div>
+              <div style="font-size: 22px; font-weight: 800; color: #15803d; margin-top: 2px;" id="statSentGuests">0</div>
+            </div>
+
+            <div style="background: #eff6ff; padding: 14px 16px; border-radius: 12px; border: 1px solid #bfdbfe;">
+              <div style="font-size: 11.5px; color: #1e40af; font-weight: 600;">Konfirmasi Hadir</div>
+              <div style="font-size: 22px; font-weight: 800; color: #1d4ed8; margin-top: 2px;" id="statAttendingCount">0</div>
+            </div>
+
+            <div style="background: #faf5ff; padding: 14px 16px; border-radius: 12px; border: 1px solid #e9d5ff;">
+              <div style="font-size: 11.5px; color: #6b21a8; font-weight: 600;">Total Ucapan Doa</div>
+              <div style="font-size: 22px; font-weight: 800; color: #7e22ce; margin-top: 2px;" id="statTotalWishes">0</div>
+            </div>
+          </div>
+
+          <!-- URL Domain Website Undangan -->
+          <div style="background: #ffffff; padding: 16px; border-radius: 14px; border: 1.5px solid var(--primary-light); margin-bottom: 20px; box-shadow: var(--shadow-sm);">
+            <label style="font-size: 13px; font-weight: 800; color: var(--primary); margin-bottom: 6px;">
+              <i data-lucide="globe" style="width: 16px; height: 16px;"></i>
+              <span>URL Domain Website Undangan (Production / Cloudflare URL)</span>
+            </label>
+            <div class="input-wrapper has-icon">
+              <i data-lucide="link-2" class="input-icon" style="width: 16px; height: 16px;"></i>
+              <input type="url" id="invitationBaseUrl" placeholder="Contoh: https://wedding24.pages.dev atau https://undangananda.com" oninput="handleBaseUrlChange()" style="font-weight: 600;">
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">
+              Tautan WhatsApp dan tombol "Buka Undangan" akan otomatis menggunakan domain ini. Jika dikosongkan, akan menggunakan domain saat ini.
+            </div>
+          </div>
+
+          <!-- Custom WhatsApp Message Template Editor with Tag Helpers -->
+          <div style="background: #ffffff; padding: 16px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+              <label style="font-size: 13px; font-weight: 800; color: var(--wa-dark); margin: 0;">
+                <i data-lucide="message-circle" style="width: 16px; height: 16px;"></i>
+                <span>Template Pesan WhatsApp Broadcast</span>
+              </label>
+              <div style="font-size: 11px; color: var(--text-muted);">Klik tombol tag di bawah untuk menyisipkan:</div>
+            </div>
+
+            <!-- Tag Helper Buttons -->
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;">
+              <button type="button" onclick="insertWaTag('[NAMA]')" class="btn btn-sm btn-light" style="font-size: 11px; padding: 4px 8px;">
+                + [NAMA]
+              </button>
+              <button type="button" onclick="insertWaTag('[LINK]')" class="btn btn-sm btn-light" style="font-size: 11px; padding: 4px 8px; color: var(--primary); font-weight: 700;">
+                + [LINK] (Wajib)
+              </button>
+              <button type="button" onclick="insertWaTag('[PASANGAN]')" class="btn btn-sm btn-light" style="font-size: 11px; padding: 4px 8px;">
+                + [PASANGAN]
+              </button>
+              <button type="button" onclick="insertWaTag('[TANGGAL]')" class="btn btn-sm btn-light" style="font-size: 11px; padding: 4px 8px;">
+                + [TANGGAL]
+              </button>
+              <button type="button" onclick="resetDefaultWaTemplate()" class="btn btn-sm btn-clean" style="font-size: 11px; color: var(--danger); margin-left: auto;">
+                Reset Default
+              </button>
+            </div>
+
+            <textarea id="waMessageTemplate" rows="5" style="font-size: 13px; font-family: inherit; line-height: 1.5;" oninput="updateAll()">Kepada Yth. Bapak/Ibu/Saudara/i *[NAMA]*
+
+Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara pernikahan kami:
+
+*[PASANGAN]*
+Tanggal: [TANGGAL]
+
+Detail undangan dapat diakses melalui tautan berikut:
+[LINK]
+
+Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.
+
+Terima kasih.</textarea>
+          </div>
+
+          <!-- Add Guest Form & Import / Export Controls -->
+          <div style="background: #f8fafc; padding: 16px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px;">
+            <div style="font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+              <span>➕ Tambah Tamu Manual</span>
+              <div style="display: flex; gap: 8px;">
+                <input type="file" id="csvFileInput" accept=".csv, .txt" style="display: none;" onchange="handleImportCSV(event)">
+                <button type="button" onclick="document.getElementById('csvFileInput').click()" class="btn btn-sm btn-light" title="Import daftar nama & no WA dari file CSV">
+                  <i data-lucide="file-up" style="width: 14px; height: 14px;"></i>
+                  <span>Import CSV</span>
+                </button>
+                <button type="button" onclick="handleExportCSV()" class="btn btn-sm btn-light" title="Download daftar tamu & status kirim ke CSV">
+                  <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                  <span>Export CSV</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>Nama Penerima Undangan</label>
+                <div class="input-wrapper has-icon">
+                  <i data-lucide="user" class="input-icon" style="width: 16px; height: 16px;"></i>
+                  <input type="text" id="guestInputName" placeholder="Contoh: Bapak Ahmad / Sahabat Lia">
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>Nomor WhatsApp (Contoh: 08123456789 atau 628123456789)</label>
+                <div class="input-wrapper has-icon">
+                  <i data-lucide="phone" class="input-icon" style="width: 16px; height: 16px;"></i>
+                  <input type="tel" id="guestInputPhone" placeholder="081234567890">
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
+              <button onclick="handleAddGuest()" class="btn btn-wa btn-wa-full">
+                <i data-lucide="plus-circle" style="width: 16px; height: 16px;"></i>
+                <span>Tambahkan Tamu &amp; Buat Link</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Guest Filter Bar & List Table -->
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Filter:</span>
+              <button onclick="setGuestTableFilter('all')" id="btnFilterAll" class="btn btn-sm btn-primary">Semua (<span id="countGuestAll">0</span>)</button>
+              <button onclick="setGuestTableFilter('pending')" id="btnFilterPending" class="btn btn-sm btn-light">Belum Dikirim (<span id="countGuestPending">0</span>)</button>
+              <button onclick="setGuestTableFilter('sent')" id="btnFilterSent" class="btn btn-sm btn-light">Sudah Dikirim (<span id="countGuestSent">0</span>)</button>
+            </div>
+          </div>
+
+          <!-- Guest List Table -->
+          <div class="guest-table-wrapper">
+            <table class="guest-table">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Status WA</th>
+                  <th>Nama Tamu</th>
+                  <th>Nomor WhatsApp</th>
+                  <th>Tautan Undangan Khusus</th>
+                  <th style="text-align: right;">Aksi Kirim</th>
+                </tr>
+              </thead>
+              <tbody id="guestTableBody">
+                <tr>
+                  <td colspan="6" style="text-align: center; color: #94a3b8; padding: 24px;">Belum ada daftar tamu. Tambahkan tamu di atas!</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 7: KONEKSI SUPABASE -->
+      <div id="tab-cloud" class="tab-content" style="display: none;">
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-header-info">
+              <div class="panel-header-icon" style="background: #ecfdf5; color: var(--success-dark);"><i data-lucide="database"></i></div>
+              <div>
+                <div class="panel-title">Koneksi Database &amp; Storage Supabase</div>
+                <div class="panel-subtitle">Hubungkan dashboard ke proyek Supabase untuk penyimpanan online permanen</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Supabase Project URL</label>
+            <input type="text" id="supabaseUrlInput" placeholder="https://xyzcompany.supabase.co">
+          </div>
+
+          <div class="form-group">
+            <label>Supabase Anon Public API Key</label>
+            <input type="password" id="supabaseKeyInput" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap;">
+            <button onclick="handleSaveSupabaseConfig()" class="btn btn-primary" style="flex: 1; min-width: 200px;">
+              <i data-lucide="save" style="width: 16px; height: 16px;"></i>
+              <span>Hubungkan &amp; Simpan Konfigurasi</span>
+            </button>
+            <button onclick="handleTestConnection()" class="btn btn-light" style="flex: 1; min-width: 140px;">
+              <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
+              <span>Uji Koneksi</span>
+            </button>
+          </div>
+
+          <!-- SQL Schema Guide -->
+          <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border);">
+            <div style="font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 6px;">
+              📄 Skrip SQL Schema Supabase
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+              Jika baru pertama kali membuat proyek di Supabase, buka menu <strong>SQL Editor</strong> di dashboard Supabase Anda, lalu jalankan skrip di bawah ini:
+            </div>
+            <button onclick="copySQLSchema()" class="btn btn-light btn-sm" style="margin-bottom: 10px;">
+              <i data-lucide="copy" style="width: 14px; height: 14px;"></i>
+              <span>Salin Skrip SQL Schema</span>
+            </button>
+            <div style="background: #0f172a; color: #e2e8f0; padding: 14px; border-radius: 10px; font-family: monospace; font-size: 11px; max-height: 200px; overflow-y: auto;" id="sqlBoxPreview">
+-- Menyiapkan tabel dan bucket di Supabase...
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="toast" class="toast">
+    <i data-lucide="check-circle" style="width: 18px; height: 18px; color: #10b981;"></i>
+    <span id="toastMsg">Berhasil disimpan!</span>
+  </div>
+
+  <script>
+    const STUDIO_PASSWORD = 'weeding26';
+    let supabaseClient = null;
+    let guestsList = [];
+    let sqlSchemaCode = '';
+
+    const DEFAULT_SUPABASE_URL = 'https://mxqhvfopceusvbmewkwn.supabase.co';
+    const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14cWh2Zm9wY2V1c3ZibWV3a3duIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxOTQyNzIsImV4cCI6MjEwMzc3MDI3Mn0.hE6npPiRrj4pQOmKHq9ITDJwwecTkmnMMK1a2akoJK0';
+
+    // Check & Handle Studio Authentication
+    function checkStudioAuth() {
+      const isAuth = sessionStorage.getItem('wevitation_studio_auth');
+      const overlay = document.getElementById('loginOverlay');
+      if (isAuth === STUDIO_PASSWORD) {
+        overlay.classList.add('hidden');
+      } else {
+        overlay.classList.remove('hidden');
+        setTimeout(() => document.getElementById('loginPasswordInput')?.focus(), 250);
+      }
+    }
+
+    function handleLoginSubmit(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('loginPasswordInput');
+      const val = input.value.trim();
+      const card = document.getElementById('loginCard');
+      const err = document.getElementById('loginErrorMsg');
+
+      if (val === STUDIO_PASSWORD) {
+        sessionStorage.setItem('wevitation_studio_auth', STUDIO_PASSWORD);
+        err.style.display = 'none';
+        document.getElementById('loginOverlay').classList.add('hidden');
+        showToast('🔓 Berhasil masuk ke Wevitation Studio!');
+      } else {
+        err.style.display = 'block';
+        card.classList.remove('shake');
+        void card.offsetWidth; // trigger CSS reflow for animation
+        card.classList.add('shake');
+        input.value = '';
+        input.focus();
+      }
+    }
+
+    function togglePasswordVisibility() {
+      const input = document.getElementById('loginPasswordInput');
+      const icon = document.getElementById('eyeIcon');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        input.type = 'password';
+        icon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+    }
+
+    function handleStudioLogout() {
+      sessionStorage.removeItem('wevitation_studio_auth');
+      document.getElementById('loginPasswordInput').value = '';
+      document.getElementById('loginErrorMsg').style.display = 'none';
+      document.getElementById('loginOverlay').classList.remove('hidden');
+      showToast('🔒 Dashboard terkunci');
+      setTimeout(() => document.getElementById('loginPasswordInput')?.focus(), 250);
+    }
+
+    // Initialize Supabase Client
+    function initSupabase() {
+      const url = localStorage.getItem('supabase_project_url') || DEFAULT_SUPABASE_URL;
+      const key = localStorage.getItem('supabase_anon_key') || DEFAULT_SUPABASE_KEY;
+
+      const statusBadge = document.getElementById('supabaseStatusBadge');
+      const statusIcon = document.getElementById('supabaseStatusIcon');
+      const statusText = document.getElementById('supabaseStatusText');
+
+      if (url && key && window.supabase) {
+        try {
+          supabaseClient = window.supabase.createClient(url, key);
+          statusBadge.className = 'status-badge connected';
+          statusIcon.setAttribute('data-lucide', 'cloud');
+          statusText.innerText = 'Terhubung ke Supabase Cloud';
+        } catch (e) {
+          statusBadge.className = 'status-badge local';
+          statusIcon.setAttribute('data-lucide', 'cloud-off');
+          statusText.innerText = 'Mode Lokal';
+        }
+      } else {
+        statusBadge.className = 'status-badge local';
+        statusIcon.setAttribute('data-lucide', 'cloud-off');
+        statusText.innerText = 'Mode Lokal (Klik untuk Hubungkan)';
+      }
+      lucide.createIcons();
+    }
+
+    function getBaseUrl() {
+      const customUrl = (document.getElementById('invitationBaseUrl')?.value || '').trim();
+      if (customUrl) {
+        return customUrl.replace(/\/+$/, '');
+      }
+      return window.location.origin;
+    }
+
+    function handleBaseUrlChange() {
+      const url = getBaseUrl();
+      const linkBtn = document.getElementById('navInvitationLink');
+      if (linkBtn) linkBtn.href = url;
+      localStorage.setItem('wedding_base_url', document.getElementById('invitationBaseUrl').value.trim());
+      renderGuestTable();
+    }
+
+    function getFormValues() {
+      return {
+        invitationUrl: document.getElementById('invitationBaseUrl')?.value.trim() || '',
+        couple: {
+          groom: {
+            name: document.getElementById('groomName').value,
+            nickname: document.getElementById('groomNick').value,
+            parents: document.getElementById('groomParents').value,
+            avatar: document.getElementById('groomAvatar').value,
+            instagram: document.getElementById('groomIg').value,
+            instagramUrl: 'https://instagram.com/' + document.getElementById('groomIg').value
+          },
+          bride: {
+            name: document.getElementById('brideName').value,
+            nickname: document.getElementById('brideNick').value,
+            parents: document.getElementById('brideParents').value,
+            avatar: document.getElementById('brideAvatar').value,
+            instagram: document.getElementById('brideIg').value,
+            instagramUrl: 'https://instagram.com/' + document.getElementById('brideIg').value
+          },
+          combinedTitle: `${document.getElementById('brideNick').value} & ${document.getElementById('groomNick').value}`
+        },
+        weddingDate: document.getElementById('weddingDateTime').value ? `${document.getElementById('weddingDateTime').value}:00+07:00` : '2026-09-21T16:00:00+07:00',
+        dayName: document.getElementById('dayName').value,
+        formattedDate: document.getElementById('formattedDate').value,
+        formattedDateShort: document.getElementById('formattedDateShort').value,
+        defaultGuest: 'Lia',
+        audioUrl: document.getElementById('audioUrl').value,
+        liveStreamUrl: 'https://youtube.com/wevitation',
+        schedules: [
+          {
+            id: 'akad',
+            title: 'Akad Nikah',
+            date: document.getElementById('formattedDate').value,
+            time: document.getElementById('akadTime').value,
+            venue: document.getElementById('venueName').value,
+            address: document.getElementById('venueAddress').value,
+            calendarUrl: 'https://www.google.com/calendar/event?action=TEMPLATE&text=' + encodeURIComponent('Akad Nikah'),
+            mapsUrl: document.getElementById('mapsUrl').value
+          },
+          {
+            id: 'resepsi',
+            title: 'Resepsi',
+            date: document.getElementById('formattedDate').value,
+            time: document.getElementById('resepsiTime').value,
+            venue: document.getElementById('venueName').value,
+            address: document.getElementById('venueAddress').value,
+            calendarUrl: 'https://www.google.com/calendar/event?action=TEMPLATE&text=' + encodeURIComponent('Resepsi'),
+            mapsUrl: document.getElementById('mapsUrl').value
+          }
+        ],
+        loveStories: [
+          {
+            id: 'pertemuan',
+            title: document.getElementById('story1Title').value,
+            image: '/assets/images/story-first-meet.jpg',
+            description: document.getElementById('story1Desc').value
+          },
+          {
+            id: 'lamaran',
+            title: document.getElementById('story2Title').value,
+            image: '/assets/images/story-proposal.jpg',
+            description: document.getElementById('story2Desc').value
+          }
+        ],
+        bankAccounts: [
+          {
+            bankName: document.getElementById('bankName').value,
+            accountHolder: document.getElementById('bankHolder').value,
+            accountNumber: document.getElementById('bankAccount').value,
+            logo: '/assets/svg/bca-logo.svg',
+            qrisImage: document.getElementById('qrisImage').value
+          }
+        ],
+        featureFlags: {
+          showGateCover: document.getElementById('flagGateCover').checked,
+          showCountdown: document.getElementById('flagCountdown').checked,
+          showQuote: document.getElementById('flagQuote').checked,
+          showCoupleProfile: document.getElementById('flagCoupleProfile').checked,
+          showEventSchedule: document.getElementById('flagEventSchedule').checked,
+          showLoveStory: document.getElementById('flagLoveStory').checked,
+          showGallery: document.getElementById('flagGallery').checked,
+          showGift: document.getElementById('flagGift').checked,
+          showGuestbook: document.getElementById('flagGuestbook').checked,
+          showIGStoryGenerator: document.getElementById('flagIGStory').checked,
+          showMusic: document.getElementById('flagMusic').checked
+        },
+        waTemplate: document.getElementById('waMessageTemplate')?.value || DEFAULT_WA_TEMPLATE
+      };
+    }
+
+    function updateAll() {
+      const data = getFormValues();
+      // Save to localStorage automatically
+      localStorage.setItem('wedding_settings_data', JSON.stringify(data));
+    }
+
+    // Save All to Supabase Cloud
+    async function saveAllToSupabase() {
+      const data = getFormValues();
+      localStorage.setItem('wedding_settings_data', JSON.stringify(data));
+
+      if (!supabaseClient) {
+        showToast('Data tersimpan di penyimpanan lokal! Hubungkan Supabase untuk simpan ke cloud.');
+        return;
+      }
+
+      showToast('Menyimpan ke Supabase Cloud...');
+      try {
+        const payload = {
+          id: 'default',
+          invitation_url: data.invitationUrl,
+          wa_template: data.waTemplate,
+          couple: data.couple,
+          wedding_date: data.weddingDate,
+          day_name: data.dayName,
+          formatted_date: data.formattedDate,
+          formatted_date_short: data.formattedDateShort,
+          default_guest: 'Lia',
+          audio_url: data.audioUrl,
+          live_stream_url: data.liveStreamUrl,
+          schedules: data.schedules,
+          love_stories: data.loveStories,
+          bank_accounts: data.bankAccounts,
+          gallery_images: [
+            {"id": "1", "src": "/assets/images/gallery-1.jpg", "alt": "Gallery 1"},
+            {"id": "2", "src": "/assets/images/gallery-2.jpg", "alt": "Gallery 2"},
+            {"id": "3", "src": "/assets/images/gallery-3.jpg", "alt": "Gallery 3"},
+            {"id": "4", "src": "/assets/images/gallery-4.jpg", "alt": "Gallery 4"}
+          ],
+          feature_flags: data.featureFlags,
+          updated_at: new Date().toISOString()
+        };
+
+        const { error } = await supabaseClient.from('invitation_settings').upsert(payload, { onConflict: 'id' });
+        if (error) {
+          showToast('Gagal menyimpan ke Supabase: ' + error.message);
+        } else {
+          showToast('✅ Berhasil disimpan ke Supabase Cloud!');
+        }
+      } catch (err) {
+        showToast('Error: ' + err.message);
+      }
+    }
+
+    // Media Uploader with Smart Old File Cleanup
+    async function handleMediaUpload(input, folder, targetFieldId, previewId) {
+      if (!input.files || input.files.length === 0) return;
+      const file = input.files[0];
+      const oldUrl = document.getElementById(targetFieldId).value;
+
+      showToast(`Mengunggah ${file.name}...`);
+
+      if (!supabaseClient) {
+        const localBlob = URL.createObjectURL(file);
+        document.getElementById(targetFieldId).value = localBlob;
+        if (previewId) document.getElementById(previewId).src = localBlob;
+        updateAll();
+        showToast('Foto dipratinjau secara lokal. Hubungkan Supabase untuk simpan ke cloud.');
+        return;
+      }
+
+      try {
+        const bucket = 'wedding-media';
+        // 1. Delete previous file if in supabase storage to prevent wasted space
+        if (oldUrl && oldUrl.includes('/storage/v1/object/public/wedding-media/')) {
+          const parts = oldUrl.split('/storage/v1/object/public/wedding-media/');
+          if (parts.length > 1) {
+            await supabaseClient.storage.from(bucket).remove([parts[1]]);
+          }
+        }
+
+        // 2. Upload replacement
+        const ext = file.name.split('.').pop() || 'jpg';
+        const newFilePath = `${folder}/${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+
+        const { error: uploadErr } = await supabaseClient.storage.from(bucket).upload(newFilePath, file, { upsert: true });
+        if (uploadErr) {
+          showToast('Gagal upload: ' + uploadErr.message);
+          return;
+        }
+
+        const { data: pubData } = supabaseClient.storage.from(bucket).getPublicUrl(newFilePath);
+        document.getElementById(targetFieldId).value = pubData.publicUrl;
+        if (previewId) document.getElementById(previewId).src = pubData.publicUrl;
+        updateAll();
+        await saveAllToSupabase();
+        showToast('✅ Berhasil diunggah ke Supabase & file lama diganti!');
+      } catch (err) {
+        showToast('Error upload: ' + err.message);
+      }
+    }
+
+    // WhatsApp Template Helpers
+    const DEFAULT_WA_TEMPLATE = `Kepada Yth. Bapak/Ibu/Saudara/i *[NAMA]*
+
+Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara pernikahan kami:
+
+*[PASANGAN]*
+Tanggal: [TANGGAL]
+
+Detail undangan dapat diakses melalui tautan berikut:
+[LINK]
+
+Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.
+
+Terima kasih.`;
+
+    function insertWaTag(tag) {
+      const textarea = document.getElementById('waMessageTemplate');
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+      textarea.value = text.substring(0, start) + tag + text.substring(end);
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = start + tag.length;
+      updateAll();
+    }
+
+    function resetDefaultWaTemplate() {
+      if (confirm('Kembalikan template pesan WhatsApp ke default?')) {
+        document.getElementById('waMessageTemplate').value = DEFAULT_WA_TEMPLATE;
+        updateAll();
+        showToast('Template WA dikembalikan ke default');
+      }
+    }
+
+    function generateWaMessage(guestName, guestLink) {
+      const template = document.getElementById('waMessageTemplate')?.value || DEFAULT_WA_TEMPLATE;
+      const coupleTitle = document.getElementById('brideNick').value + ' & ' + document.getElementById('groomNick').value;
+      const weddingDate = document.getElementById('formattedDate').value;
+
+      let msg = template
+        .replace(/\[NAMA\]/g, guestName)
+        .replace(/\[PASANGAN\]/g, coupleTitle)
+        .replace(/\[TANGGAL\]/g, weddingDate);
+
+      if (msg.includes('[LINK]')) {
+        msg = msg.replace(/\[LINK\]/g, guestLink);
+      } else {
+        // Fallback to guarantee link is never missing
+        msg += `\n\nLink Undangan:\n${guestLink}`;
+      }
+
+      return msg;
+    }
+
+    let guestFilter = 'all';
+
+    function setGuestTableFilter(filter) {
+      guestFilter = filter;
+      document.getElementById('btnFilterAll').className = filter === 'all' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-light';
+      document.getElementById('btnFilterPending').className = filter === 'pending' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-light';
+      document.getElementById('btnFilterSent').className = filter === 'sent' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-light';
+      renderGuestTable();
+    }
+
+    async function toggleGuestSentStatus(id, newStatus) {
+      guestsList = guestsList.map(g => g.id === id ? { ...g, is_sent: newStatus, sent_at: newStatus ? new Date().toISOString() : null } : g);
+      localStorage.setItem('wedding_guests_data', JSON.stringify(guestsList));
+      
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('guests').update({ is_sent: newStatus, sent_at: newStatus ? new Date().toISOString() : null }).eq('id', id);
+        } catch (e) {}
+      }
+
+      renderGuestTable();
+      updateDashboardStats();
+    }
+
+    function handleSendWaClick(id, waUrl) {
+      toggleGuestSentStatus(id, true);
+      window.open(waUrl, '_blank');
+    }
+
+    // Export Guests to CSV
+    function handleExportCSV() {
+      if (guestsList.length === 0) {
+        showToast('Daftar tamu masih kosong!');
+        return;
+      }
+
+      const baseUrl = getBaseUrl();
+      const headers = ['No', 'Nama Tamu', 'Nomor WhatsApp', 'Status Kirim', 'Tautan Undangan'];
+      const rows = guestsList.map((g, idx) => [
+        idx + 1,
+        `"${g.name.replace(/"/g, '""')}"`,
+        `"${g.phone}"`,
+        g.is_sent ? 'Sudah Terkirim' : 'Belum Dikirim',
+        `"${baseUrl}/?to=${encodeURIComponent(g.name)}"`
+      ]);
+
+      const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `daftar_tamu_undangan_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('✅ Berhasil mendownload file CSV tamu!');
+    }
+
+    // Import Guests from CSV
+    function handleImportCSV(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const text = e.target.result;
+        const lines = text.split(/\r\n|\n/);
+        let importedCount = 0;
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          
+          // Skip header line if contains 'Nama' or 'Phone'
+          if (i === 0 && (line.toLowerCase().includes('nama') || line.toLowerCase().includes('name'))) {
+            continue;
+          }
+
+          const cols = line.split(/[,;\t]/).map(c => c.replace(/^["']|["']$/g, '').trim());
+          if (cols.length >= 2 && cols[0] && cols[1]) {
+            const guestName = cols[0];
+            const guestPhone = cols[1];
+            
+            const newGuest = {
+              id: (Date.now() + importedCount).toString(),
+              name: guestName,
+              phone: guestPhone,
+              slug: encodeURIComponent(guestName),
+              is_sent: false,
+              created_at: new Date().toISOString()
+            };
+
+            guestsList.unshift(newGuest);
+            importedCount++;
+
+            if (supabaseClient) {
+              try { await supabaseClient.from('guests').insert(newGuest); } catch (err) {}
+            }
+          }
+        }
+
+        localStorage.setItem('wedding_guests_data', JSON.stringify(guestsList));
+        renderGuestTable();
+        updateDashboardStats();
+        showToast(`✅ Berhasil mengimpor ${importedCount} tamu dari file!`);
+        event.target.value = '';
+      };
+
+      reader.readAsText(file);
+    }
+
+    // Update Dashboard Analytics
+    async function updateDashboardStats() {
+      const totalGuests = guestsList.length;
+      const sentGuests = guestsList.filter(g => g.is_sent).length;
+      
+      document.getElementById('statTotalGuests').innerText = totalGuests;
+      document.getElementById('statSentGuests').innerText = sentGuests;
+      document.getElementById('countGuestAll').innerText = totalGuests;
+      document.getElementById('countGuestPending').innerText = totalGuests - sentGuests;
+      document.getElementById('countGuestSent').innerText = sentGuests;
+
+      // Fetch wishes stats
+      if (supabaseClient) {
+        try {
+          const { data: wishesData } = await supabaseClient.from('wishes').select('attending, attendance_status');
+          if (wishesData) {
+            document.getElementById('statTotalWishes').innerText = wishesData.length;
+            const attending = wishesData.filter(w => w.attendance_status === 'hadir' || w.attending).length;
+            document.getElementById('statAttendingCount').innerText = `${attending} Tamu`;
+          }
+        } catch (e) {}
+      } else {
+        const localWishes = localStorage.getItem('wedding_guest_wishes');
+        if (localWishes) {
+          try {
+            const list = JSON.parse(localWishes);
+            document.getElementById('statTotalWishes').innerText = list.length;
+            const attending = list.filter(w => w.attendance_status === 'hadir' || w.attending).length;
+            document.getElementById('statAttendingCount').innerText = `${attending} Tamu`;
+          } catch (e) {}
+        }
+      }
+    }
+
+    // Guest & WhatsApp Management
+    async function loadGuests() {
+      if (supabaseClient) {
+        try {
+          const { data } = await supabaseClient.from('guests').select('*').order('created_at', { ascending: false });
+          if (data && data.length > 0) {
+            guestsList = data;
+          } else {
+            const local = localStorage.getItem('wedding_guests_data');
+            if (local) guestsList = JSON.parse(local);
+          }
+        } catch (e) {
+          const local = localStorage.getItem('wedding_guests_data');
+          if (local) guestsList = JSON.parse(local);
+        }
+      } else {
+        const local = localStorage.getItem('wedding_guests_data');
+        if (local) guestsList = JSON.parse(local);
+      }
+      renderGuestTable();
+      updateDashboardStats();
+    }
+
+    function renderGuestTable() {
+      const tbody = document.getElementById('guestTableBody');
+      if (guestsList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 24px;">Belum ada daftar tamu. Tambahkan tamu di atas!</td></tr>`;
+        return;
+      }
+
+      const baseUrl = getBaseUrl();
+      const filtered = guestsList.filter(g => {
+        if (guestFilter === 'sent') return g.is_sent;
+        if (guestFilter === 'pending') return !g.is_sent;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 24px;">Tidak ada tamu pada filter ini.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((g, idx) => {
+        const guestLink = `${baseUrl}/?to=${encodeURIComponent(g.name)}`;
+        const waMsg = generateWaMessage(g.name, guestLink);
+        const waUrl = `https://api.whatsapp.com/send?phone=${formatPhoneWA(g.phone)}&text=${encodeURIComponent(waMsg)}`;
+        const isSent = !!g.is_sent;
+
+        return `
+          <tr style="${isSent ? 'background: #fcfdfc;' : ''}">
+            <td>${idx + 1}</td>
+            <td>
+              <button onclick="toggleGuestSentStatus('${g.id}', ${!isSent})" class="btn-clean" style="display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; cursor: pointer; padding: 3px 8px; border-radius: 12px; background: ${isSent ? '#dcfce7' : '#f1f5f9'}; color: ${isSent ? '#15803d' : '#64748b'};">
+                <i data-lucide="${isSent ? 'check-circle-2' : 'clock'}" style="width: 13px; height: 13px;"></i>
+                <span>${isSent ? 'Terkirim' : 'Belum'}</span>
+              </button>
+            </td>
+            <td><strong>${g.name}</strong></td>
+            <td><code>${g.phone}</code></td>
+            <td><a href="${guestLink}" target="_blank" style="color: var(--primary); text-decoration: none; font-size: 11.5px;">${guestLink}</a></td>
+            <td style="text-align: right; white-space: nowrap;">
+              <button onclick="handleSendWaClick('${g.id}', '${waUrl}')" class="btn btn-wa btn-sm" style="margin-right: 4px;" title="Buka WhatsApp & tandai terkirim">
+                <i data-lucide="send" style="width: 13px; height: 13px;"></i>
+                <span>Kirim ke WA</span>
+              </button>
+              <button onclick="copyToClipboard('${guestLink}')" class="btn btn-light btn-sm" title="Salin link" style="margin-right: 4px;">
+                <i data-lucide="copy" style="width: 13px; height: 13px;"></i>
+              </button>
+              <button onclick="handleDeleteGuest('${g.id}')" class="btn btn-danger btn-sm" title="Hapus tamu">
+                <i data-lucide="trash-2" style="width: 13px; height: 13px;"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function formatPhoneWA(phone) {
+      let clean = phone.replace(/[^0-9]/g, '');
+      if (clean.startsWith('0')) {
+        clean = '62' + clean.slice(1);
+      }
+      return clean;
+    }
+
+    async function handleAddGuest() {
+      const name = document.getElementById('guestInputName').value.trim();
+      const phone = document.getElementById('guestInputPhone').value.trim();
+
+      if (!name || !phone) {
+        showToast('Mohon isi nama tamu dan nomor WhatsApp!');
+        return;
+      }
+
+      const newGuest = {
+        id: Date.now().toString(),
+        name,
+        phone,
+        slug: encodeURIComponent(name),
+        is_sent: false,
+        created_at: new Date().toISOString()
+      };
+
+      guestsList.unshift(newGuest);
+      localStorage.setItem('wedding_guests_data', JSON.stringify(guestsList));
+
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('guests').insert(newGuest);
+        } catch (e) {}
+      }
+
+      document.getElementById('guestInputName').value = '';
+      document.getElementById('guestInputPhone').value = '';
+      renderGuestTable();
+      showToast(`✅ Tamu "${name}" berhasil ditambahkan!`);
+    }
+
+    async function handleDeleteGuest(id) {
+      guestsList = guestsList.filter(g => g.id !== id);
+      localStorage.setItem('wedding_guests_data', JSON.stringify(guestsList));
+
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('guests').delete().eq('id', id);
+        } catch (e) {}
+      }
+
+      renderGuestTable();
+      showToast('Tamu berhasil dihapus');
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tabId).style.display = 'block';
+      event.currentTarget.classList.add('active');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2800);
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Tautan berhasil disalin ke clipboard!');
+      });
+    }
+
+    function handleSaveSupabaseConfig() {
+      const url = document.getElementById('supabaseUrlInput').value.trim();
+      const key = document.getElementById('supabaseKeyInput').value.trim();
+
+      localStorage.setItem('supabase_project_url', url);
+      localStorage.setItem('supabase_anon_key', key);
+      initSupabase();
+      showToast('Konfigurasi Supabase berhasil disimpan!');
+    }
+
+    async function handleTestConnection() {
+      initSupabase();
+      if (!supabaseClient) {
+        showToast('Gagal: Masukkan Project URL dan Anon Key terlebih dahulu!');
+        return;
+      }
+
+      try {
+        const { data, error } = await supabaseClient.from('invitation_settings').select('id').limit(1);
+        if (error) {
+          showToast('Koneksi gagal: ' + error.message);
+        } else {
+          showToast('✅ Berhasil terhubung ke Supabase Database & Storage!');
+        }
+      } catch (err) {
+        showToast('Error koneksi: ' + err.message);
+      }
+    }
+
+    function copySQLSchema() {
+      navigator.clipboard.writeText(sqlSchemaCode).then(() => {
+        showToast('✅ Skrip SQL Schema berhasil disalin!');
+      });
+    }
+
+    function populateForm(d) {
+      if (!d) return;
+      const invUrl = d.invitationUrl || d.invitation_url || localStorage.getItem('wedding_base_url') || '';
+      if (document.getElementById('invitationBaseUrl')) {
+        document.getElementById('invitationBaseUrl').value = invUrl;
+      }
+      const navLink = document.getElementById('navInvitationLink');
+      if (navLink) navLink.href = getBaseUrl();
+
+      const waTemplate = d.waTemplate || d.wa_template;
+      if (waTemplate && document.getElementById('waMessageTemplate')) {
+        document.getElementById('waMessageTemplate').value = waTemplate;
+      }
+
+      if (d.couple?.bride) {
+        document.getElementById('brideName').value = d.couple.bride.name || '';
+        document.getElementById('brideNick').value = d.couple.bride.nickname || '';
+        document.getElementById('brideParents').value = d.couple.bride.parents || '';
+        document.getElementById('brideIg').value = d.couple.bride.instagram || '';
+        document.getElementById('brideAvatar').value = d.couple.bride.avatar || '';
+        document.getElementById('brideAvatarPreview').src = d.couple.bride.avatar || '';
+      }
+      if (d.couple?.groom) {
+        document.getElementById('groomName').value = d.couple.groom.name || '';
+        document.getElementById('groomNick').value = d.couple.groom.nickname || '';
+        document.getElementById('groomParents').value = d.couple.groom.parents || '';
+        document.getElementById('groomIg').value = d.couple.groom.instagram || '';
+        document.getElementById('groomAvatar').value = d.couple.groom.avatar || '';
+        document.getElementById('groomAvatarPreview').src = d.couple.groom.avatar || '';
+      }
+      if (d.dayName || d.day_name) document.getElementById('dayName').value = d.dayName || d.day_name;
+      if (d.formattedDate || d.formatted_date) document.getElementById('formattedDate').value = d.formattedDate || d.formatted_date;
+      if (d.formattedDateShort || d.formatted_date_short) document.getElementById('formattedDateShort').value = d.formattedDateShort || d.formatted_date_short;
+      if (d.audioUrl || d.audio_url) document.getElementById('audioUrl').value = d.audioUrl || d.audio_url;
+      
+      const banks = d.bankAccounts || d.bank_accounts;
+      if (banks && banks[0]) {
+        document.getElementById('bankName').value = banks[0].bankName;
+        document.getElementById('bankAccount').value = banks[0].accountNumber;
+        document.getElementById('bankHolder').value = banks[0].accountHolder;
+        document.getElementById('qrisImage').value = banks[0].qrisImage || '';
+        document.getElementById('qrisPreview').src = banks[0].qrisImage || '';
+      }
+      const flags = d.featureFlags || d.feature_flags;
+      if (flags) {
+        document.getElementById('flagGateCover').checked = flags.showGateCover !== false;
+        document.getElementById('flagCountdown').checked = flags.showCountdown !== false;
+        document.getElementById('flagQuote').checked = flags.showQuote !== false;
+        document.getElementById('flagCoupleProfile').checked = flags.showCoupleProfile !== false;
+        document.getElementById('flagEventSchedule').checked = flags.showEventSchedule !== false;
+        document.getElementById('flagLoveStory').checked = flags.showLoveStory !== false;
+        document.getElementById('flagGallery').checked = flags.showGallery !== false;
+        document.getElementById('flagGift').checked = flags.showGift !== false;
+        document.getElementById('flagGuestbook').checked = flags.showGuestbook !== false;
+        document.getElementById('flagIGStory').checked = (flags.showIGStoryGenerator !== false && flags.showIGStory !== false);
+        document.getElementById('flagMusic').checked = flags.showMusic !== false;
+      }
+    }
+
+    // Load initial settings
+    window.addEventListener('DOMContentLoaded', async () => {
+      checkStudioAuth();
+      lucide.createIcons();
+
+      // Read SQL Schema for display
+      fetch('/supabase_schema.sql').then(r => r.text()).then(t => {
+        sqlSchemaCode = t;
+        document.getElementById('sqlBoxPreview').innerText = t.slice(0, 1000) + '\n... (salin untuk teks lengkap)';
+      }).catch(() => {});
+
+      // Set input config fields
+      document.getElementById('supabaseUrlInput').value = localStorage.getItem('supabase_project_url') || DEFAULT_SUPABASE_URL;
+      document.getElementById('supabaseKeyInput').value = localStorage.getItem('supabase_anon_key') || DEFAULT_SUPABASE_KEY;
+
+      initSupabase();
+
+      // Load local settings first
+      const saved = localStorage.getItem('wedding_settings_data');
+      if (saved) {
+        try { populateForm(JSON.parse(saved)); } catch (e) {}
+      }
+
+      // Then fetch from Supabase if connected
+      if (supabaseClient) {
+        try {
+          const { data, error } = await supabaseClient.from('invitation_settings').select('*').eq('id', 'default').single();
+          if (data && !error) {
+            populateForm(data);
+          }
+        } catch (err) {
+          console.warn('Could not fetch initial settings from Supabase:', err);
+        }
+      }
+
+      loadGuests();
+      updateAll();
+    });
+  </script>
+
+</body>
+</html>
