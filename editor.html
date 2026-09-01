@@ -3115,12 +3115,25 @@ Terima kasih.</textarea>
       showToast('Slot foto galeri baru ditambahkan', 'success');
     }
 
-    function handleDeleteGalleryPhoto(idx) {
+    async function handleDeleteGalleryPhoto(idx) {
       if (!confirm('Hapus foto ini dari galeri?')) return;
+      const targetPhoto = galleryList[idx];
+      const oldUrl = targetPhoto?.src || '';
+
+      if (supabaseClient && oldUrl && oldUrl.includes('/storage/v1/object/public/wedding-media/')) {
+        const parts = oldUrl.split('/storage/v1/object/public/wedding-media/');
+        if (parts.length > 1) {
+          try {
+            await supabaseClient.storage.from('wedding-media').remove([parts[1]]);
+          } catch (e) {}
+        }
+      }
+
       galleryList.splice(idx, 1);
       renderGalleryManager();
       updateAll();
-      showToast('Foto dihapus dari galeri', 'info');
+      await saveAllToSupabase();
+      showToast('Foto dihapus dari galeri & cloud storage', 'info');
     }
 
     async function handleGalleryPhotoUpload(idx, inputElem) {
