@@ -854,6 +854,39 @@
       transform: translateX(20px);
     }
 
+    .feature-group-box {
+      margin-bottom: var(--space-4);
+      border-radius: var(--radius-md);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: var(--space-4);
+    }
+
+    .feature-group-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: var(--space-3);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .feature-group-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 12px;
+      background: var(--primary-light);
+      color: var(--primary);
+      text-transform: none;
+    }
+
     /* Buttons */
     .btn {
       display: inline-flex;
@@ -1459,168 +1492,434 @@
               <div class="panel-header-icon"><i data-lucide="sliders"></i></div>
               <div>
                 <div class="panel-title font-serif">Kontrol Visibilitas Fitur &amp; Seksi</div>
-                <div class="panel-subtitle">Aktifkan atau nonaktifkan seksi yang tampil di website undangan</div>
+                <div class="panel-subtitle">Aktifkan atau nonaktifkan seksi dan tombol aksi di website undangan secara terperinci</div>
               </div>
             </div>
           </div>
 
-          <div class="switch-grid">
-            <div class="switch-item">
-              <div class="switch-info">
-                <i data-lucide="mail" style="color: var(--primary); width: 18px; height: 18px;"></i>
-                <div>
-                  <div class="switch-label">Gate Cover</div>
-                  <div class="switch-desc">Sampul pembuka amplop</div>
-                </div>
+          <!-- GROUP 1: Seksi Utama Undangan -->
+          <div class="feature-group-box">
+            <div class="feature-group-title">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="layout-template" style="width: 16px; height: 16px;"></i>
+                <span>1. Seksi Utama Undangan</span>
               </div>
-              <label class="switch">
-                <input type="checkbox" id="flagGateCover" checked onchange="updateAll()">
-                <span class="slider"></span>
-              </label>
+              <span class="feature-group-badge">11 Seksi</span>
             </div>
-
-            <div class="switch-item">
-              <div class="switch-info">
-                <i data-lucide="clock" style="color: var(--primary); width: 18px; height: 18px;"></i>
-                <div>
-                  <div class="switch-label">Countdown Timer</div>
-                  <div class="switch-desc">Hitung mundur hari bahagia</div>
+            <div class="switch-grid">
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="mail" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Gate Cover</div>
+                    <div class="switch-desc">Sampul pembuka amplop</div>
+                  </div>
                 </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagGateCover" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
               </div>
-              <label class="switch">
-                <input type="checkbox" id="flagCountdown" checked onchange="updateAll()">
-                <span class="slider"></span>
-              </label>
-            </div>
 
-            <div class="switch-item">
-              <div class="switch-info">
-                <i data-lucide="quote" style="color: var(--primary); width: 18px; height: 18px;"></i>
-                <div>
-                  <div class="switch-label">Kutipan Ayat Suci</div>
-                  <div class="switch-desc">Surah Ar-Rum ayat 21</div>
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="clock" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Countdown Timer</div>
+                    <div class="switch-desc">Hitung mundur hari bahagia</div>
+                  </div>
                 </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagCountdown" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
               </div>
-              <label class="switch">
-                <input type="checkbox" id="flagQuote" checked onchange="updateAll()">
-                <span class="slider"></span>
-              </label>
-            </div>
 
-            <div class="switch-item">
-              <div class="switch-info">
-                <i data-lucide="users" style="color: var(--primary); width: 18px; height: 18px;"></i>
-                <div>
-                  <div class="switch-label">Profil Mempelai</div>
-                  <div class="switch-desc">Foto, nama orang tua, &amp; IG</div>
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="quote" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Kutipan Ayat Suci</div>
+                    <div class="switch-desc">Surah Ar-Rum ayat 21</div>
+                  </div>
                 </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagQuote" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
               </div>
-              <label class="switch">
-                <input type="checkbox" id="flagCoupleProfile" checked onchange="updateAll()">
-                <span class="slider"></span>
-              </label>
-            </div>
 
-            <div class="switch-item">
-              <div class="switch-info">
-                <i data-lucide="calendar" style="color: var(--primary); width: 18px; height: 18px;"></i>
-                <div>
-                  <div class="switch-label">Jadwal Acara &amp; Maps</div>
-                  <div class="switch-desc">Akad, Resepsi, dan rute map</div>
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="users" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Profil Mempelai</div>
+                    <div class="switch-desc">Foto, nama, ortu, &amp; IG</div>
+                  </div>
                 </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagCoupleProfile" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
               </div>
-              <label class="switch">
-                <input type="checkbox" id="flagEventSchedule" checked onchange="updateAll()">
-                <span class="slider"></span>
-              </label>
-            </div>
 
-            <div class="switch-item">
-              <div class="switch-info">
-                <i data-lucide="book-open" style="color: var(--primary); width: 18px; height: 18px;"></i>
-                <div>
-                  <div class="switch-label">Kisah Cinta (Love Story)</div>
-                  <div class="switch-desc">Timeline pertemuan &amp; lamaran</div>
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="calendar" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Jadwal Acara &amp; Maps</div>
+                    <div class="switch-desc">Akad, Resepsi, dan lokasi</div>
+                  </div>
                 </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagEventSchedule" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
               </div>
-              <label class="switch">
-                <input type="checkbox" id="flagLoveStory" checked onchange="updateAll()">
-                <span class="slider"></span>
-              </label>
-            </div>
 
-            <div class="switch-item">
-              <div class="switch-info">
-                <i data-lucide="image" style="color: var(--primary); width: 18px; height: 18px;"></i>
-                <div>
-                  <div class="switch-label">Galeri Foto</div>
-                  <div class="switch-desc">Slider foto prewedding</div>
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="book-open" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Kisah Cinta (Love Story)</div>
+                    <div class="switch-desc">Timeline cerita perjalanan</div>
+                  </div>
                 </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagLoveStory" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
               </div>
-              <label class="switch">
-                <input type="checkbox" id="flagGallery" checked onchange="updateAll()">
-                <span class="slider"></span>
-              </label>
-            </div>
 
-            <div class="switch-item">
-              <div class="switch-info">
-                <i data-lucide="credit-card" style="color: var(--primary); width: 18px; height: 18px;"></i>
-                <div>
-                  <div class="switch-label">Kado Digital &amp; QRIS</div>
-                  <div class="switch-desc">Amplop kado &amp; rekening</div>
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="image" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Galeri Foto</div>
+                    <div class="switch-desc">Slider &amp; foto album</div>
+                  </div>
                 </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagGallery" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
               </div>
-              <label class="switch">
-                <input type="checkbox" id="flagGift" checked onchange="updateAll()">
-                <span class="slider"></span>
-              </label>
-            </div>
 
-            <div class="switch-item">
-              <div class="switch-info">
-                <i data-lucide="message-square" style="color: var(--primary); width: 18px; height: 18px;"></i>
-                <div>
-                  <div class="switch-label">Buku Tamu &amp; Ucapan</div>
-                  <div class="switch-desc">Doa restu &amp; RSVP online</div>
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="credit-card" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Kado Digital &amp; QRIS</div>
+                    <div class="switch-desc">Amplop kado &amp; rekening</div>
+                  </div>
                 </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagGift" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
               </div>
-              <label class="switch">
-                <input type="checkbox" id="flagGuestbook" checked onchange="updateAll()">
-                <span class="slider"></span>
-              </label>
-            </div>
 
-            <div class="switch-item">
-              <div class="switch-info">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-                <div>
-                  <div class="switch-label">IG Story Generator</div>
-                  <div class="switch-desc">Export kartu ucapan 9:16</div>
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="message-square" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Buku Tamu &amp; Ucapan</div>
+                    <div class="switch-desc">Doa restu &amp; RSVP online</div>
+                  </div>
                 </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagGuestbook" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
               </div>
-              <label class="switch">
-                <input type="checkbox" id="flagIGStory" checked onchange="updateAll()">
-                <span class="slider"></span>
-              </label>
-            </div>
 
-            <div class="switch-item">
-              <div class="switch-info">
-                <i data-lucide="music" style="color: var(--primary); width: 18px; height: 18px;"></i>
-                <div>
-                  <div class="switch-label">Musik Latar (Audio)</div>
-                  <div class="switch-desc">Pemutar lagu otomatis</div>
+              <div class="switch-item">
+                <div class="switch-info">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                  <div>
+                    <div class="switch-label">IG Story Generator</div>
+                    <div class="switch-desc">Export kartu ucapan 9:16</div>
+                  </div>
                 </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagIGStory" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
               </div>
-              <label class="switch">
-                <input type="checkbox" id="flagMusic" checked onchange="updateAll()">
-                <span class="slider"></span>
-              </label>
+
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="music" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Musik Latar (Audio)</div>
+                    <div class="switch-desc">Pemutar lagu otomatis</div>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagMusic" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
+              </div>
             </div>
           </div>
 
-          <div class="panel-footer-nav">
+          <!-- GROUP 2: Tombol Aksi Jadwal & Lokasi -->
+          <div class="feature-group-box">
+            <div class="feature-group-title">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="calendar-check" style="width: 16px; height: 16px;"></i>
+                <span>2. Tombol Aksi Jadwal &amp; Navigasi Lokasi</span>
+              </div>
+              <span class="feature-group-badge">5 Tombol</span>
+            </div>
+            <div class="switch-grid">
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="calendar-plus" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Google Calendar</div>
+                    <div class="switch-desc">Tombol "Google Cal" di jadwal</div>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagGoogleCal" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="download" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Apple / iCal (.ics)</div>
+                    <div class="switch-desc">Tombol unduh file kalender</div>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagAppleCal" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="map-pin" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Google Maps</div>
+                    <div class="switch-desc">Tombol rute Google Maps</div>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagGoogleMaps" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="navigation" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Waze Navigation</div>
+                    <div class="switch-desc">Tombol rute aplikasi Waze</div>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagWaze" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="radio" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Live Streaming</div>
+                    <div class="switch-desc">Seksi siaran langsung acara</div>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagLiveStream" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP 3: Info & Sosial Mempelai -->
+          <div class="feature-group-box">
+            <div class="feature-group-title">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="heart" style="width: 16px; height: 16px;"></i>
+                <span>3. Detail Profil Mempelai &amp; Sosial Media</span>
+              </div>
+              <span class="feature-group-badge">3 Kontrol</span>
+            </div>
+            <div class="switch-grid">
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="instagram" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Instagram Wanita</div>
+                    <div class="switch-desc">Tombol Instagram mempelai wanita</div>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagBrideInstagram" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="instagram" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Instagram Pria</div>
+                    <div class="switch-desc">Tombol Instagram mempelai pria</div>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagGroomInstagram" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="user-check" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Teks Nama Orang Tua</div>
+                    <div class="switch-desc">Nama ayah &amp; ibu kedua mempelai</div>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagParentsInfo" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP 4: Kado & Amplop Digital -->
+          <div class="feature-group-box">
+            <div class="feature-group-title">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="wallet" style="width: 16px; height: 16px;"></i>
+                <span>4. Kado &amp; Amplop Digital</span>
+              </div>
+              <span class="feature-group-badge">2 Kontrol</span>
+            </div>
+            <div class="switch-grid">
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="credit-card" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Nomor Rekening Bank</div>
+                    <div class="switch-desc">Kartu rekening transfer bank</div>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagBankTransfer" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="qr-code" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Gambar &amp; Modal QRIS</div>
+                    <div class="switch-desc">Barcode QRIS pembayaran digital</div>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagQrisCode" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP 5: Buku Tamu & RSVP -->
+          <div class="feature-group-box">
+            <div class="feature-group-title">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="message-square-heart" style="width: 16px; height: 16px;"></i>
+                <span>5. Buku Tamu &amp; Konfirmasi RSVP</span>
+              </div>
+              <span class="feature-group-badge">2 Kontrol</span>
+            </div>
+            <div class="switch-grid">
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="check-circle-2" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Tombol Konfirmasi RSVP</div>
+                    <div class="switch-desc">Pop-up modal konfirmasi kehadiran</div>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagRsvpButton" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="heart" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Fitur Love / Like Ucapan</div>
+                    <div class="switch-desc">Tombol love pada pesan ucapan</div>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagWishLikes" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP 6: Navigasi Mengambang & Ornamen -->
+          <div class="feature-group-box" style="margin-bottom: 0;">
+            <div class="feature-group-title">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="compass" style="width: 16px; height: 16px;"></i>
+                <span>6. Navigasi Mengambang &amp; Ornamen</span>
+              </div>
+              <span class="feature-group-badge">2 Kontrol</span>
+            </div>
+            <div class="switch-grid">
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="navigation-2" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Floating Navbar Dock</div>
+                    <div class="switch-desc">Menu navigasi melayang di bawah</div>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagFloatingNav" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="switch-item">
+                <div class="switch-info">
+                  <i data-lucide="flower" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                  <div>
+                    <div class="switch-label">Ornamen Botanical Sudut</div>
+                    <div class="switch-desc">Hiasan dedaunan di pojok layar</div>
+                  </div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="flagBotanicalCorners" checked onchange="updateAll()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-footer-nav" style="margin-top: var(--space-4);">
             <button onclick="switchTab('tab-couple')" class="btn btn-primary">
               <span>Lanjut ke Mempelai</span>
               <i data-lucide="chevron-right" style="width: 15px; height: 15px;"></i>
@@ -2779,7 +3078,21 @@ Terima kasih.</textarea>
           showGift: document.getElementById('flagGift').checked,
           showGuestbook: document.getElementById('flagGuestbook').checked,
           showIGStoryGenerator: document.getElementById('flagIGStory').checked,
-          showMusic: document.getElementById('flagMusic').checked
+          showMusic: document.getElementById('flagMusic').checked,
+          showGoogleCal: document.getElementById('flagGoogleCal') ? document.getElementById('flagGoogleCal').checked : true,
+          showAppleCal: document.getElementById('flagAppleCal') ? document.getElementById('flagAppleCal').checked : true,
+          showGoogleMaps: document.getElementById('flagGoogleMaps') ? document.getElementById('flagGoogleMaps').checked : true,
+          showWaze: document.getElementById('flagWaze') ? document.getElementById('flagWaze').checked : true,
+          showLiveStream: document.getElementById('flagLiveStream') ? document.getElementById('flagLiveStream').checked : true,
+          showBrideInstagram: document.getElementById('flagBrideInstagram') ? document.getElementById('flagBrideInstagram').checked : true,
+          showGroomInstagram: document.getElementById('flagGroomInstagram') ? document.getElementById('flagGroomInstagram').checked : true,
+          showParentsInfo: document.getElementById('flagParentsInfo') ? document.getElementById('flagParentsInfo').checked : true,
+          showBankTransfer: document.getElementById('flagBankTransfer') ? document.getElementById('flagBankTransfer').checked : true,
+          showQrisCode: document.getElementById('flagQrisCode') ? document.getElementById('flagQrisCode').checked : true,
+          showRsvpButton: document.getElementById('flagRsvpButton') ? document.getElementById('flagRsvpButton').checked : true,
+          showWishLikes: document.getElementById('flagWishLikes') ? document.getElementById('flagWishLikes').checked : true,
+          showFloatingNav: document.getElementById('flagFloatingNav') ? document.getElementById('flagFloatingNav').checked : true,
+          showBotanicalCorners: document.getElementById('flagBotanicalCorners') ? document.getElementById('flagBotanicalCorners').checked : true
         },
         galleryImages: galleryList,
         waTemplate: document.getElementById('waMessageTemplate')?.value || DEFAULT_WA_TEMPLATE
@@ -3618,6 +3931,20 @@ Terima kasih.`;
         document.getElementById('flagGuestbook').checked = flags.showGuestbook !== false;
         document.getElementById('flagIGStory').checked = (flags.showIGStoryGenerator !== false && flags.showIGStory !== false);
         document.getElementById('flagMusic').checked = flags.showMusic !== false;
+        if (document.getElementById('flagGoogleCal')) document.getElementById('flagGoogleCal').checked = flags.showGoogleCal !== false;
+        if (document.getElementById('flagAppleCal')) document.getElementById('flagAppleCal').checked = flags.showAppleCal !== false;
+        if (document.getElementById('flagGoogleMaps')) document.getElementById('flagGoogleMaps').checked = flags.showGoogleMaps !== false;
+        if (document.getElementById('flagWaze')) document.getElementById('flagWaze').checked = flags.showWaze !== false;
+        if (document.getElementById('flagLiveStream')) document.getElementById('flagLiveStream').checked = flags.showLiveStream !== false;
+        if (document.getElementById('flagBrideInstagram')) document.getElementById('flagBrideInstagram').checked = flags.showBrideInstagram !== false;
+        if (document.getElementById('flagGroomInstagram')) document.getElementById('flagGroomInstagram').checked = flags.showGroomInstagram !== false;
+        if (document.getElementById('flagParentsInfo')) document.getElementById('flagParentsInfo').checked = flags.showParentsInfo !== false;
+        if (document.getElementById('flagBankTransfer')) document.getElementById('flagBankTransfer').checked = flags.showBankTransfer !== false;
+        if (document.getElementById('flagQrisCode')) document.getElementById('flagQrisCode').checked = flags.showQrisCode !== false;
+        if (document.getElementById('flagRsvpButton')) document.getElementById('flagRsvpButton').checked = flags.showRsvpButton !== false;
+        if (document.getElementById('flagWishLikes')) document.getElementById('flagWishLikes').checked = flags.showWishLikes !== false;
+        if (document.getElementById('flagFloatingNav')) document.getElementById('flagFloatingNav').checked = flags.showFloatingNav !== false;
+        if (document.getElementById('flagBotanicalCorners')) document.getElementById('flagBotanicalCorners').checked = flags.showBotanicalCorners !== false;
       }
 
       const gal = d.galleryImages || d.gallery_images;
