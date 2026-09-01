@@ -1977,7 +1977,71 @@ Terima kasih.</textarea>
             </button>
           </div>
         </div>
+
+        <!-- ═══════════════════════════════════════════════════════
+             BUKU TAMU & RSVP MONITOR
+             ═══════════════════════════════════════════════════════ -->
+        <div class="panel-card" style="margin-top: var(--space-4);">
+          <div class="panel-header">
+            <div class="panel-header-info">
+              <div class="panel-header-icon" style="background: #FFF5F7; color: #E84393;"><i data-lucide="message-square-heart"></i></div>
+              <div>
+                <div class="panel-title font-serif">Buku Tamu &amp; Status Kehadiran (RSVP)</div>
+                <div class="panel-subtitle">Pantau ucapan, doa restu, dan konfirmasi kehadiran dari tamu secara real-time</div>
+              </div>
+            </div>
+            <button onclick="loadWishes()" class="btn btn-light btn-sm" style="display: inline-flex; align-items: center; gap: 4px;" title="Refresh dari Supabase">
+              <i data-lucide="refresh-cw" style="width: 13px; height: 13px;"></i>
+              <span>Refresh</span>
+            </button>
+          </div>
+
+          <!-- RSVP Summary Bar -->
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2); margin-bottom: var(--space-4);">
+            <div style="background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-3); text-align: center;">
+              <div style="font-size: 22px; font-weight: 800; color: var(--primary);" id="wishStatTotal">0</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Total Ucapan</div>
+            </div>
+            <div style="background: #F0FFF4; border: 1px solid #9AE6B4; border-radius: var(--radius-md); padding: var(--space-3); text-align: center;">
+              <div style="font-size: 22px; font-weight: 800; color: #22863A;" id="wishStatHadir">0</div>
+              <div style="font-size: 11px; color: #22863A;">Hadir</div>
+            </div>
+            <div style="background: #FFF5F0; border: 1px solid #FBD38D; border-radius: var(--radius-md); padding: var(--space-3); text-align: center;">
+              <div style="font-size: 22px; font-weight: 800; color: #DD6B20;" id="wishStatTidakHadir">0</div>
+              <div style="font-size: 11px; color: #DD6B20;">Tidak Hadir</div>
+            </div>
+            <div style="background: #F5F3FF; border: 1px solid #C4B5FD; border-radius: var(--radius-md); padding: var(--space-3); text-align: center;">
+              <div style="font-size: 22px; font-weight: 800; color: #6D28D9;" id="wishStatMungkin">0</div>
+              <div style="font-size: 11px; color: #6D28D9;">Mungkin Hadir</div>
+            </div>
+          </div>
+
+          <!-- Filter Buttons -->
+          <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-3); flex-wrap: wrap;">
+            <button onclick="setWishFilter('all')" id="btnWishAll" class="btn btn-sm btn-primary">Semua (<span id="countWishAll">0</span>)</button>
+            <button onclick="setWishFilter('hadir')" id="btnWishHadir" class="btn btn-sm btn-light">Hadir (<span id="countWishHadir">0</span>)</button>
+            <button onclick="setWishFilter('tidak_hadir')" id="btnWishTidak" class="btn btn-sm btn-light">Tidak Hadir (<span id="countWishTidak">0</span>)</button>
+            <button onclick="setWishFilter('mungkin')" id="btnWishMungkin" class="btn btn-sm btn-light">Mungkin (<span id="countWishMungkin">0</span>)</button>
+          </div>
+
+          <!-- Wishes List -->
+          <div id="wishesListContainer" style="display: flex; flex-direction: column; gap: var(--space-3); max-height: 480px; overflow-y: auto; padding-right: 4px;">
+            <div style="text-align: center; color: var(--text-muted); padding: var(--space-5); font-size: 13px;">
+              <i data-lucide="inbox" style="width: 28px; height: 28px; opacity: 0.4; display: block; margin: 0 auto var(--space-2);"></i>
+              Belum ada ucapan masuk. Tamu akan mengisi buku tamu di halaman undangan.
+            </div>
+          </div>
+
+          <!-- Export Wishes -->
+          <div style="margin-top: var(--space-4); padding-top: var(--space-3); border-top: 1px solid var(--border-light); display: flex; gap: var(--space-2); flex-wrap: wrap;">
+            <button onclick="handleExportWishesCSV()" class="btn btn-light btn-sm" style="display: inline-flex; align-items: center; gap: 4px;">
+              <i data-lucide="download" style="width: 13px; height: 13px;"></i>
+              <span>Export Ucapan (.csv)</span>
+            </button>
+          </div>
+        </div>
       </div>
+
 
       <!-- TAB 8: KONEKSI SUPABASE -->
       <div id="tab-cloud" class="tab-content" style="display: none;">
@@ -2681,6 +2745,165 @@ Terima kasih.`;
       window.open(waUrl, '_blank');
     }
 
+    // ═══ BUKU TAMU & RSVP MANAGEMENT ═══
+    let wishesList = [];
+    let wishFilter = 'all';
+
+    async function loadWishes() {
+      if (supabaseClient) {
+        try {
+          const { data, error } = await supabaseClient
+            .from('wishes')
+            .select('*')
+            .order('created_at', { ascending: false });
+          if (!error && data) {
+            wishesList = data;
+            localStorage.setItem('wedding_wishes_data', JSON.stringify(data));
+          }
+        } catch (e) {
+          const local = localStorage.getItem('wedding_wishes_data');
+          if (local) wishesList = JSON.parse(local);
+        }
+      } else {
+        const local = localStorage.getItem('wedding_wishes_data');
+        if (local) wishesList = JSON.parse(local);
+      }
+      renderWishesList();
+      updateWishesStats();
+      updateDashboardStats();
+    }
+
+    function setWishFilter(filter) {
+      wishFilter = filter;
+      // Update active button styles
+      ['all', 'hadir', 'tidak_hadir', 'mungkin'].forEach(f => {
+        const btn = document.getElementById('btnWish' + (f === 'all' ? 'All' : f === 'hadir' ? 'Hadir' : f === 'tidak_hadir' ? 'Tidak' : 'Mungkin'));
+        if (btn) {
+          btn.className = 'btn btn-sm ' + (f === filter ? 'btn-primary' : 'btn-light');
+        }
+      });
+      renderWishesList();
+    }
+
+    function updateWishesStats() {
+      const total = wishesList.length;
+      const hadir = wishesList.filter(w => w.attendance_status === 'hadir' || w.attending === true).length;
+      const tidakHadir = wishesList.filter(w => w.attendance_status === 'tidak_hadir' || w.attending === false).length;
+      const mungkin = wishesList.filter(w => w.attendance_status === 'mungkin').length;
+
+      const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      set('wishStatTotal', total);
+      set('wishStatHadir', hadir);
+      set('wishStatTidakHadir', tidakHadir);
+      set('wishStatMungkin', mungkin);
+      set('countWishAll', total);
+      set('countWishHadir', hadir);
+      set('countWishTidak', tidakHadir);
+      set('countWishMungkin', mungkin);
+      // Also update top KPI
+      set('statTotalWishes', total);
+      set('statAttendingCount', hadir);
+    }
+
+    function renderWishesList() {
+      const container = document.getElementById('wishesListContainer');
+      if (!container) return;
+
+      const filtered = wishFilter === 'all' ? wishesList :
+        wishesList.filter(w => {
+          if (wishFilter === 'hadir') return w.attendance_status === 'hadir' || w.attending === true;
+          if (wishFilter === 'tidak_hadir') return w.attendance_status === 'tidak_hadir' || w.attending === false;
+          if (wishFilter === 'mungkin') return w.attendance_status === 'mungkin';
+          return true;
+        });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; color: var(--text-muted); padding: var(--space-5); font-size: 13px;">
+            <i data-lucide="inbox" style="width: 28px; height: 28px; opacity: 0.4; display: block; margin: 0 auto var(--space-2);"></i>
+            Belum ada ucapan pada kategori ini.
+          </div>`;
+        lucide.createIcons();
+        return;
+      }
+
+      const statusConfig = {
+        hadir: { label: 'Hadir', bg: '#F0FFF4', color: '#22863A', border: '#9AE6B4', icon: 'check-circle-2' },
+        tidak_hadir: { label: 'Tidak Hadir', bg: '#FFF5F0', color: '#DD6B20', border: '#FBD38D', icon: 'x-circle' },
+        mungkin: { label: 'Mungkin', bg: '#F5F3FF', color: '#6D28D9', border: '#C4B5FD', icon: 'help-circle' }
+      };
+
+      container.innerHTML = filtered.map(w => {
+        const status = w.attendance_status || (w.attending === true ? 'hadir' : w.attending === false ? 'tidak_hadir' : 'mungkin');
+        const cfg = statusConfig[status] || statusConfig.hadir;
+        const date = w.created_at ? new Date(w.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+        return `
+          <div style="background: #fff; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); position: relative;">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;">
+              <div style="flex: 1; min-width: 0;">
+                <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1); flex-wrap: wrap;">
+                  <span style="font-weight: 700; font-size: 13.5px; color: var(--text);">${w.name}</span>
+                  <span style="display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: ${cfg.bg}; color: ${cfg.color}; border: 1px solid ${cfg.border};">
+                    <i data-lucide="${cfg.icon}" style="width: 10px; height: 10px;"></i>
+                    ${cfg.label}
+                  </span>
+                  <span style="font-size: 10.5px; color: var(--text-muted);">${date}</span>
+                </div>
+                <p style="margin: 0; font-size: 13px; color: var(--text); line-height: 1.5; font-style: italic;">"${w.comment}"</p>
+                ${w.likes_count > 0 ? `<div style="margin-top: var(--space-1); font-size: 11px; color: var(--text-muted);">❤️ ${w.likes_count} suka</div>` : ''}
+              </div>
+              <button onclick="deleteWish('${w.id}')" class="btn btn-danger btn-sm" title="Hapus ucapan" style="flex-shrink: 0;">
+                <i data-lucide="trash-2" style="width: 12px; height: 12px;"></i>
+              </button>
+            </div>
+          </div>`;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    async function deleteWish(id) {
+      if (!confirm('Hapus ucapan ini dari buku tamu?')) return;
+      wishesList = wishesList.filter(w => w.id !== id);
+      localStorage.setItem('wedding_wishes_data', JSON.stringify(wishesList));
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('wishes').delete().eq('id', id);
+        } catch (e) {}
+      }
+      renderWishesList();
+      updateWishesStats();
+      updateDashboardStats();
+      showToast('Ucapan berhasil dihapus', 'success');
+    }
+
+    function handleExportWishesCSV() {
+      if (wishesList.length === 0) {
+        showToast('Belum ada ucapan untuk diekspor', 'info');
+        return;
+      }
+      const headers = ['No', 'Nama', 'Ucapan', 'Status Kehadiran', 'Suka', 'Waktu'];
+      const rows = wishesList.map((w, i) => {
+        const date = w.created_at ? new Date(w.created_at).toLocaleString('id-ID') : '-';
+        const status = w.attendance_status || (w.attending === true ? 'hadir' : 'tidak_hadir');
+        return [
+          i + 1,
+          `"${(w.name || '').replace(/"/g, '""')}"`,
+          `"${(w.comment || '').replace(/"/g, '""')}"`,
+          status,
+          w.likes_count || 0,
+          `"${date}"`
+        ];
+      });
+      const csv = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const link = document.createElement('a');
+      link.href = encodeURI(csv);
+      link.download = `buku_tamu_${Date.now()}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('File CSV buku tamu berhasil diunduh', 'success');
+    }
+
     // OG Thumbnail Upload Handler
     async function handleOgThumbnailUpload(inputElem) {
       const file = inputElem.files?.[0];
@@ -3257,6 +3480,7 @@ Terima kasih.`;
       }
 
       loadGuests();
+      loadWishes();
       updateAll();
     });
   </script>
