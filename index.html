@@ -288,29 +288,18 @@
       margin-top: var(--space-1);
     }
 
-    /* Minimalist App-Icon Grid (Balanced 3-Column Grid) */
+    /* Minimalist App-Icon Grid (Balanced 4-Column Grid for 8 Modules) */
     .menu-icon-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: var(--space-4);
       width: 100%;
     }
 
-    /* Center 7th tile on 3-column desktop */
-    .menu-icon-tile:last-child:nth-child(3n + 1) {
-      grid-column: 2;
-    }
-
-    @media (max-width: 640px) {
+    @media (max-width: 960px) {
       .menu-icon-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: var(--space-3);
-      }
-      /* Center 7th tile on 2-column mobile */
-      .menu-icon-tile:last-child:nth-child(2n + 1) {
-        grid-column: 1 / span 2;
-        max-width: 320px;
-        margin: 0 auto;
       }
     }
 
@@ -1055,7 +1044,7 @@
           <div class="menu-hub-subtitle">Pilih modul di bawah untuk mulai mengelola data dan konten undangan.</div>
         </div>
 
-        <!-- 7 Minimalist App-Icon Tiles Grid (Balanced 3-Column Grid) -->
+        <!-- 8 Minimalist App-Icon Tiles Grid (Balanced 4-Column Grid) -->
         <div class="menu-icon-grid">
           
           <!-- Tile 1: Visibilitas Fitur -->
@@ -1091,7 +1080,18 @@
             </div>
           </div>
 
-          <!-- Tile 4: Kado & QRIS -->
+          <!-- Tile 4: Galeri Foto -->
+          <div class="menu-icon-tile" onclick="switchTab('tab-gallery')">
+            <div class="tile-icon-box">
+              <i data-lucide="image" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div>
+              <div class="tile-label">Galeri Foto</div>
+              <div class="tile-desc">Upload &amp; kelola album</div>
+            </div>
+          </div>
+
+          <!-- Tile 5: Kado & QRIS -->
           <div class="menu-icon-tile" onclick="switchTab('tab-gift')">
             <div class="tile-icon-box accent-gold">
               <i data-lucide="credit-card" style="width: 24px; height: 24px;"></i>
@@ -1102,7 +1102,7 @@
             </div>
           </div>
 
-          <!-- Tile 5: Cerita & Musik -->
+          <!-- Tile 6: Cerita & Musik -->
           <div class="menu-icon-tile" onclick="switchTab('tab-story')">
             <div class="tile-icon-box">
               <i data-lucide="music-2" style="width: 24px; height: 24px;"></i>
@@ -1113,7 +1113,7 @@
             </div>
           </div>
 
-          <!-- Tile 6: Tamu & WhatsApp -->
+          <!-- Tile 7: Tamu & WhatsApp -->
           <div class="menu-icon-tile" onclick="switchTab('tab-guests')">
             <div class="tile-icon-box accent-wa">
               <i data-lucide="users" style="width: 24px; height: 24px;"></i>
@@ -1124,7 +1124,7 @@
             </div>
           </div>
 
-          <!-- Tile 7: Supabase Cloud -->
+          <!-- Tile 8: Supabase Cloud -->
           <div class="menu-icon-tile" onclick="switchTab('tab-cloud')">
             <div class="tile-icon-box">
               <i data-lucide="database" style="width: 24px; height: 24px;"></i>
@@ -1145,8 +1145,9 @@
             <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
             <span>Kembali</span>
           </button>
-          <div class="progress-dots" title="Langkah 1 dari 7">
+          <div class="progress-dots" title="Langkah 1 dari 8">
             <span class="progress-dot active"></span>
+            <span class="progress-dot"></span>
             <span class="progress-dot"></span>
             <span class="progress-dot"></span>
             <span class="progress-dot"></span>
@@ -1339,9 +1340,10 @@
             <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
             <span>Kembali</span>
           </button>
-          <div class="progress-dots" title="Langkah 2 dari 7">
+          <div class="progress-dots" title="Langkah 2 dari 8">
             <span class="progress-dot"></span>
             <span class="progress-dot active"></span>
+            <span class="progress-dot"></span>
             <span class="progress-dot"></span>
             <span class="progress-dot"></span>
             <span class="progress-dot"></span>
@@ -1461,10 +1463,11 @@
             <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
             <span>Kembali</span>
           </button>
-          <div class="progress-dots" title="Langkah 3 dari 7">
+          <div class="progress-dots" title="Langkah 3 dari 8">
             <span class="progress-dot"></span>
             <span class="progress-dot"></span>
             <span class="progress-dot active"></span>
+            <span class="progress-dot"></span>
             <span class="progress-dot"></span>
             <span class="progress-dot"></span>
             <span class="progress-dot"></span>
@@ -1535,6 +1538,63 @@
           </div>
 
           <div class="panel-footer-nav">
+            <button onclick="switchTab('tab-gallery')" class="btn btn-primary">
+              <span>Lanjut ke Galeri Foto</span>
+              <i data-lucide="chevron-right" style="width: 15px; height: 15px;"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: GALERI FOTO & UPLOAD ALBUM -->
+      <div id="tab-gallery" class="tab-content" style="display: none;">
+        <div class="module-nav-bar">
+          <button onclick="switchTab('tab-menu-grid')" class="btn-back-hub">
+            <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
+            <span>Kembali</span>
+          </button>
+          <div class="progress-dots" title="Langkah 4 dari 8">
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot active"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+            <span class="progress-dot"></span>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-header-info">
+              <div class="panel-header-icon"><i data-lucide="image"></i></div>
+              <div>
+                <div class="panel-title font-serif">Galeri Foto Pernikahan</div>
+                <div class="panel-subtitle">Upload dan kelola foto album slider yang tampil di website undangan</div>
+              </div>
+            </div>
+            <button type="button" onclick="handleAddGallerySlot()" class="btn btn-light btn-sm" style="display: inline-flex; align-items: center; gap: var(--space-1);">
+              <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+              <span>Tambah Foto</span>
+            </button>
+          </div>
+
+          <div style="background: var(--bg); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-4); font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: var(--space-2);">
+            <i data-lucide="info" style="width: 16px; height: 16px; color: var(--primary); min-width: 16px;"></i>
+            <span>Format foto yang disarankan: JPG, PNG, atau WEBP rasio 4:3. Foto otomatis diunggah dan disimpan ke Supabase Storage (<code>wedding-media/gallery</code>).</span>
+          </div>
+
+          <!-- Dynamic Gallery Cards Grid -->
+          <div id="galleryCardsContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-4);">
+            <!-- Rendered dynamically by JS -->
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-4); flex-wrap: wrap; gap: var(--space-2);">
+            <button type="button" onclick="handleAddGallerySlot()" class="btn btn-light" style="display: inline-flex; align-items: center; gap: var(--space-2);">
+              <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+              <span>Tambah Slot Foto Baru</span>
+            </button>
             <button onclick="switchTab('tab-gift')" class="btn btn-primary">
               <span>Lanjut ke Kado &amp; QRIS</span>
               <i data-lucide="chevron-right" style="width: 15px; height: 15px;"></i>
@@ -1543,14 +1603,15 @@
         </div>
       </div>
 
-      <!-- TAB 4: KADO & QRIS -->
+      <!-- TAB 5: KADO & QRIS -->
       <div id="tab-gift" class="tab-content" style="display: none;">
         <div class="module-nav-bar">
           <button onclick="switchTab('tab-menu-grid')" class="btn-back-hub">
             <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
             <span>Kembali</span>
           </button>
-          <div class="progress-dots" title="Langkah 4 dari 7">
+          <div class="progress-dots" title="Langkah 5 dari 8">
+            <span class="progress-dot"></span>
             <span class="progress-dot"></span>
             <span class="progress-dot"></span>
             <span class="progress-dot"></span>
@@ -1608,14 +1669,15 @@
         </div>
       </div>
 
-      <!-- TAB 5: CERITA & GALERI -->
+      <!-- TAB 6: CERITA CINTA & MUSIK LATAR -->
       <div id="tab-story" class="tab-content" style="display: none;">
         <div class="module-nav-bar">
           <button onclick="switchTab('tab-menu-grid')" class="btn-back-hub">
             <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
             <span>Kembali</span>
           </button>
-          <div class="progress-dots" title="Langkah 5 dari 7">
+          <div class="progress-dots" title="Langkah 6 dari 8">
+            <span class="progress-dot"></span>
             <span class="progress-dot"></span>
             <span class="progress-dot"></span>
             <span class="progress-dot"></span>
@@ -1632,12 +1694,12 @@
               <div class="panel-header-icon"><i data-lucide="book-open"></i></div>
               <div>
                 <div class="panel-title font-serif">Kisah Cinta (Love Story)</div>
-                <div class="panel-subtitle">Tuliskan momen pertemuan pertama dan lamaran Anda</div>
+                <div class="panel-subtitle">Cerita perjalanan asmara mempelai</div>
               </div>
             </div>
           </div>
 
-          <div style="margin-bottom: var(--space-4); padding-bottom: var(--space-4); border-bottom: 1px dashed var(--border);">
+          <div style="margin-bottom: var(--space-4); padding-bottom: var(--space-4); border-bottom: 1px dashed var(--border-light);">
             <div class="form-group">
               <label>Cerita 1 - Judul</label>
               <input type="text" id="story1Title" value="Pertemuan Pertama" oninput="updateAll()">
@@ -1693,14 +1755,15 @@
         </div>
       </div>
 
-      <!-- TAB 6: PENERIMA UNDANGAN (WHATSAPP BLAST) -->
+      <!-- TAB 7: PENERIMA UNDANGAN (WHATSAPP BLAST) -->
       <div id="tab-guests" class="tab-content" style="display: none;">
         <div class="module-nav-bar">
           <button onclick="switchTab('tab-menu-grid')" class="btn-back-hub">
             <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
             <span>Kembali</span>
           </button>
-          <div class="progress-dots" title="Langkah 6 dari 7">
+          <div class="progress-dots" title="Langkah 7 dari 8">
+            <span class="progress-dot"></span>
             <span class="progress-dot"></span>
             <span class="progress-dot"></span>
             <span class="progress-dot"></span>
@@ -1873,14 +1936,15 @@ Terima kasih.</textarea>
         </div>
       </div>
 
-      <!-- TAB 7: KONEKSI SUPABASE -->
+      <!-- TAB 8: KONEKSI SUPABASE -->
       <div id="tab-cloud" class="tab-content" style="display: none;">
         <div class="module-nav-bar">
           <button onclick="switchTab('tab-menu-grid')" class="btn-back-hub">
             <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
             <span>Kembali</span>
           </button>
-          <div class="progress-dots" title="Langkah 7 dari 7">
+          <div class="progress-dots" title="Langkah 8 dari 8">
+            <span class="progress-dot"></span>
             <span class="progress-dot"></span>
             <span class="progress-dot"></span>
             <span class="progress-dot"></span>
@@ -1980,6 +2044,129 @@ Terima kasih.</textarea>
     let supabaseClient = null;
     let guestsList = [];
     let sqlSchemaCode = '';
+    let galleryList = [
+      { id: "1", src: "/assets/images/gallery-1.jpg", alt: "Foto Galeri 1" },
+      { id: "2", src: "/assets/images/gallery-2.jpg", alt: "Foto Galeri 2" },
+      { id: "3", src: "/assets/images/gallery-3.jpg", alt: "Foto Galeri 3" },
+      { id: "4", src: "/assets/images/gallery-4.jpg", alt: "Foto Galeri 4" }
+    ];
+
+    function renderGalleryManager() {
+      const container = document.getElementById('galleryCardsContainer');
+      if (!container) return;
+
+      if (!galleryList || galleryList.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: var(--space-5); background: var(--bg); border: 1px dashed var(--border); border-radius: var(--radius-md); color: var(--text-muted);">
+            Belum ada foto galeri. Klik tombol "Tambah Foto" di atas untuk menambahkan.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = galleryList.map((item, idx) => {
+        return `
+          <div style="background: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow-subtle);">
+            <div style="position: relative; width: 100%; aspect-ratio: 4/3; background: var(--bg); overflow: hidden;">
+              <img id="galleryPreview_${idx}" src="${item.src || '/assets/images/gallery-1.jpg'}" alt="${item.alt || 'Foto Galeri'}" style="width: 100%; height: 100%; object-fit: cover;">
+              <span style="position: absolute; top: 8px; left: 8px; background: rgba(42, 38, 34, 0.75); color: #FFFFFF; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; backdrop-filter: blur(4px);">
+                Foto #${idx + 1}
+              </span>
+              <button onclick="handleDeleteGalleryPhoto(${idx})" type="button" class="btn-clean" style="position: absolute; top: 8px; right: 8px; background: rgba(229, 62, 62, 0.85); color: #FFFFFF; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(4px);" title="Hapus foto">
+                <i data-lucide="trash-2" style="width: 13px; height: 13px;"></i>
+              </button>
+            </div>
+            <div style="padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); flex: 1;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label style="font-size: 11.5px; margin-bottom: 2px;">Keterangan Foto (Alt Text)</label>
+                <input type="text" value="${item.alt || ''}" placeholder="Contoh: Prewedding di Pantai" oninput="handleGalleryAltChange(${idx}, this.value)" style="font-size: 12px; padding: 4px 8px;">
+              </div>
+              <div>
+                <label style="font-size: 11.5px; margin-bottom: 4px;">Pilih / Ganti File Foto</label>
+                <input type="file" accept="image/*" onchange="handleGalleryPhotoUpload(${idx}, this)" style="font-size: 11px; width: 100%;">
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function handleGalleryAltChange(idx, val) {
+      if (galleryList[idx]) {
+        galleryList[idx].alt = val;
+        updateAll();
+      }
+    }
+
+    function handleAddGallerySlot() {
+      const newId = (galleryList.length + 1).toString();
+      galleryList.push({
+        id: newId,
+        src: '/assets/images/gallery-1.jpg',
+        alt: `Foto Galeri ${newId}`
+      });
+      renderGalleryManager();
+      updateAll();
+      showToast('Slot foto galeri baru ditambahkan', 'success');
+    }
+
+    function handleDeleteGalleryPhoto(idx) {
+      if (!confirm('Hapus foto ini dari galeri?')) return;
+      galleryList.splice(idx, 1);
+      renderGalleryManager();
+      updateAll();
+      showToast('Foto dihapus dari galeri', 'info');
+    }
+
+    async function handleGalleryPhotoUpload(idx, inputElem) {
+      const file = inputElem.files?.[0];
+      if (!file) return;
+
+      const oldUrl = galleryList[idx]?.src || '';
+
+      if (!supabaseClient) {
+        const localBlob = URL.createObjectURL(file);
+        if (galleryList[idx]) galleryList[idx].src = localBlob;
+        renderGalleryManager();
+        updateAll();
+        showToast('Foto galeri dipratinjau lokal', 'info');
+        return;
+      }
+
+      showToast('Mengunggah foto ke Galeri Cloud...', 'info');
+
+      try {
+        const bucket = 'wedding-media';
+        if (oldUrl && oldUrl.includes('/storage/v1/object/public/wedding-media/')) {
+          const parts = oldUrl.split('/storage/v1/object/public/wedding-media/');
+          if (parts.length > 1) {
+            await supabaseClient.storage.from(bucket).remove([parts[1]]);
+          }
+        }
+
+        const ext = file.name.split('.').pop() || 'jpg';
+        const newFilePath = `gallery/${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+
+        const { error: uploadErr } = await supabaseClient.storage.from(bucket).upload(newFilePath, file, { upsert: true });
+        if (uploadErr) {
+          showToast('Gagal unggah foto: ' + uploadErr.message, 'error');
+          return;
+        }
+
+        const { data: pubData } = supabaseClient.storage.from(bucket).getPublicUrl(newFilePath);
+        if (galleryList[idx]) {
+          galleryList[idx].src = pubData.publicUrl;
+        }
+        renderGalleryManager();
+        updateAll();
+        await saveAllToSupabase();
+        showToast('Foto galeri berhasil diunggah & disimpan!', 'success');
+      } catch (err) {
+        showToast('Error unggah: ' + err.message, 'error');
+      }
+    }
 
     const DEFAULT_SUPABASE_URL = 'https://mxqhvfopceusvbmewkwn.supabase.co';
     const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14cWh2Zm9wY2V1c3ZibWV3a3duIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxOTQyNzIsImV4cCI6MjEwMzc3MDI3Mn0.hE6npPiRrj4pQOmKHq9ITDJwwecTkmnMMK1a2akoJK0';
@@ -2191,6 +2378,7 @@ Terima kasih.</textarea>
           showIGStoryGenerator: document.getElementById('flagIGStory').checked,
           showMusic: document.getElementById('flagMusic').checked
         },
+        galleryImages: galleryList,
         waTemplate: document.getElementById('waMessageTemplate')?.value || DEFAULT_WA_TEMPLATE
       };
     }
@@ -2224,6 +2412,7 @@ Terima kasih.</textarea>
           schedules: data.schedules,
           love_stories: data.loveStories,
           bank_accounts: data.bankAccounts,
+          gallery_images: data.galleryImages,
           feature_flags: data.featureFlags,
           invitation_url: data.invitationUrl,
           wa_template: data.waTemplate,
@@ -2802,11 +2991,18 @@ Terima kasih.`;
         document.getElementById('flagIGStory').checked = (flags.showIGStoryGenerator !== false && flags.showIGStory !== false);
         document.getElementById('flagMusic').checked = flags.showMusic !== false;
       }
+
+      const gal = d.galleryImages || d.gallery_images;
+      if (gal && Array.isArray(gal) && gal.length > 0) {
+        galleryList = gal;
+      }
+      renderGalleryManager();
     }
 
     // Load initial settings
     window.addEventListener('DOMContentLoaded', async () => {
       checkStudioAuth();
+      renderGalleryManager();
       lucide.createIcons();
 
       // Read SQL Schema for display
