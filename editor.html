@@ -2793,6 +2793,8 @@ Terima kasih.`;
         const waMsg = generateWaMessage(g.name, guestLink);
         const waUrl = `https://api.whatsapp.com/send?phone=${formatPhoneWA(g.phone)}&text=${encodeURIComponent(waMsg)}`;
         const isSent = !!g.is_sent;
+        // Encode waUrl as base64 to safely store in data attribute (avoids quote/ampersand conflicts)
+        const waUrlB64 = btoa(unescape(encodeURIComponent(waUrl)));
 
         return `
           <tr style="${isSent ? 'background: #FAFDFB;' : ''}">
@@ -2807,7 +2809,13 @@ Terima kasih.`;
             <td><code>${g.phone}</code></td>
             <td><a href="${guestLink}" target="_blank" style="color: var(--primary); text-decoration: none; font-size: 11.5px;">${guestLink}</a></td>
             <td style="text-align: right; white-space: nowrap;">
-              <button onclick="handleSendWaClick('${g.id}', '${waUrl}')" class="btn btn-wa btn-sm" style="margin-right: var(--space-1);" title="Kirim WhatsApp">
+              <button
+                class="btn btn-wa btn-sm btn-send-wa"
+                data-guest-id="${g.id}"
+                data-wa-url="${waUrlB64}"
+                style="margin-right: var(--space-1);"
+                title="Kirim Undangan via WhatsApp"
+              >
                 <i data-lucide="send" style="width: 12px; height: 12px;"></i>
                 <span>Kirim</span>
               </button>
@@ -2821,6 +2829,16 @@ Terima kasih.`;
           </tr>
         `;
       }).join('');
+
+      // Attach event listeners to WA send buttons after rendering
+      document.querySelectorAll('.btn-send-wa').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const guestId = this.dataset.guestId;
+          const waUrl = decodeURIComponent(escape(atob(this.dataset.waUrl)));
+          handleSendWaClick(guestId, waUrl);
+        });
+      });
+
       lucide.createIcons();
     }
 
