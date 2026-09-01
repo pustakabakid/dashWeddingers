@@ -1121,11 +1121,12 @@
 
     /* Systematic Column Widths */
     .guest-table th:nth-child(1), .guest-table td:nth-child(1) { width: 44px; text-align: center; }
-    .guest-table th:nth-child(2), .guest-table td:nth-child(2) { width: 100px; }
-    .guest-table th:nth-child(3), .guest-table td:nth-child(3) { min-width: 120px; }
+    .guest-table th:nth-child(2), .guest-table td:nth-child(2) { width: 110px; }
+    .guest-table th:nth-child(3), .guest-table td:nth-child(3) { min-width: 130px; }
     .guest-table th:nth-child(4), .guest-table td:nth-child(4) { width: 130px; }
-    .guest-table th:nth-child(5), .guest-table td:nth-child(5) { min-width: 170px; }
-    .guest-table th:nth-child(6), .guest-table td:nth-child(6) { width: 140px; text-align: right; }
+    .guest-table th:nth-child(5), .guest-table td:nth-child(5) { min-width: 180px; }
+    .guest-table th:nth-child(6), .guest-table td:nth-child(6) { min-width: 160px; }
+    .guest-table th:nth-child(7), .guest-table td:nth-child(7) { width: 140px; text-align: right; }
 
     /* Floating Bottom Action Bar */
     .floating-bottom-bar {
@@ -3291,34 +3292,6 @@ Terima kasih.`;
       }
     }
 
-    // Export Guests to CSV
-    function handleExportCSV() {
-      if (guestsList.length === 0) {
-        showToast('Daftar tamu masih kosong', 'info');
-        return;
-      }
-
-      const baseUrl = getBaseUrl();
-      const headers = ['No', 'Nama Tamu', 'Nomor WhatsApp', 'Status Kirim', 'Tautan Undangan'];
-      const rows = guestsList.map((g, idx) => [
-        idx + 1,
-        `"${g.name.replace(/"/g, '""')}"`,
-        `"${g.phone}"`,
-        g.is_sent ? 'Terkirim' : 'Belum',
-        `"${baseUrl}/?to=${encodeURIComponent(g.name)}"`
-      ]);
-
-      const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement('a');
-      link.setAttribute('href', encodedUri);
-      link.setAttribute('download', `daftar_tamu_undangan_${Date.now()}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      showToast('File CSV berhasil diunduh', 'success');
-    }
-
     // Import Guests from CSV
     function handleImportCSV(event) {
       const file = event.target.files?.[0];
@@ -3377,135 +3350,6 @@ Terima kasih.`;
       };
 
       reader.readAsText(file);
-    }
-
-    // Update Dashboard Analytics
-    async function updateDashboardStats() {
-      const totalGuests = guestsList.length;
-      const sentGuests = guestsList.filter(g => g.is_sent).length;
-      
-      document.getElementById('statTotalGuests').innerText = totalGuests;
-      document.getElementById('statSentGuests').innerText = sentGuests;
-      document.getElementById('countGuestAll').innerText = totalGuests;
-      document.getElementById('countGuestPending').innerText = totalGuests - sentGuests;
-      document.getElementById('countGuestSent').innerText = sentGuests;
-
-      if (supabaseClient) {
-        try {
-          const { data: wishesData } = await supabaseClient.from('wishes').select('attending, attendance_status');
-          if (wishesData) {
-            document.getElementById('statTotalWishes').innerText = wishesData.length;
-            const attending = wishesData.filter(w => w.attendance_status === 'hadir' || w.attending).length;
-            document.getElementById('statAttendingCount').innerText = attending;
-          }
-        } catch (e) {}
-      } else {
-        const localWishes = localStorage.getItem('wedding_guest_wishes');
-        if (localWishes) {
-          try {
-            const list = JSON.parse(localWishes);
-            document.getElementById('statTotalWishes').innerText = list.length;
-            const attending = list.filter(w => w.attendance_status === 'hadir' || w.attending).length;
-            document.getElementById('statAttendingCount').innerText = attending;
-          } catch (e) {}
-        }
-      }
-    }
-
-    // Guest & WhatsApp Management
-    async function loadGuests() {
-      if (supabaseClient) {
-        try {
-          const { data } = await supabaseClient.from('guests').select('*').order('created_at', { ascending: false });
-          if (data && data.length > 0) {
-            guestsList = data;
-          } else {
-            const local = localStorage.getItem('wedding_guests_data');
-            if (local) guestsList = JSON.parse(local);
-          }
-        } catch (e) {
-          const local = localStorage.getItem('wedding_guests_data');
-          if (local) guestsList = JSON.parse(local);
-        }
-      } else {
-        const local = localStorage.getItem('wedding_guests_data');
-        if (local) guestsList = JSON.parse(local);
-      }
-      renderGuestTable();
-      updateDashboardStats();
-    }
-
-    function renderGuestTable() {
-      const tbody = document.getElementById('guestTableBody');
-      if (guestsList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: var(--space-5);">Belum ada daftar tamu. Tambahkan tamu di atas.</td></tr>`;
-        return;
-      }
-
-      const baseUrl = getBaseUrl();
-      const filtered = guestsList.filter(g => {
-        if (guestFilter === 'sent') return g.is_sent;
-        if (guestFilter === 'pending') return !g.is_sent;
-        return true;
-      });
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: var(--space-5);">Tidak ada tamu pada filter ini.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = filtered.map((g, idx) => {
-        const guestLink = `${baseUrl}/?to=${encodeURIComponent(g.name)}`;
-        const waMsg = generateWaMessage(g.name, guestLink);
-        const waUrl = `https://api.whatsapp.com/send?phone=${formatPhoneWA(g.phone)}&text=${encodeURIComponent(waMsg)}`;
-        const isSent = !!g.is_sent;
-        // Encode waUrl as base64 to safely store in data attribute (avoids quote/ampersand conflicts)
-        const waUrlB64 = btoa(unescape(encodeURIComponent(waUrl)));
-
-        return `
-          <tr style="${isSent ? 'background: #FAFDFB;' : ''}">
-            <td>${idx + 1}</td>
-            <td>
-              <button onclick="toggleGuestSentStatus('${g.id}', ${!isSent})" class="btn-clean" style="display: inline-flex; align-items: center; gap: var(--space-1); font-size: 11px; font-weight: 700; cursor: pointer; padding: 2px 7px; border-radius: 4px; background: ${isSent ? 'var(--wa-light)' : 'var(--bg)'}; color: ${isSent ? 'var(--wa-dark)' : 'var(--text-muted)'};">
-                <i data-lucide="${isSent ? 'check' : 'clock'}" style="width: 12px; height: 12px;"></i>
-                <span>${isSent ? 'Terkirim' : 'Belum'}</span>
-              </button>
-            </td>
-            <td><strong>${g.name}</strong></td>
-            <td><code>${g.phone}</code></td>
-            <td><a href="${guestLink}" target="_blank" style="color: var(--primary); text-decoration: none; font-size: 11.5px;">${guestLink}</a></td>
-            <td style="text-align: right; white-space: nowrap;">
-              <button
-                class="btn btn-wa btn-sm btn-send-wa"
-                data-guest-id="${g.id}"
-                data-wa-url="${waUrlB64}"
-                style="margin-right: var(--space-1);"
-                title="Kirim Undangan via WhatsApp"
-              >
-                <i data-lucide="send" style="width: 12px; height: 12px;"></i>
-                <span>Kirim</span>
-              </button>
-              <button onclick="copyToClipboard('${guestLink}')" class="btn btn-light btn-sm" title="Salin tautan" style="margin-right: var(--space-1);">
-                <i data-lucide="copy" style="width: 12px; height: 12px;"></i>
-              </button>
-              <button onclick="handleDeleteGuest('${g.id}')" class="btn btn-danger btn-sm" title="Hapus tamu">
-                <i data-lucide="trash-2" style="width: 12px; height: 12px;"></i>
-              </button>
-            </td>
-          </tr>
-        `;
-      }).join('');
-
-      // Attach event listeners to WA send buttons after rendering
-      document.querySelectorAll('.btn-send-wa').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const guestId = this.dataset.guestId;
-          const waUrl = decodeURIComponent(escape(atob(this.dataset.waUrl)));
-          handleSendWaClick(guestId, waUrl);
-        });
-      });
-
-      lucide.createIcons();
     }
 
     function formatPhoneWA(phone) {
