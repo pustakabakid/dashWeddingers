@@ -747,6 +747,72 @@
       color: var(--text);
     }
 
+    /* Theme Selector Styles */
+    .theme-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-4);
+      margin-top: var(--space-4);
+    }
+    .theme-card-option {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .theme-card-option:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+    .theme-card-option.active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+    .theme-preview-box {
+      height: 120px;
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-3);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+    }
+    .theme-preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .theme-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+    }
+    .theme-color-dots {
+      display: flex;
+      gap: 6px;
+      margin: 8px 0;
+    }
+    .theme-color-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
     /* Form Section Box */
     .panel-card {
       background: var(--card-bg);
@@ -1452,6 +1518,34 @@
       <i data-lucide="music-2" style="width: 14px; height: 14px;"></i>
       <span>Cerita &amp; Musik</span>
     </div>
+    <div class="mobile-tab-item" data-tab="tab-themes" onclick="switchTab('tab-themes')">
+      <i data-lucide="palette" style="width: 14px; height: 14px;"></i>
+      <span>Tema</span>
+    </div>
+    <div class="mobile-tab-item" data-tab="tab-features" onclick="switchTab('tab-features')">
+      <i data-lucide="sliders" style="width: 14px; height: 14px;"></i>
+      <span>Fitur</span>
+    </div>
+    <div class="mobile-tab-item" data-tab="tab-couple" onclick="switchTab('tab-couple')">
+      <i data-lucide="heart" style="width: 14px; height: 14px;"></i>
+      <span>Mempelai</span>
+    </div>
+    <div class="mobile-tab-item" data-tab="tab-schedule" onclick="switchTab('tab-schedule')">
+      <i data-lucide="calendar-days" style="width: 14px; height: 14px;"></i>
+      <span>Acara</span>
+    </div>
+    <div class="mobile-tab-item" data-tab="tab-gallery" onclick="switchTab('tab-gallery')">
+      <i data-lucide="image" style="width: 14px; height: 14px;"></i>
+      <span>Galeri</span>
+    </div>
+    <div class="mobile-tab-item" data-tab="tab-gift" onclick="switchTab('tab-gift')">
+      <i data-lucide="credit-card" style="width: 14px; height: 14px;"></i>
+      <span>Kado</span>
+    </div>
+    <div class="mobile-tab-item" data-tab="tab-story" onclick="switchTab('tab-story')">
+      <i data-lucide="music-2" style="width: 14px; height: 14px;"></i>
+      <span>Cerita &amp; Musik</span>
+    </div>
     <div class="mobile-tab-item" data-tab="tab-guests" onclick="switchTab('tab-guests')">
       <i data-lucide="users" style="width: 14px; height: 14px;"></i>
       <span>Tamu</span>
@@ -1473,6 +1567,10 @@
         <div class="side-nav-item active" data-tab="tab-menu-grid" onclick="switchTab('tab-menu-grid')">
           <div class="side-nav-icon"><i data-lucide="layout-grid" style="width: 15px; height: 15px;"></i></div>
           <span>Beranda / Hub</span>
+        </div>
+        <div class="side-nav-item" data-tab="tab-themes" onclick="switchTab('tab-themes')">
+          <div class="side-nav-icon"><i data-lucide="palette" style="width: 15px; height: 15px;"></i></div>
+          <span>Tema Undangan</span>
         </div>
       </div>
 
@@ -1769,6 +1867,17 @@
               </div>
             </div>
 
+            <!-- Tile 0: Tema Undangan -->
+            <div class="menu-icon-tile" onclick="switchTab('tab-themes')">
+              <div class="tile-icon-box" style="background: #F3E8FF; color: #7E22CE;">
+                <i data-lucide="palette" style="width: 24px; height: 24px;"></i>
+              </div>
+              <div>
+                <div class="tile-label">Tema Undangan</div>
+                <div class="tile-desc">4 Pilihan Desain &amp; Gaya</div>
+              </div>
+            </div>
+
             <!-- Tile 7: Tamu & WhatsApp -->
             <div class="menu-icon-tile" onclick="switchTab('tab-guests')">
               <div class="tile-icon-box accent-wa">
@@ -1794,6 +1903,157 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- TAB 0: PILIHAN TEMA UNDANGAN (MULTI-THEME ENGINE) -->
+      <div id="tab-themes" class="tab-content" style="display: none;">
+        <div class="module-nav-bar">
+          <button onclick="switchTab('tab-menu-grid')" class="btn-back-hub" title="Kembali ke Menu Utama">
+            <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
+            <span>Kembali</span>
+          </button>
+          <div class="breadcrumb-nav">
+            <span class="breadcrumb-link" onclick="switchTab('tab-menu-grid')">Menu Utama</span>
+            <i data-lucide="chevron-right" class="breadcrumb-sep"></i>
+            <span class="breadcrumb-current">Pilihan Tema Undangan</span>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-header-info">
+              <div class="panel-header-icon" style="background: #F3E8FF; color: #7E22CE;"><i data-lucide="palette"></i></div>
+              <div>
+                <div class="panel-title font-serif">Pilihan Desain &amp; Tema Undangan</div>
+                <div class="panel-subtitle">Ganti nuansa visual, warna, font, dan ornamen kartu secara instan tanpa mengubah data undangan Anda</div>
+              </div>
+            </div>
+            <span class="badge" id="themeActiveIndicator" style="background: var(--primary-light); color: var(--primary); font-weight: 700;">Classic Emerald</span>
+          </div>
+
+          <div style="margin-bottom: var(--space-4); font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+            💡 <strong>Multi-Tema Fleksibel:</strong> Anda dapat memilih tema yang berbeda untuk masing-masing pihak (Mempelai Wanita / Mempelai Pria) atau memilih tema yang sama. Pilihan tema tersimpan otomatis ke Cloud.
+          </div>
+
+          <!-- Hidden Input for Current Theme ID -->
+          <input type="hidden" id="selectedThemeId" value="classic-card">
+
+          <!-- 4 Interactive Theme Selection Cards -->
+          <div class="theme-cards-grid">
+            
+            <!-- Theme 1: Classic Emerald Botanical -->
+            <div class="theme-card-option active" id="themeCard_classic-card" onclick="selectTheme('classic-card')">
+              <div>
+                <div class="theme-preview-box" style="background: linear-gradient(135deg, #F4F7FB 0%, #E7EEF6 100%);">
+                  <div style="text-align: center; padding: 12px;">
+                    <div style="font-family: 'Philosopher', serif; font-size: 20px; font-weight: 700; color: #2F5D62;">Via &amp; Andra</div>
+                    <div style="font-size: 11px; color: #4B6B99; margin-top: 4px;">🌿 Botanical Frame &amp; Soft Emerald</div>
+                  </div>
+                </div>
+                <span class="theme-badge" style="background: #E8F1F2; color: #2F5D62;">Default / Klasik</span>
+                <div style="font-size: 16px; font-weight: 700; color: var(--text);">Classic Emerald Botanical</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.4;">
+                  Desain kartu elegan dengan bingkai dedaunan botani, aksen warna hijau emerald lembut, dan floating dock navigation.
+                </div>
+                <div class="theme-color-dots">
+                  <div class="theme-color-dot" style="background: #2F5D62;" title="Emerald"></div>
+                  <div class="theme-color-dot" style="background: #4B6B99;" title="Slate Blue"></div>
+                  <div class="theme-color-dot" style="background: #E8F1F2;" title="Soft Sage"></div>
+                </div>
+              </div>
+              <div style="margin-top: var(--space-4); display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 12px; font-weight: 600; color: var(--primary);" id="themeStatus_classic-card">✓ Sedang Aktif</span>
+                <button type="button" class="btn btn-primary btn-sm" onclick="selectTheme('classic-card'); event.stopPropagation();">Pilih</button>
+              </div>
+            </div>
+
+            <!-- Theme 2: Timeless Snapshot -->
+            <div class="theme-card-option" id="themeCard_timeless-snapshot" onclick="selectTheme('timeless-snapshot')">
+              <div>
+                <div class="theme-preview-box" style="background: linear-gradient(135deg, #F8F4E8 0%, #EFE8D6 100%);">
+                  <div style="text-align: center; padding: 12px;">
+                    <div style="font-family: 'Philosopher', serif; font-size: 20px; font-weight: 700; color: #664d38;">Via &amp; Andra</div>
+                    <div style="font-size: 11px; color: #8C6D53; margin-top: 4px;">📸 Vintage Polaroid &amp; Warm Tone</div>
+                  </div>
+                </div>
+                <span class="theme-badge" style="background: #F4ECE1; color: #8C6D53;">Retro &amp; Earthy</span>
+                <div style="font-size: 16px; font-weight: 700; color: var(--text);">Timeless Snapshot</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.4;">
+                  Nuansa kertas hangat vintage dengan bingkai foto snapshot/polaroid estetik, tipografi serif klasik, dan efek film retro.
+                </div>
+                <div class="theme-color-dots">
+                  <div class="theme-color-dot" style="background: #8C6D53;" title="Earthy Brown"></div>
+                  <div class="theme-color-dot" style="background: #C2A68D;" title="Warm Sepia"></div>
+                  <div class="theme-color-dot" style="background: #F8F4E8;" title="Parchment"></div>
+                </div>
+              </div>
+              <div style="margin-top: var(--space-4); display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);" id="themeStatus_timeless-snapshot">Gunakan Tema</span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="selectTheme('timeless-snapshot'); event.stopPropagation();">Pilih</button>
+              </div>
+            </div>
+
+            <!-- Theme 3: Elegant Light -->
+            <div class="theme-card-option" id="themeCard_elegant-light" onclick="selectTheme('elegant-light')">
+              <div>
+                <div class="theme-preview-box" style="background: linear-gradient(135deg, #FDFBF7 0%, #F5EFE6 100%);">
+                  <div style="text-align: center; padding: 12px;">
+                    <div style="font-family: 'Great Vibes', cursive; font-size: 24px; color: #B89047;">Via &amp; Andra</div>
+                    <div style="font-size: 11px; color: #8B7355; margin-top: 2px;">👑 Royal Luxury &amp; Gold Hairline</div>
+                  </div>
+                </div>
+                <span class="theme-badge" style="background: #FBF6EB; color: #B89047;">Luxury &amp; Royal</span>
+                <div style="font-size: 16px; font-weight: 700; color: var(--text);">Elegant Light</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.4;">
+                  Kemewahan aristokrat dengan palet ivory alabaster, aksen emas berkilau (champagne gold), garis border emas halus, dan tipografi script memukau.
+                </div>
+                <div class="theme-color-dots">
+                  <div class="theme-color-dot" style="background: #B89047;" title="Gold"></div>
+                  <div class="theme-color-dot" style="background: #D4AF37;" title="Champagne"></div>
+                  <div class="theme-color-dot" style="background: #FDFBF7;" title="Ivory"></div>
+                </div>
+              </div>
+              <div style="margin-top: var(--space-4); display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);" id="themeStatus_elegant-light">Gunakan Tema</span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="selectTheme('elegant-light'); event.stopPropagation();">Pilih</button>
+              </div>
+            </div>
+
+            <!-- Theme 4: Photovit Magazine -->
+            <div class="theme-card-option" id="themeCard_photovit" onclick="selectTheme('photovit')">
+              <div>
+                <div class="theme-preview-box" style="background: linear-gradient(135deg, #FAF6F4 0%, #F4EAE6 100%);">
+                  <div style="text-align: center; padding: 12px;">
+                    <div style="font-family: 'Great Vibes', cursive; font-size: 24px; color: #D97768;">Via &amp; Andra</div>
+                    <div style="font-size: 11px; color: #B65749; margin-top: 2px;">✨ Photo Magazine &amp; Romantic Rose</div>
+                  </div>
+                </div>
+                <span class="theme-badge" style="background: #FDF1EF; color: #D97768;">Modern &amp; Chic</span>
+                <div style="font-size: 16px; font-weight: 700; color: var(--text);">Photovit Magazine</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.4;">
+                  Tata letak modern ala majalah pernikahan dengan framing foto menonjol, tipografi romantis berkarakter, dan aksen charcoal blush.
+                </div>
+                <div class="theme-color-dots">
+                  <div class="theme-color-dot" style="background: #D97768;" title="Blush Rose"></div>
+                  <div class="theme-color-dot" style="background: #E88D7D;" title="Coral"></div>
+                  <div class="theme-color-dot" style="background: #3D3B40;" title="Charcoal"></div>
+                </div>
+              </div>
+              <div style="margin-top: var(--space-4); display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);" id="themeStatus_photovit">Gunakan Tema</span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="selectTheme('photovit'); event.stopPropagation();">Pilih</button>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="panel-footer-nav" style="margin-top: var(--space-6);">
+            <button onclick="saveAllToSupabase()" class="btn btn-primary">
+              <i data-lucide="save"></i>
+              <span>Simpan Tema ke Cloud</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- TAB 1: KONTROL VISIBILITAS FITUR -->
@@ -3444,6 +3704,49 @@ Terima kasih.</textarea>
       renderGuestTable();
     }
 
+    function selectTheme(themeId, shouldSave = true) {
+      const validThemes = ['classic-card', 'timeless-snapshot', 'elegant-light', 'photovit'];
+      const activeTheme = validThemes.includes(themeId) ? themeId : 'classic-card';
+      
+      const hiddenInput = document.getElementById('selectedThemeId');
+      if (hiddenInput) hiddenInput.value = activeTheme;
+
+      const themeNames = {
+        'classic-card': 'Classic Emerald',
+        'timeless-snapshot': 'Timeless Snapshot',
+        'elegant-light': 'Elegant Light',
+        'photovit': 'Photovit Magazine'
+      };
+
+      const indicator = document.getElementById('themeActiveIndicator');
+      if (indicator) indicator.innerText = themeNames[activeTheme] || activeTheme;
+
+      validThemes.forEach(t => {
+        const card = document.getElementById(`themeCard_${t}`);
+        const status = document.getElementById(`themeStatus_${t}`);
+        if (card) {
+          if (t === activeTheme) {
+            card.classList.add('active');
+            if (status) {
+              status.innerText = '✓ Sedang Aktif';
+              status.style.color = 'var(--primary)';
+            }
+          } else {
+            card.classList.remove('active');
+            if (status) {
+              status.innerText = 'Gunakan Tema';
+              status.style.color = 'var(--text-muted)';
+            }
+          }
+        }
+      });
+
+      if (shouldSave) {
+        updateAll();
+        showToast(`Tema ${themeNames[activeTheme]} dipilih! Klik "Simpan Tema ke Cloud" untuk menerapkan ke website tamu.`, 'info');
+      }
+    }
+
     function getFormValues() {
       const groomIgUsername = document.getElementById('groomIg').value.trim().replace('@', '');
       const brideIgUsername = document.getElementById('brideIg').value.trim().replace('@', '');
@@ -3451,11 +3754,13 @@ Terima kasih.</textarea>
       const brideIgUrl = (document.getElementById('brideIgUrl')?.value.trim()) || ('https://instagram.com/' + brideIgUsername);
       const invSlug = currentInvitationContext === 'groom' ? 'andra' : 'via';
       const invName = currentInvitationContext === 'groom' ? 'Undangan Mempelai Pria (Andra)' : 'Undangan Mempelai Wanita (Via)';
+      const selectedTheme = document.getElementById('selectedThemeId')?.value || 'classic-card';
 
       return {
         id: currentInvitationContext,
         wedding_id: 'default',
         invitation_type: currentInvitationContext,
+        theme_id: selectedTheme,
         name: invName,
         slug: invSlug,
         invitationUrl: document.getElementById('invitationBaseUrl')?.value.trim() || '',
@@ -3589,6 +3894,7 @@ Terima kasih.</textarea>
           id: ctx,
           wedding_id: 'default',
           invitation_type: ctx,
+          theme_id: data.theme_id || 'classic-card',
           name: data.name,
           slug: data.slug,
           couple: data.couple,
@@ -4407,6 +4713,11 @@ Terima kasih.`;
 
     function populateForm(d) {
       if (!d) return;
+      
+      // Populate Theme
+      const activeTheme = d.theme_id || d.themeId || 'classic-card';
+      selectTheme(activeTheme, false);
+
       const invUrl = d.invitationUrl || d.invitation_url || localStorage.getItem('wedding_base_url') || '';
       if (document.getElementById('invitationBaseUrl')) {
         document.getElementById('invitationBaseUrl').value = invUrl;

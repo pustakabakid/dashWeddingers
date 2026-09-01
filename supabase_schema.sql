@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS public.invitation_settings (
     id TEXT PRIMARY KEY DEFAULT 'default',
     wedding_id TEXT DEFAULT 'default',
     invitation_type TEXT DEFAULT 'bride',
+    theme_id TEXT DEFAULT 'classic-card',
     name TEXT DEFAULT 'Undangan Mempelai Wanita',
     slug TEXT DEFAULT 'via',
     couple JSONB NOT NULL DEFAULT '{
@@ -137,6 +138,7 @@ CREATE TABLE IF NOT EXISTS public.invitation_settings (
 -- Migrasi skema penambahan kolom baru jika tabel sudah ada
 ALTER TABLE public.invitation_settings ADD COLUMN IF NOT EXISTS wedding_id TEXT DEFAULT 'default';
 ALTER TABLE public.invitation_settings ADD COLUMN IF NOT EXISTS invitation_type TEXT DEFAULT 'bride';
+ALTER TABLE public.invitation_settings ADD COLUMN IF NOT EXISTS theme_id TEXT DEFAULT 'classic-card';
 ALTER TABLE public.invitation_settings ADD COLUMN IF NOT EXISTS name TEXT DEFAULT 'Undangan Mempelai Wanita';
 ALTER TABLE public.invitation_settings ADD COLUMN IF NOT EXISTS slug TEXT DEFAULT 'via';
 ALTER TABLE public.invitation_settings ADD COLUMN IF NOT EXISTS invitation_url TEXT;
