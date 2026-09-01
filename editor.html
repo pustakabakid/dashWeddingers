@@ -1381,10 +1381,18 @@
           </div>
 
           <div class="form-group">
-            <label>Username Instagram</label>
+            <label>Username Instagram (tanpa @)</label>
             <div class="input-wrapper has-icon">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="input-icon"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-              <input type="text" id="brideIg" value="wevitation" oninput="updateAll()">
+              <input type="text" id="brideIg" value="wevitation" placeholder="username_tanpa_@" oninput="updateAll()">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>URL Profil Instagram (opsional)</label>
+            <div class="input-wrapper has-icon">
+              <i data-lucide="external-link" class="input-icon" style="width: 15px; height: 15px;"></i>
+              <input type="url" id="brideIgUrl" value="https://instagram.com/wevitation" placeholder="https://instagram.com/username" oninput="updateAll()">
             </div>
           </div>
           <input type="hidden" id="brideAvatar" value="/assets/images/bride-eviana.jpg">
@@ -1429,10 +1437,18 @@
           </div>
 
           <div class="form-group">
-            <label>Username Instagram</label>
+            <label>Username Instagram (tanpa @)</label>
             <div class="input-wrapper has-icon">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="input-icon"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-              <input type="text" id="groomIg" value="wevitation" oninput="updateAll()">
+              <input type="text" id="groomIg" value="wevitation" placeholder="username_tanpa_@" oninput="updateAll()">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>URL Profil Instagram (opsional)</label>
+            <div class="input-wrapper has-icon">
+              <i data-lucide="external-link" class="input-icon" style="width: 15px; height: 15px;"></i>
+              <input type="url" id="groomIgUrl" value="https://instagram.com/wevitation" placeholder="https://instagram.com/username" oninput="updateAll()">
             </div>
           </div>
           <input type="hidden" id="groomAvatar" value="/assets/images/groom-andra.jpg">
@@ -1535,6 +1551,15 @@
               <i data-lucide="map-pin" class="input-icon" style="width: 15px; height: 15px;"></i>
               <input type="url" id="mapsUrl" value="https://maps.app.goo.gl/vwB5zqwGS2P4cPaY9" oninput="updateAll()">
             </div>
+          </div>
+
+          <div class="form-group">
+            <label>Tautan Live Stream / YouTube</label>
+            <div class="input-wrapper has-icon">
+              <i data-lucide="video" class="input-icon" style="width: 15px; height: 15px;"></i>
+              <input type="url" id="liveStreamUrl" value="https://youtube.com/wevitation" placeholder="https://youtube.com/live/..." oninput="updateAll()">
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Tautan ini tampil di tombol Live Stream pada jadwal acara undangan.</div>
           </div>
 
           <div class="panel-footer-nav">
@@ -1708,6 +1733,15 @@
               <label>Cerita 1 - Isi</label>
               <textarea id="story1Desc" rows="3" oninput="updateAll()">Pertama kali kami bertemu saat menjadi anggota sebuah organisasi di kampus. Kebetulan kami berada di divisi yang sama, yang menjadikan kami lebih akrab. Dari diskusi yang serius hingga tawa lepas karena lelucon yang garing, momen-momen itu perlahan menumbuhkan benih cinta yang tak terduga di antara kami.</textarea>
             </div>
+            <input type="hidden" id="story1Image" value="/assets/images/story-first-meet.jpg">
+            <div class="upload-zone">
+              <img id="story1ImagePreview" src="/assets/images/story-first-meet.jpg" class="upload-preview-thumb" alt="Preview Cerita 1">
+              <div style="flex: 1; width: 100%;">
+                <div style="font-size: 12.5px; font-weight: 700;">Foto Cerita 1 (Opsional)</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: var(--space-1);">Ganti foto ilustrasi kisah cerita pertama.</div>
+                <input type="file" accept="image/*" style="font-size: 12px; width: 100%;" onchange="handleMediaUpload(this, 'stories', 'story1Image', 'story1ImagePreview')">
+              </div>
+            </div>
           </div>
 
           <div>
@@ -1718,6 +1752,15 @@
             <div class="form-group">
               <label>Cerita 2 - Isi</label>
               <textarea id="story2Desc" rows="3" oninput="updateAll()">Walaupun kami sempat menjalani hubungan jarak jauh selama 2 tahun terakhir, namun hal itu bukan menjadi halangan untuk hubungan kami. Justru kami menjadi semakin yakin satu sama lain. Oleh karena itu kami memutuskan untuk menjalin hubungan lebih serius.</textarea>
+            </div>
+            <input type="hidden" id="story2Image" value="/assets/images/story-proposal.jpg">
+            <div class="upload-zone">
+              <img id="story2ImagePreview" src="/assets/images/story-proposal.jpg" class="upload-preview-thumb" alt="Preview Cerita 2">
+              <div style="flex: 1; width: 100%;">
+                <div style="font-size: 12.5px; font-weight: 700;">Foto Cerita 2 (Opsional)</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: var(--space-1);">Ganti foto ilustrasi kisah cerita kedua.</div>
+                <input type="file" accept="image/*" style="font-size: 12px; width: 100%;" onchange="handleMediaUpload(this, 'stories', 'story2Image', 'story2ImagePreview')">
+              </div>
             </div>
           </div>
         </div>
@@ -2292,6 +2335,10 @@ Terima kasih.</textarea>
     }
 
     function getFormValues() {
+      const groomIgUsername = document.getElementById('groomIg').value.trim().replace('@', '');
+      const brideIgUsername = document.getElementById('brideIg').value.trim().replace('@', '');
+      const groomIgUrl = (document.getElementById('groomIgUrl')?.value.trim()) || ('https://instagram.com/' + groomIgUsername);
+      const brideIgUrl = (document.getElementById('brideIgUrl')?.value.trim()) || ('https://instagram.com/' + brideIgUsername);
       return {
         invitationUrl: document.getElementById('invitationBaseUrl')?.value.trim() || '',
         couple: {
@@ -2300,16 +2347,16 @@ Terima kasih.</textarea>
             nickname: document.getElementById('groomNick').value,
             parents: document.getElementById('groomParents').value,
             avatar: document.getElementById('groomAvatar').value,
-            instagram: document.getElementById('groomIg').value,
-            instagramUrl: 'https://instagram.com/' + document.getElementById('groomIg').value
+            instagram: groomIgUsername,
+            instagramUrl: groomIgUrl
           },
           bride: {
             name: document.getElementById('brideName').value,
             nickname: document.getElementById('brideNick').value,
             parents: document.getElementById('brideParents').value,
             avatar: document.getElementById('brideAvatar').value,
-            instagram: document.getElementById('brideIg').value,
-            instagramUrl: 'https://instagram.com/' + document.getElementById('brideIg').value
+            instagram: brideIgUsername,
+            instagramUrl: brideIgUrl
           },
           combinedTitle: `${document.getElementById('brideNick').value} & ${document.getElementById('groomNick').value}`
         },
@@ -2319,7 +2366,7 @@ Terima kasih.</textarea>
         formattedDateShort: document.getElementById('formattedDateShort').value,
         defaultGuest: 'Lia',
         audioUrl: document.getElementById('audioUrl').value,
-        liveStreamUrl: 'https://youtube.com/wevitation',
+        liveStreamUrl: document.getElementById('liveStreamUrl')?.value.trim() || 'https://youtube.com/wevitation',
         schedules: [
           {
             id: 'akad',
@@ -2346,13 +2393,13 @@ Terima kasih.</textarea>
           {
             id: 'pertemuan',
             title: document.getElementById('story1Title').value,
-            image: '/assets/images/story-first-meet.jpg',
+            image: document.getElementById('story1Image')?.value || '/assets/images/story-first-meet.jpg',
             description: document.getElementById('story1Desc').value
           },
           {
             id: 'lamaran',
             title: document.getElementById('story2Title').value,
-            image: '/assets/images/story-proposal.jpg',
+            image: document.getElementById('story2Image')?.value || '/assets/images/story-proposal.jpg',
             description: document.getElementById('story2Desc').value
           }
         ],
@@ -2953,6 +3000,9 @@ Terima kasih.`;
         document.getElementById('brideNick').value = d.couple.bride.nickname || '';
         document.getElementById('brideParents').value = d.couple.bride.parents || '';
         document.getElementById('brideIg').value = d.couple.bride.instagram || '';
+        if (document.getElementById('brideIgUrl')) {
+          document.getElementById('brideIgUrl').value = d.couple.bride.instagramUrl || ('https://instagram.com/' + (d.couple.bride.instagram || ''));
+        }
         document.getElementById('brideAvatar').value = d.couple.bride.avatar || '';
         document.getElementById('brideAvatarPreview').src = d.couple.bride.avatar || '';
       }
@@ -2961,6 +3011,9 @@ Terima kasih.`;
         document.getElementById('groomNick').value = d.couple.groom.nickname || '';
         document.getElementById('groomParents').value = d.couple.groom.parents || '';
         document.getElementById('groomIg').value = d.couple.groom.instagram || '';
+        if (document.getElementById('groomIgUrl')) {
+          document.getElementById('groomIgUrl').value = d.couple.groom.instagramUrl || ('https://instagram.com/' + (d.couple.groom.instagram || ''));
+        }
         document.getElementById('groomAvatar').value = d.couple.groom.avatar || '';
         document.getElementById('groomAvatarPreview').src = d.couple.groom.avatar || '';
       }
@@ -2968,7 +3021,54 @@ Terima kasih.`;
       if (d.formattedDate || d.formatted_date) document.getElementById('formattedDate').value = d.formattedDate || d.formatted_date;
       if (d.formattedDateShort || d.formatted_date_short) document.getElementById('formattedDateShort').value = d.formattedDateShort || d.formatted_date_short;
       if (d.audioUrl || d.audio_url) document.getElementById('audioUrl').value = d.audioUrl || d.audio_url;
-      
+
+      // Populate liveStreamUrl
+      const liveUrl = d.liveStreamUrl || d.live_stream_url;
+      if (liveUrl && document.getElementById('liveStreamUrl')) {
+        document.getElementById('liveStreamUrl').value = liveUrl;
+      }
+
+      // Populate schedule fields from first/second schedule entry
+      const scheds = d.schedules;
+      if (scheds && scheds.length >= 1) {
+        const akad = scheds.find(s => s.id === 'akad') || scheds[0];
+        if (akad) {
+          if (document.getElementById('akadTime')) document.getElementById('akadTime').value = akad.time || '';
+          if (document.getElementById('venueName')) document.getElementById('venueName').value = akad.venue || '';
+          if (document.getElementById('venueAddress')) document.getElementById('venueAddress').value = akad.address || '';
+          if (document.getElementById('mapsUrl')) document.getElementById('mapsUrl').value = akad.mapsUrl || '';
+        }
+        const resepsi = scheds.find(s => s.id === 'resepsi') || scheds[1];
+        if (resepsi && document.getElementById('resepsiTime')) {
+          document.getElementById('resepsiTime').value = resepsi.time || '';
+        }
+      }
+
+      // Populate love story fields
+      const stories = d.loveStories || d.love_stories;
+      if (stories && stories.length >= 1) {
+        const s1 = stories[0];
+        if (s1) {
+          if (document.getElementById('story1Title')) document.getElementById('story1Title').value = s1.title || '';
+          if (document.getElementById('story1Desc')) document.getElementById('story1Desc').value = s1.description || '';
+          if (s1.image && document.getElementById('story1Image')) {
+            document.getElementById('story1Image').value = s1.image;
+            document.getElementById('story1ImagePreview').src = s1.image;
+          }
+        }
+        if (stories.length >= 2) {
+          const s2 = stories[1];
+          if (s2) {
+            if (document.getElementById('story2Title')) document.getElementById('story2Title').value = s2.title || '';
+            if (document.getElementById('story2Desc')) document.getElementById('story2Desc').value = s2.description || '';
+            if (s2.image && document.getElementById('story2Image')) {
+              document.getElementById('story2Image').value = s2.image;
+              document.getElementById('story2ImagePreview').src = s2.image;
+            }
+          }
+        }
+      }
+
       const banks = d.bankAccounts || d.bank_accounts;
       if (banks && banks[0]) {
         document.getElementById('bankName').value = banks[0].bankName;
