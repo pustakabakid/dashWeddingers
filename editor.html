@@ -224,6 +224,140 @@
       gap: var(--space-2);
     }
 
+    /* Multi-Invitation Global Context Switcher */
+    .context-switcher {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .context-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .context-btn:hover {
+      color: var(--text);
+      background: rgba(0,0,0,0.04);
+    }
+
+    .context-btn.active {
+      color: var(--primary);
+      background: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .context-btn.active-bride {
+      color: #be185d;
+      background: #fdf2f8;
+      font-weight: 700;
+      border: 1px solid #fbcfe8;
+    }
+
+    .context-btn.active-groom {
+      color: #1d4ed8;
+      background: #eff6ff;
+      font-weight: 700;
+      border: 1px solid #bfdbfe;
+    }
+
+    .context-btn.active-overview {
+      color: var(--primary);
+      background: var(--primary-light);
+      font-weight: 700;
+      border: 1px solid rgba(47, 93, 98, 0.2);
+    }
+
+    @media (max-width: 768px) {
+      .context-btn span {
+        display: none;
+      }
+      .context-btn {
+        padding: 6px 8px;
+      }
+    }
+
+    /* Comparison Cards for Overview */
+    .overview-comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+      margin-top: var(--space-4);
+    }
+
+    @media (max-width: 768px) {
+      .overview-comparison-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .comparison-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .comparison-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    }
+
+    .comparison-card.bride-card {
+      border-top: 4px solid #db2777;
+    }
+
+    .comparison-card.groom-card {
+      border-top: 4px solid #2563eb;
+    }
+
+    .invitation-context-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-bride {
+      background: #fdf2f8;
+      color: #db2777;
+      border: 1px solid #fbcfe8;
+    }
+
+    .badge-groom {
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+    }
+
+    .badge-overview {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid rgba(47, 93, 98, 0.2);
+    }
+
     /* Status Badges */
     .status-badge {
       display: inline-flex;
@@ -1265,6 +1399,22 @@
     </div>
 
     <div class="nav-actions">
+      <!-- Global Multi-Invitation Switcher -->
+      <div class="context-switcher" id="invitationContextSwitcher">
+        <button type="button" onclick="switchInvitationContext('overview')" class="context-btn" id="ctxBtnOverview" title="Semua Undangan (Overview Ringkasan)">
+          <i data-lucide="layout-dashboard" style="width: 14px; height: 14px;"></i>
+          <span>Overview</span>
+        </button>
+        <button type="button" onclick="switchInvitationContext('bride')" class="context-btn active-bride" id="ctxBtnBride" title="Kelola Undangan Mempelai Wanita (Via)">
+          <i data-lucide="heart" style="width: 14px; height: 14px; color: #db2777;"></i>
+          <span>Mempelai Wanita</span>
+        </button>
+        <button type="button" onclick="switchInvitationContext('groom')" class="context-btn" id="ctxBtnGroom" title="Kelola Undangan Mempelai Pria (Andra)">
+          <i data-lucide="user-check" style="width: 14px; height: 14px; color: #2563eb;"></i>
+          <span>Mempelai Pria</span>
+        </button>
+      </div>
+
       <button onclick="handleStudioLogout()" class="btn btn-light btn-sm" title="Kunci Dashboard">
         <i data-lucide="lock" style="width: 14px; height: 14px;"></i>
         <span>Kunci</span>
@@ -1372,107 +1522,266 @@
     <!-- Form & Configuration Panels -->
     <div class="editor-pane">
 
-      <!-- MAIN MENU GRID HUB (MINIMALIST APP-ICON TILES) -->
+      <!-- MAIN MENU GRID HUB (MULTI-INVITATION & MODULE TILES) -->
       <div id="tab-menu-grid" class="tab-content" style="display: block;">
-        <div class="menu-hub-header">
-          <div class="menu-hub-title font-serif">
-            <span>Menu Pengaturan Undangan</span>
+        
+        <!-- SECTION A: OVERVIEW RINGKASAN AGREGAT (Saat Context = overview) -->
+        <div id="overviewHubSection" style="display: none;">
+          <div class="menu-hub-header">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-2);">
+              <div>
+                <div class="menu-hub-title font-serif">
+                  <span>Ringkasan Pernikahan (Overview)</span>
+                </div>
+                <div class="menu-hub-subtitle">Statistik gabungan dan perbandingan antara Undangan Mempelai Wanita &amp; Mempelai Pria.</div>
+              </div>
+              <span class="invitation-context-badge badge-overview">2 Undangan Terhubung</span>
+            </div>
           </div>
-          <div class="menu-hub-subtitle">Pilih modul di bawah untuk mulai mengelola data dan konten undangan.</div>
+
+          <!-- Total Aggregated Wedding KPIs -->
+          <div class="kpi-stats-grid">
+            <div class="kpi-stat-card active">
+              <div class="kpi-stat-label">
+                <span>Total Tamu (Gabungan)</span>
+                <i data-lucide="users" style="width: 13px; height: 13px; opacity: 0.7;"></i>
+              </div>
+              <div class="kpi-stat-number" id="statAggTotalGuests">0</div>
+            </div>
+
+            <div class="kpi-stat-card accent-wa">
+              <div class="kpi-stat-label">
+                <span>Terkirim WhatsApp</span>
+                <i data-lucide="send" style="width: 13px; height: 13px; opacity: 0.7;"></i>
+              </div>
+              <div class="kpi-stat-number" id="statAggSentGuests">0</div>
+            </div>
+
+            <div class="kpi-stat-card">
+              <div class="kpi-stat-label">
+                <span>Konfirmasi Hadir</span>
+                <i data-lucide="check-circle-2" style="width: 13px; height: 13px; color: #22863A;"></i>
+              </div>
+              <div class="kpi-stat-number" id="statAggAttendingCount" style="color: #22863A;">0</div>
+            </div>
+
+            <div class="kpi-stat-card">
+              <div class="kpi-stat-label">
+                <span>Ucapan Masuk</span>
+                <i data-lucide="message-square-heart" style="width: 13px; height: 13px; color: #D946EF;"></i>
+              </div>
+              <div class="kpi-stat-number" id="statAggTotalWishes">0</div>
+            </div>
+          </div>
+
+          <!-- Side-by-Side Comparison Cards (Bride vs Groom) -->
+          <div class="overview-comparison-grid">
+            <!-- Card 1: Mempelai Wanita -->
+            <div class="comparison-card bride-card">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-3);">
+                <div style="display: flex; align-items: center; gap: var(--space-2);">
+                  <div class="tile-icon-box" style="background: #fdf2f8; color: #db2777; width: 34px; height: 34px;">
+                    <i data-lucide="heart" style="width: 18px; height: 18px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size: 14px; font-weight: 700; color: var(--text);">Undangan Mempelai Wanita</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted);">Eviana Saskia (Via) • Slug: <code>/via</code></div>
+                  </div>
+                </div>
+                <span class="invitation-context-badge badge-bride">Pihak Wanita</span>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; background: var(--bg); padding: var(--space-2); border-radius: var(--radius-sm); margin-bottom: var(--space-3); text-align: center;">
+                <div>
+                  <div style="font-size: 10px; color: var(--text-muted);">Tamu</div>
+                  <div style="font-size: 14px; font-weight: 700; color: var(--text);" id="statBrideGuests">0</div>
+                </div>
+                <div>
+                  <div style="font-size: 10px; color: var(--text-muted);">WA</div>
+                  <div style="font-size: 14px; font-weight: 700; color: var(--wa-dark);" id="statBrideSent">0</div>
+                </div>
+                <div>
+                  <div style="font-size: 10px; color: var(--text-muted);">Hadir</div>
+                  <div style="font-size: 14px; font-weight: 700; color: #22863A;" id="statBrideHadir">0</div>
+                </div>
+                <div>
+                  <div style="font-size: 10px; color: var(--text-muted);">Ucapan</div>
+                  <div style="font-size: 14px; font-weight: 700; color: #D946EF;" id="statBrideWishes">0</div>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: var(--space-2);">
+                <button type="button" onclick="switchInvitationContext('bride')" class="btn btn-primary btn-sm" style="flex: 1;">
+                  <i data-lucide="sliders" style="width: 13px; height: 13px;"></i>
+                  <span>Kelola Undangan Wanita</span>
+                </button>
+                <a id="linkPreviewBride" href="/via" target="_blank" class="btn btn-light btn-sm" title="Buka website undangan wanita">
+                  <i data-lucide="external-link" style="width: 13px; height: 13px;"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Card 2: Mempelai Pria -->
+            <div class="comparison-card groom-card">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-3);">
+                <div style="display: flex; align-items: center; gap: var(--space-2);">
+                  <div class="tile-icon-box" style="background: #eff6ff; color: #2563eb; width: 34px; height: 34px;">
+                    <i data-lucide="user-check" style="width: 18px; height: 18px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size: 14px; font-weight: 700; color: var(--text);">Undangan Mempelai Pria</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted);">Andra Gunawan (Andra) • Slug: <code>/andra</code></div>
+                  </div>
+                </div>
+                <span class="invitation-context-badge badge-groom">Pihak Pria</span>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; background: var(--bg); padding: var(--space-2); border-radius: var(--radius-sm); margin-bottom: var(--space-3); text-align: center;">
+                <div>
+                  <div style="font-size: 10px; color: var(--text-muted);">Tamu</div>
+                  <div style="font-size: 14px; font-weight: 700; color: var(--text);" id="statGroomGuests">0</div>
+                </div>
+                <div>
+                  <div style="font-size: 10px; color: var(--text-muted);">WA</div>
+                  <div style="font-size: 14px; font-weight: 700; color: var(--wa-dark);" id="statGroomSent">0</div>
+                </div>
+                <div>
+                  <div style="font-size: 10px; color: var(--text-muted);">Hadir</div>
+                  <div style="font-size: 14px; font-weight: 700; color: #22863A;" id="statGroomHadir">0</div>
+                </div>
+                <div>
+                  <div style="font-size: 10px; color: var(--text-muted);">Ucapan</div>
+                  <div style="font-size: 14px; font-weight: 700; color: #D946EF;" id="statGroomWishes">0</div>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: var(--space-2);">
+                <button type="button" onclick="switchInvitationContext('groom')" class="btn btn-primary btn-sm" style="flex: 1;">
+                  <i data-lucide="sliders" style="width: 13px; height: 13px;"></i>
+                  <span>Kelola Undangan Pria</span>
+                </button>
+                <a id="linkPreviewGroom" href="/andra" target="_blank" class="btn btn-light btn-sm" title="Buka website undangan pria">
+                  <i data-lucide="external-link" style="width: 13px; height: 13px;"></i>
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- 8 Minimalist App-Icon Tiles Grid (Balanced 4-Column Grid) -->
-        <div class="menu-icon-grid">
-          
-          <!-- Tile 1: Visibilitas Fitur -->
-          <div class="menu-icon-tile" onclick="switchTab('tab-features')">
-            <div class="tile-icon-box">
-              <i data-lucide="sliders" style="width: 24px; height: 24px;"></i>
-            </div>
-            <div>
-              <div class="tile-label">Visibilitas Fitur</div>
-              <div class="tile-desc">Saklar seksi &amp; fitur</div>
-            </div>
-          </div>
-
-          <!-- Tile 2: Mempelai & Foto -->
-          <div class="menu-icon-tile" onclick="switchTab('tab-couple')">
-            <div class="tile-icon-box">
-              <i data-lucide="heart" style="width: 24px; height: 24px;"></i>
-            </div>
-            <div>
-              <div class="tile-label">Mempelai &amp; Foto</div>
-              <div class="tile-desc">Profil &amp; avatar pengantin</div>
+        <!-- SECTION B: SINGLE INVITATION MODULE TILES HUB (Saat Context = bride | groom) -->
+        <div id="singleHubSection" style="display: block;">
+          <div class="menu-hub-header">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-2);">
+              <div>
+                <div class="menu-hub-title font-serif">
+                  <span id="hubContextTitle">Undangan Mempelai Wanita (Via)</span>
+                </div>
+                <div class="menu-hub-subtitle">Pilih modul di bawah untuk mulai mengelola data dan konten undangan ini.</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-2);">
+                <span class="invitation-context-badge badge-bride" id="hubContextBadge">Pihak Wanita</span>
+                <a id="navInvitationLink" href="/via" target="_blank" class="btn btn-light btn-sm" title="Buka Website Undangan">
+                  <i data-lucide="external-link" style="width: 13px; height: 13px;"></i>
+                  <span>Buka Undangan</span>
+                </a>
+              </div>
             </div>
           </div>
 
-          <!-- Tile 3: Acara & Lokasi -->
-          <div class="menu-icon-tile" onclick="switchTab('tab-schedule')">
-            <div class="tile-icon-box">
-              <i data-lucide="calendar-days" style="width: 24px; height: 24px;"></i>
+          <!-- 8 Minimalist App-Icon Tiles Grid (Balanced 4-Column Grid) -->
+          <div class="menu-icon-grid">
+            
+            <!-- Tile 1: Visibilitas Fitur -->
+            <div class="menu-icon-tile" onclick="switchTab('tab-features')">
+              <div class="tile-icon-box">
+                <i data-lucide="sliders" style="width: 24px; height: 24px;"></i>
+              </div>
+              <div>
+                <div class="tile-label">Visibilitas Fitur</div>
+                <div class="tile-desc">Saklar seksi &amp; fitur</div>
+              </div>
             </div>
-            <div>
-              <div class="tile-label">Acara &amp; Lokasi</div>
-              <div class="tile-desc">Jadwal akad, resepsi, maps</div>
-            </div>
-          </div>
 
-          <!-- Tile 4: Galeri Foto -->
-          <div class="menu-icon-tile" onclick="switchTab('tab-gallery')">
-            <div class="tile-icon-box">
-              <i data-lucide="image" style="width: 24px; height: 24px;"></i>
+            <!-- Tile 2: Mempelai & Foto -->
+            <div class="menu-icon-tile" onclick="switchTab('tab-couple')">
+              <div class="tile-icon-box">
+                <i data-lucide="heart" style="width: 24px; height: 24px;"></i>
+              </div>
+              <div>
+                <div class="tile-label">Mempelai &amp; Foto</div>
+                <div class="tile-desc">Profil &amp; avatar pengantin</div>
+              </div>
             </div>
-            <div>
-              <div class="tile-label">Galeri Foto</div>
-              <div class="tile-desc">Upload &amp; kelola album</div>
-            </div>
-          </div>
 
-          <!-- Tile 5: Kado & QRIS -->
-          <div class="menu-icon-tile" onclick="switchTab('tab-gift')">
-            <div class="tile-icon-box accent-gold">
-              <i data-lucide="credit-card" style="width: 24px; height: 24px;"></i>
+            <!-- Tile 3: Acara & Lokasi -->
+            <div class="menu-icon-tile" onclick="switchTab('tab-schedule')">
+              <div class="tile-icon-box">
+                <i data-lucide="calendar-days" style="width: 24px; height: 24px;"></i>
+              </div>
+              <div>
+                <div class="tile-label">Acara &amp; Lokasi</div>
+                <div class="tile-desc">Jadwal akad, resepsi, maps</div>
+              </div>
             </div>
-            <div>
-              <div class="tile-label">Kado &amp; QRIS</div>
-              <div class="tile-desc">Rekening &amp; amplop digital</div>
-            </div>
-          </div>
 
-          <!-- Tile 6: Cerita & Musik -->
-          <div class="menu-icon-tile" onclick="switchTab('tab-story')">
-            <div class="tile-icon-box">
-              <i data-lucide="music-2" style="width: 24px; height: 24px;"></i>
+            <!-- Tile 4: Galeri Foto -->
+            <div class="menu-icon-tile" onclick="switchTab('tab-gallery')">
+              <div class="tile-icon-box">
+                <i data-lucide="image" style="width: 24px; height: 24px;"></i>
+              </div>
+              <div>
+                <div class="tile-label">Galeri Foto</div>
+                <div class="tile-desc">Upload &amp; kelola album</div>
+              </div>
             </div>
-            <div>
-              <div class="tile-label">Cerita &amp; Musik</div>
-              <div class="tile-desc">Kisah cinta &amp; lagu latar</div>
-            </div>
-          </div>
 
-          <!-- Tile 7: Tamu & WhatsApp -->
-          <div class="menu-icon-tile" onclick="switchTab('tab-guests')">
-            <div class="tile-icon-box accent-wa">
-              <i data-lucide="users" style="width: 24px; height: 24px;"></i>
+            <!-- Tile 5: Kado & QRIS -->
+            <div class="menu-icon-tile" onclick="switchTab('tab-gift')">
+              <div class="tile-icon-box accent-gold">
+                <i data-lucide="credit-card" style="width: 24px; height: 24px;"></i>
+              </div>
+              <div>
+                <div class="tile-label">Kado &amp; QRIS</div>
+                <div class="tile-desc">Rekening &amp; amplop digital</div>
+              </div>
             </div>
-            <div>
-              <div class="tile-label">Tamu &amp; WhatsApp</div>
-              <div class="tile-desc">Broadcast WA &amp; RSVP</div>
-            </div>
-          </div>
 
-          <!-- Tile 8: Supabase Cloud -->
-          <div class="menu-icon-tile" onclick="switchTab('tab-cloud')">
-            <div class="tile-icon-box">
-              <i data-lucide="database" style="width: 24px; height: 24px;"></i>
+            <!-- Tile 6: Cerita & Musik -->
+            <div class="menu-icon-tile" onclick="switchTab('tab-story')">
+              <div class="tile-icon-box">
+                <i data-lucide="music-2" style="width: 24px; height: 24px;"></i>
+              </div>
+              <div>
+                <div class="tile-label">Cerita &amp; Musik</div>
+                <div class="tile-desc">Kisah cinta &amp; lagu latar</div>
+              </div>
             </div>
-            <div>
-              <div class="tile-label">Supabase Cloud</div>
-              <div class="tile-desc">Database &amp; penyimpanan</div>
-            </div>
-          </div>
 
+            <!-- Tile 7: Tamu & WhatsApp -->
+            <div class="menu-icon-tile" onclick="switchTab('tab-guests')">
+              <div class="tile-icon-box accent-wa">
+                <i data-lucide="users" style="width: 24px; height: 24px;"></i>
+              </div>
+              <div>
+                <div class="tile-label">Tamu &amp; WhatsApp</div>
+                <div class="tile-desc">Broadcast WA &amp; RSVP</div>
+              </div>
+            </div>
+
+            <!-- Tile 8: Supabase Cloud -->
+            <div class="menu-icon-tile" onclick="switchTab('tab-cloud')">
+              <div class="tile-icon-box">
+                <i data-lucide="database" style="width: 24px; height: 24px;"></i>
+              </div>
+              <div>
+                <div class="tile-label">Supabase Cloud</div>
+                <div class="tile-desc">Database &amp; penyimpanan</div>
+              </div>
+            </div>
+
+          </div>
         </div>
+
       </div>
 
       <!-- TAB 1: KONTROL VISIBILITAS FITUR -->
@@ -2390,7 +2699,10 @@
             <div class="panel-header-info">
               <div class="panel-header-icon" style="background: var(--wa-light); color: var(--wa-dark);"><i data-lucide="users"></i></div>
               <div>
-                <div class="panel-title font-serif">Manajemen Tamu &amp; Broadcast WhatsApp</div>
+                <div style="display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;">
+                  <div class="panel-title font-serif">Manajemen Tamu &amp; Broadcast WhatsApp</div>
+                  <span class="invitation-context-badge badge-bride" id="guestContextBadge">Undangan Mempelai Wanita</span>
+                </div>
                 <div class="panel-subtitle">Daftar penerima, broadcast WA personal, import/export data, &amp; statistik kehadiran</div>
               </div>
             </div>
@@ -2948,6 +3260,120 @@ Terima kasih.</textarea>
       setTimeout(() => document.getElementById('loginPasswordInput')?.focus(), 250);
     }
 
+    // ═══ MULTI-INVITATION STATE & ENGINE ═══
+    let currentInvitationContext = 'bride'; // 'overview' | 'bride' | 'groom'
+    let allWeddingGuests = [];
+    let allWeddingWishes = [];
+
+    // Context Switcher Controller
+    async function switchInvitationContext(ctx) {
+      // Save current working copy before switching if in bride/groom mode
+      if (currentInvitationContext === 'bride' || currentInvitationContext === 'groom') {
+        const currentData = getFormValues();
+        localStorage.setItem(`wedding_settings_${currentInvitationContext}`, JSON.stringify(currentData));
+      }
+
+      currentInvitationContext = ctx;
+      sessionStorage.setItem('wevitation_active_invitation_context', ctx);
+
+      // Update Top Nav Switcher Active Class
+      const btnOverview = document.getElementById('ctxBtnOverview');
+      const btnBride = document.getElementById('ctxBtnBride');
+      const btnGroom = document.getElementById('ctxBtnGroom');
+
+      if (btnOverview) btnOverview.className = 'context-btn' + (ctx === 'overview' ? ' active active-overview' : '');
+      if (btnBride) btnBride.className = 'context-btn' + (ctx === 'bride' ? ' active active-bride' : '');
+      if (btnGroom) btnGroom.className = 'context-btn' + (ctx === 'groom' ? ' active active-groom' : '');
+
+      const overviewHub = document.getElementById('overviewHubSection');
+      const singleHub = document.getElementById('singleHubSection');
+
+      if (ctx === 'overview') {
+        if (overviewHub) overviewHub.style.display = 'block';
+        if (singleHub) singleHub.style.display = 'none';
+        await loadOverviewStats();
+        switchTab('tab-menu-grid');
+      } else {
+        if (overviewHub) overviewHub.style.display = 'none';
+        if (singleHub) singleHub.style.display = 'block';
+
+        // Update Hub Header & Badges
+        const isBride = (ctx === 'bride');
+        const titleText = isBride ? 'Undangan Mempelai Wanita (Via)' : 'Undangan Mempelai Pria (Andra)';
+        const badgeClass = isBride ? 'invitation-context-badge badge-bride' : 'invitation-context-badge badge-groom';
+        const badgeText = isBride ? 'Pihak Wanita' : 'Pihak Pria';
+        const guestBadgeText = isBride ? 'Undangan Mempelai Wanita' : 'Undangan Mempelai Pria';
+        const invSlug = isBride ? '/via' : '/andra';
+
+        const titleElem = document.getElementById('hubContextTitle');
+        if (titleElem) titleElem.innerText = titleText;
+
+        const hubBadge = document.getElementById('hubContextBadge');
+        if (hubBadge) {
+          hubBadge.className = badgeClass;
+          hubBadge.innerText = badgeText;
+        }
+
+        const guestBadge = document.getElementById('guestContextBadge');
+        if (guestBadge) {
+          guestBadge.className = badgeClass;
+          guestBadge.innerText = guestBadgeText;
+        }
+
+        const navLink = document.getElementById('navInvitationLink');
+        if (navLink) {
+          navLink.href = `${getBaseUrl()}${invSlug}`;
+        }
+
+        // Load Settings for the specific invitation
+        await loadInvitationSettings(ctx);
+
+        // Load Guests and Wishes for the specific invitation
+        await loadGuests();
+        await loadWishes();
+      }
+
+      lucide.createIcons();
+    }
+
+    // Load Settings for specific invitation context
+    async function loadInvitationSettings(ctx) {
+      const storageKey = `wedding_settings_${ctx}`;
+      const local = localStorage.getItem(storageKey);
+      if (local) {
+        try {
+          populateForm(JSON.parse(local));
+        } catch (e) {}
+      }
+
+      if (supabaseClient) {
+        try {
+          const { data, error } = await supabaseClient
+            .from('invitation_settings')
+            .select('*')
+            .eq('id', ctx)
+            .single();
+
+          if (data && !error) {
+            populateForm(data);
+            localStorage.setItem(storageKey, JSON.stringify(data));
+          } else if (ctx === 'bride') {
+            // Fallback for bride to legacy 'default' row
+            const { data: defData } = await supabaseClient
+              .from('invitation_settings')
+              .select('*')
+              .eq('id', 'default')
+              .single();
+            if (defData) {
+              populateForm(defData);
+            }
+          }
+        } catch (err) {
+          console.warn(`Could not fetch settings for ${ctx}:`, err);
+        }
+      }
+    }
+
     // Initialize Supabase Client
     function initSupabase() {
       const url = localStorage.getItem('supabase_project_url') || DEFAULT_SUPABASE_URL;
@@ -2986,8 +3412,9 @@ Terima kasih.</textarea>
 
     function handleBaseUrlChange() {
       const url = getBaseUrl();
+      const slug = currentInvitationContext === 'groom' ? '/andra' : '/via';
       const linkBtn = document.getElementById('navInvitationLink');
-      if (linkBtn) linkBtn.href = url;
+      if (linkBtn) linkBtn.href = `${url}${slug}`;
       localStorage.setItem('wedding_base_url', document.getElementById('invitationBaseUrl').value.trim());
       renderGuestTable();
     }
@@ -2997,7 +3424,15 @@ Terima kasih.</textarea>
       const brideIgUsername = document.getElementById('brideIg').value.trim().replace('@', '');
       const groomIgUrl = (document.getElementById('groomIgUrl')?.value.trim()) || ('https://instagram.com/' + groomIgUsername);
       const brideIgUrl = (document.getElementById('brideIgUrl')?.value.trim()) || ('https://instagram.com/' + brideIgUsername);
+      const invSlug = currentInvitationContext === 'groom' ? 'andra' : 'via';
+      const invName = currentInvitationContext === 'groom' ? 'Undangan Mempelai Pria (Andra)' : 'Undangan Mempelai Wanita (Via)';
+
       return {
+        id: currentInvitationContext,
+        wedding_id: 'default',
+        invitation_type: currentInvitationContext,
+        name: invName,
+        slug: invSlug,
         invitationUrl: document.getElementById('invitationBaseUrl')?.value.trim() || '',
         couple: {
           groom: {
@@ -3016,13 +3451,15 @@ Terima kasih.</textarea>
             instagram: brideIgUsername,
             instagramUrl: brideIgUrl
           },
-          combinedTitle: `${document.getElementById('brideNick').value} & ${document.getElementById('groomNick').value}`
+          combinedTitle: currentInvitationContext === 'groom'
+            ? `${document.getElementById('groomNick').value} & ${document.getElementById('brideNick').value}`
+            : `${document.getElementById('brideNick').value} & ${document.getElementById('groomNick').value}`
         },
         weddingDate: document.getElementById('weddingDateTime').value + ':00+07:00',
         dayName: document.getElementById('dayName').value,
         formattedDate: document.getElementById('formattedDate').value,
         formattedDateShort: document.getElementById('formattedDateShort').value,
-        defaultGuest: 'Lia',
+        defaultGuest: currentInvitationContext === 'groom' ? 'Sahabat Andra' : 'Lia',
         audioUrl: document.getElementById('audioUrl').value,
         liveStreamUrl: document.getElementById('liveStreamUrl')?.value.trim() || 'https://youtube.com/wevitation',
         schedules: [
@@ -3104,22 +3541,31 @@ Terima kasih.</textarea>
 
     function updateAll() {
       const data = getFormValues();
+      const ctx = currentInvitationContext === 'overview' ? 'bride' : currentInvitationContext;
+      localStorage.setItem(`wedding_settings_${ctx}`, JSON.stringify(data));
       localStorage.setItem('wedding_settings_data', JSON.stringify(data));
     }
 
-    // Save All to Supabase Cloud
+    // Save All to Supabase Cloud for Active Invitation Context
     async function saveAllToSupabase() {
       const data = getFormValues();
+      const ctx = currentInvitationContext === 'overview' ? 'bride' : currentInvitationContext;
+      localStorage.setItem(`wedding_settings_${ctx}`, JSON.stringify(data));
       localStorage.setItem('wedding_settings_data', JSON.stringify(data));
 
       if (!supabaseClient) {
-        showToast('Tersimpan di memori lokal', 'success');
+        showToast('Tersimpan di memori lokal (' + (ctx === 'groom' ? 'Mempelai Pria' : 'Mempelai Wanita') + ')', 'success');
         return;
       }
 
-      showToast('Menyimpan ke Cloud Supabase...', 'info');
+      showToast(`Menyimpan ${ctx === 'groom' ? 'Undangan Pria' : 'Undangan Wanita'} ke Cloud...`, 'info');
       try {
         const payload = {
+          id: ctx,
+          wedding_id: 'default',
+          invitation_type: ctx,
+          name: data.name,
+          slug: data.slug,
           couple: data.couple,
           wedding_date: data.weddingDate,
           day_name: data.dayName,
@@ -3138,32 +3584,30 @@ Terima kasih.</textarea>
           updated_at: new Date().toISOString()
         };
 
-        // Try UPDATE first
+        // Try UPDATE for target invitation row
         let { data: updatedRows, error } = await supabaseClient
           .from('invitation_settings')
           .update(payload)
-          .eq('id', 'default')
+          .eq('id', ctx)
           .select();
 
-        // If row does not exist yet in database, do INSERT
+        // If row does not exist yet, INSERT it
         if (!error && (!updatedRows || updatedRows.length === 0)) {
-          payload.id = 'default';
           const insertRes = await supabaseClient.from('invitation_settings').insert(payload);
           error = insertRes.error;
         }
 
-        // Graceful column fallback if newly introduced columns don't exist yet
-        if (error && (error.message?.includes('invitation_url') || error.message?.includes('wa_template') || error.code === 'PGRST204' || error.code === '42703' || error.status === 400)) {
-          delete payload.invitation_url;
-          delete payload.wa_template;
-          const retry = await supabaseClient.from('invitation_settings').update(payload).eq('id', 'default');
-          error = retry.error;
+        // Backward compatibility: also sync to 'default' if this is bride
+        if (ctx === 'bride') {
+          payload.id = 'default';
+          await supabaseClient.from('invitation_settings').update(payload).eq('id', 'default');
         }
 
         if (error) {
           showToast('Gagal: ' + error.message, 'error');
         } else {
-          showToast('Berhasil tersimpan ke Cloud Supabase', 'success');
+          showToast(`Berhasil tersimpan ke Cloud (${ctx === 'groom' ? 'Mempelai Pria' : 'Mempelai Wanita'})`, 'success');
+          loadOverviewStats();
         }
       } catch (err) {
         showToast('Error koneksi: ' + err.message, 'error');
@@ -3251,7 +3695,9 @@ Terima kasih.`;
 
     function generateWaMessage(guestName, guestLink) {
       const template = document.getElementById('waMessageTemplate')?.value || DEFAULT_WA_TEMPLATE;
-      const coupleTitle = document.getElementById('brideNick').value + ' & ' + document.getElementById('groomNick').value;
+      const coupleTitle = currentInvitationContext === 'groom'
+        ? document.getElementById('groomNick').value + ' & ' + document.getElementById('brideNick').value
+        : document.getElementById('brideNick').value + ' & ' + document.getElementById('groomNick').value;
       const weddingDate = document.getElementById('formattedDate').value;
 
       let msg = template
@@ -3273,7 +3719,6 @@ Terima kasih.`;
     function setGuestTableFilter(filter) {
       guestFilter = filter;
       
-      // Update active state on KPI Stat Cards
       const cardMap = {
         'all': 'kpiCardAll',
         'sent': 'kpiCardSent',
@@ -3289,7 +3734,6 @@ Terima kasih.`;
         }
       });
 
-      // Update table filter title label
       const labelMap = {
         'all': 'Semua Tamu Undangan',
         'sent': 'Tamu Terkirim WhatsApp',
@@ -3305,7 +3749,8 @@ Terima kasih.`;
 
     async function toggleGuestSentStatus(id, newStatus) {
       guestsList = guestsList.map(g => g.id === id ? { ...g, is_sent: newStatus, sent_at: newStatus ? new Date().toISOString() : null } : g);
-      localStorage.setItem('wedding_guests_data', JSON.stringify(guestsList));
+      const storageKey = `wedding_guests_${currentInvitationContext}`;
+      localStorage.setItem(storageKey, JSON.stringify(guestsList));
       
       if (supabaseClient) {
         try {
@@ -3326,22 +3771,26 @@ Terima kasih.`;
     let wishesList = [];
 
     async function loadWishes() {
+      const ctx = currentInvitationContext === 'overview' ? 'bride' : currentInvitationContext;
+      const storageKey = `wedding_wishes_${ctx}`;
+
       if (supabaseClient) {
         try {
-          const { data, error } = await supabaseClient
-            .from('wishes')
-            .select('*')
-            .order('created_at', { ascending: false });
+          let query = supabaseClient.from('wishes').select('*').order('created_at', { ascending: false });
+          if (ctx === 'bride' || ctx === 'groom') {
+            query = query.eq('invitation_id', ctx);
+          }
+          const { data, error } = await query;
           if (!error && data) {
             wishesList = data;
-            localStorage.setItem('wedding_wishes_data', JSON.stringify(data));
+            localStorage.setItem(storageKey, JSON.stringify(data));
           }
         } catch (e) {
-          const local = localStorage.getItem('wedding_wishes_data');
+          const local = localStorage.getItem(storageKey);
           if (local) wishesList = JSON.parse(local);
         }
       } else {
-        const local = localStorage.getItem('wedding_wishes_data');
+        const local = localStorage.getItem(storageKey);
         if (local) wishesList = JSON.parse(local);
       }
       renderGuestTable();
@@ -3351,7 +3800,9 @@ Terima kasih.`;
     async function deleteWish(wishId) {
       if (!confirm('Hapus pesan/doa restu ini dari buku tamu?')) return;
       wishesList = wishesList.filter(w => w.id !== wishId);
-      localStorage.setItem('wedding_wishes_data', JSON.stringify(wishesList));
+      const ctx = currentInvitationContext === 'overview' ? 'bride' : currentInvitationContext;
+      localStorage.setItem(`wedding_wishes_${ctx}`, JSON.stringify(wishesList));
+
       if (supabaseClient) {
         try {
           await supabaseClient.from('wishes').delete().eq('id', wishId);
@@ -3368,7 +3819,7 @@ Terima kasih.`;
       return wishesList.find(w => (w.name || '').trim().toLowerCase() === gNorm) || null;
     }
 
-    // Export Guests to CSV (Including RSVP Status and Wishes)
+    // Export Guests to CSV
     function handleExportCSV() {
       if (guestsList.length === 0) {
         showToast('Daftar tamu masih kosong', 'info');
@@ -3376,19 +3827,21 @@ Terima kasih.`;
       }
 
       const baseUrl = getBaseUrl();
-      const headers = ['No', 'Nama Tamu', 'Nomor WhatsApp', 'Status WA', 'Status RSVP', 'Pesan / Ucapan', 'Tautan Undangan'];
+      const slug = currentInvitationContext === 'groom' ? '/andra' : '/via';
+      const headers = ['No', 'Konteks Undangan', 'Nama Tamu', 'Nomor WhatsApp', 'Status WA', 'Status RSVP', 'Pesan / Ucapan', 'Tautan Undangan'];
       const rows = guestsList.map((g, idx) => {
         const wish = findGuestWish(g.name);
         const rsvpStatus = wish ? (wish.attendance_status || (wish.attending ? 'hadir' : 'tidak_hadir')) : 'Belum RSVP';
         const comment = wish ? (wish.comment || '').replace(/"/g, '""') : '-';
         return [
           idx + 1,
+          currentInvitationContext === 'groom' ? 'Mempelai Pria' : 'Mempelai Wanita',
           `"${g.name.replace(/"/g, '""')}"`,
           `"${g.phone}"`,
           g.is_sent ? 'Terkirim' : 'Belum',
           rsvpStatus,
           `"${comment}"`,
-          `"${baseUrl}/?to=${encodeURIComponent(g.name)}"`
+          `"${baseUrl}${slug}?to=${encodeURIComponent(g.name)}"`
         ];
       });
 
@@ -3396,14 +3849,14 @@ Terima kasih.`;
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement('a');
       link.setAttribute('href', encodedUri);
-      link.setAttribute('download', `rekap_tamu_rsvp_${Date.now()}.csv`);
+      link.setAttribute('download', `rekap_tamu_${currentInvitationContext}_${Date.now()}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      showToast('File CSV rekap tamu & RSVP berhasil diunduh', 'success');
+      showToast('File CSV rekap tamu berhasil diunduh', 'success');
     }
 
-    // Update Dashboard Analytics
+    // Update Dashboard Analytics for Current Active Context
     async function updateDashboardStats() {
       const totalGuests = guestsList.length;
       const sentGuests = guestsList.filter(g => g.is_sent).length;
@@ -3416,7 +3869,6 @@ Terima kasih.`;
         }
       });
 
-      // Update KPI Stat Numbers
       const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
       set('statTotalGuests', totalGuests);
       set('statSentGuests', sentGuests);
@@ -3424,24 +3876,116 @@ Terima kasih.`;
       set('statTotalWishes', wishesList.length);
     }
 
-    // Guest & WhatsApp Management
-    async function loadGuests() {
+    // Load and Compute Aggregated Stats for Overview Screen
+    async function loadOverviewStats() {
+      let brideGuests = [];
+      let groomGuests = [];
+      let brideWishes = [];
+      let groomWishes = [];
+
       if (supabaseClient) {
         try {
-          const { data } = await supabaseClient.from('guests').select('*').order('created_at', { ascending: false });
-          if (data && data.length > 0) {
-            guestsList = data;
-          } else {
-            const local = localStorage.getItem('wedding_guests_data');
-            if (local) guestsList = JSON.parse(local);
-          }
+          const [bgRes, ggRes, bwRes, gwRes] = await Promise.all([
+            supabaseClient.from('guests').select('*').or('invitation_id.eq.bride,invitation_id.is.null'),
+            supabaseClient.from('guests').select('*').eq('invitation_id', 'groom'),
+            supabaseClient.from('wishes').select('*').or('invitation_id.eq.bride,invitation_id.is.null'),
+            supabaseClient.from('wishes').select('*').eq('invitation_id', 'groom')
+          ]);
+
+          brideGuests = bgRes.data || [];
+          groomGuests = ggRes.data || [];
+          brideWishes = bwRes.data || [];
+          groomWishes = gwRes.data || [];
         } catch (e) {
-          const local = localStorage.getItem('wedding_guests_data');
-          if (local) guestsList = JSON.parse(local);
+          console.warn('Error loading overview stats from Supabase:', e);
         }
       } else {
-        const local = localStorage.getItem('wedding_guests_data');
-        if (local) guestsList = JSON.parse(local);
+        const bgLocal = localStorage.getItem('wedding_guests_bride') || localStorage.getItem('wedding_guests_data');
+        const ggLocal = localStorage.getItem('wedding_guests_groom');
+        const bwLocal = localStorage.getItem('wedding_wishes_bride') || localStorage.getItem('wedding_wishes_data');
+        const gwLocal = localStorage.getItem('wedding_wishes_groom');
+
+        if (bgLocal) brideGuests = JSON.parse(bgLocal);
+        if (ggLocal) groomGuests = JSON.parse(ggLocal);
+        if (bwLocal) brideWishes = JSON.parse(bwLocal);
+        if (gwLocal) groomWishes = JSON.parse(gwLocal);
+      }
+
+      // Calculations
+      const bTotal = brideGuests.length;
+      const bSent = brideGuests.filter(g => g.is_sent).length;
+      const bHadir = brideGuests.filter(g => {
+        const w = brideWishes.find(wish => (wish.name || '').trim().toLowerCase() === (g.name || '').trim().toLowerCase());
+        return w && (w.attendance_status === 'hadir' || w.attending === true);
+      }).length;
+      const bWishesCount = brideWishes.length;
+
+      const gTotal = groomGuests.length;
+      const gSent = groomGuests.filter(g => g.is_sent).length;
+      const gHadir = groomGuests.filter(g => {
+        const w = groomWishes.find(wish => (wish.name || '').trim().toLowerCase() === (g.name || '').trim().toLowerCase());
+        return w && (w.attendance_status === 'hadir' || w.attending === true);
+      }).length;
+      const gWishesCount = groomWishes.length;
+
+      // Aggregates
+      const aggTotal = bTotal + gTotal;
+      const aggSent = bSent + gSent;
+      const aggHadir = bHadir + gHadir;
+      const aggWishes = bWishesCount + gWishesCount;
+
+      const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+      set('statAggTotalGuests', aggTotal);
+      set('statAggSentGuests', aggSent);
+      set('statAggAttendingCount', aggHadir);
+      set('statAggTotalWishes', aggWishes);
+
+      set('statBrideGuests', bTotal);
+      set('statBrideSent', bSent);
+      set('statBrideHadir', bHadir);
+      set('statBrideWishes', bWishesCount);
+
+      set('statGroomGuests', gTotal);
+      set('statGroomSent', gSent);
+      set('statGroomHadir', gHadir);
+      set('statGroomWishes', gWishesCount);
+
+      const base = getBaseUrl();
+      const pBride = document.getElementById('linkPreviewBride');
+      const pGroom = document.getElementById('linkPreviewGroom');
+      if (pBride) pBride.href = `${base}/via`;
+      if (pGroom) pGroom.href = `${base}/andra`;
+    }
+
+    // Guest & WhatsApp Management (Isolated per invitation)
+    async function loadGuests() {
+      const ctx = currentInvitationContext === 'overview' ? 'bride' : currentInvitationContext;
+      const storageKey = `wedding_guests_${ctx}`;
+
+      if (supabaseClient) {
+        try {
+          let query = supabaseClient.from('guests').select('*').order('created_at', { ascending: false });
+          if (ctx === 'bride') {
+            query = query.or('invitation_id.eq.bride,invitation_id.is.null');
+          } else {
+            query = query.eq('invitation_id', ctx);
+          }
+
+          const { data } = await query;
+          if (data && data.length > 0) {
+            guestsList = data;
+            localStorage.setItem(storageKey, JSON.stringify(data));
+          } else {
+            const local = localStorage.getItem(storageKey);
+            guestsList = local ? JSON.parse(local) : [];
+          }
+        } catch (e) {
+          const local = localStorage.getItem(storageKey);
+          guestsList = local ? JSON.parse(local) : [];
+        }
+      } else {
+        const local = localStorage.getItem(storageKey);
+        guestsList = local ? JSON.parse(local) : [];
       }
       renderGuestTable();
       updateDashboardStats();
@@ -3452,11 +3996,13 @@ Terima kasih.`;
       if (!tbody) return;
 
       if (guestsList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: var(--space-5);">Belum ada daftar tamu. Tambahkan tamu di atas.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: var(--space-5);">Belum ada daftar tamu untuk ${currentInvitationContext === 'groom' ? 'Mempelai Pria' : 'Mempelai Wanita'}. Tambahkan tamu di atas.</td></tr>`;
         return;
       }
 
       const baseUrl = getBaseUrl();
+      const slug = currentInvitationContext === 'groom' ? '/andra' : '/via';
+
       const filtered = guestsList.filter(g => {
         if (guestFilter === 'sent') return g.is_sent;
         if (guestFilter === 'hadir') {
@@ -3482,13 +4028,12 @@ Terima kasih.`;
       };
 
       tbody.innerHTML = filtered.map((g, idx) => {
-        const guestLink = `${baseUrl}/?to=${encodeURIComponent(g.name)}`;
+        const guestLink = `${baseUrl}${slug}?to=${encodeURIComponent(g.name)}`;
         const waMsg = generateWaMessage(g.name, guestLink);
         const waUrl = `https://api.whatsapp.com/send?phone=${formatPhoneWA(g.phone)}&text=${encodeURIComponent(waMsg)}`;
         const isSent = !!g.is_sent;
         const waUrlB64 = btoa(unescape(encodeURIComponent(waUrl)));
 
-        // Match with wish
         const wish = findGuestWish(g.name);
         let rsvpCellHtml = '';
 
@@ -3549,7 +4094,6 @@ Terima kasih.`;
         `;
       }).join('');
 
-      // Attach event listeners to WA send buttons after rendering
       document.querySelectorAll('.btn-send-wa').forEach(btn => {
         btn.addEventListener('click', function() {
           const guestId = this.dataset.guestId;
@@ -3600,8 +4144,7 @@ Terima kasih.`;
         document.getElementById('ogThumbnailPreview').src = newUrl;
         document.getElementById('ogSimPreview').src = newUrl;
 
-        showToast('Thumbnail berhasil diunggah! Perbarui meta tag og:image di index.html dengan URL baru ini.', 'success');
-        // Auto-copy new URL to clipboard
+        showToast('Thumbnail berhasil diunggah!', 'success');
         navigator.clipboard.writeText(newUrl).catch(() => {});
       } catch (err) {
         showToast('Error: ' + err.message, 'error');
@@ -3613,7 +4156,9 @@ Terima kasih.`;
       const file = event.target.files?.[0];
       if (!file) return;
 
+      const ctx = currentInvitationContext === 'overview' ? 'bride' : currentInvitationContext;
       const reader = new FileReader();
+
       reader.onload = async (e) => {
         const text = e.target.result;
         const lines = text.split(/\r\n|\n/);
@@ -3634,6 +4179,7 @@ Terima kasih.`;
             
             const newGuest = {
               id: (Date.now() + importedCount).toString(),
+              invitation_id: ctx,
               name: guestName,
               phone: guestPhone,
               slug: encodeURIComponent(guestName),
@@ -3647,6 +4193,7 @@ Terima kasih.`;
             if (supabaseClient) {
               try {
                 const { data } = await supabaseClient.from('guests').insert({
+                  invitation_id: ctx,
                   name: guestName,
                   phone: guestPhone,
                   slug: encodeURIComponent(guestName),
@@ -3658,10 +4205,11 @@ Terima kasih.`;
           }
         }
 
-        localStorage.setItem('wedding_guests_data', JSON.stringify(guestsList));
+        const storageKey = `wedding_guests_${ctx}`;
+        localStorage.setItem(storageKey, JSON.stringify(guestsList));
         renderGuestTable();
         updateDashboardStats();
-        showToast(`Berhasil mengimpor ${importedCount} tamu`, 'success');
+        showToast(`Berhasil mengimpor ${importedCount} tamu ke ${ctx === 'groom' ? 'Mempelai Pria' : 'Mempelai Wanita'}`, 'success');
         event.target.value = '';
       };
 
@@ -3688,8 +4236,11 @@ Terima kasih.`;
         return;
       }
 
+      const ctx = currentInvitationContext === 'overview' ? 'bride' : currentInvitationContext;
+
       const newGuest = {
         id: Date.now().toString(),
+        invitation_id: ctx,
         name,
         phone,
         slug: encodeURIComponent(name),
@@ -3698,17 +4249,19 @@ Terima kasih.`;
       };
 
       guestsList.unshift(newGuest);
-      localStorage.setItem('wedding_guests_data', JSON.stringify(guestsList));
+      const storageKey = `wedding_guests_${ctx}`;
+      localStorage.setItem(storageKey, JSON.stringify(guestsList));
       renderGuestTable();
       updateDashboardStats();
 
       nameInput.value = '';
       phoneInput.value = '';
-      showToast('Tamu berhasil ditambahkan', 'success');
+      showToast(`Tamu berhasil ditambahkan (${ctx === 'groom' ? 'Mempelai Pria' : 'Mempelai Wanita'})`, 'success');
 
       if (supabaseClient) {
         try {
           const { data, error } = await supabaseClient.from('guests').insert({
+            invitation_id: ctx,
             name: newGuest.name,
             phone: newGuest.phone,
             slug: newGuest.slug,
@@ -3716,7 +4269,7 @@ Terima kasih.`;
           }).select().single();
           if (data && data.id) {
             newGuest.id = data.id;
-            localStorage.setItem('wedding_guests_data', JSON.stringify(guestsList));
+            localStorage.setItem(storageKey, JSON.stringify(guestsList));
             renderGuestTable();
           }
         } catch (err) {
@@ -3729,7 +4282,9 @@ Terima kasih.`;
       if (!confirm('Hapus tamu ini dari daftar?')) return;
 
       guestsList = guestsList.filter(g => g.id !== id);
-      localStorage.setItem('wedding_guests_data', JSON.stringify(guestsList));
+      const ctx = currentInvitationContext === 'overview' ? 'bride' : currentInvitationContext;
+      const storageKey = `wedding_guests_${ctx}`;
+      localStorage.setItem(storageKey, JSON.stringify(guestsList));
       renderGuestTable();
       updateDashboardStats();
       showToast('Tamu dihapus dari daftar', 'info');
@@ -3832,7 +4387,10 @@ Terima kasih.`;
         document.getElementById('invitationBaseUrl').value = invUrl;
       }
       const navLink = document.getElementById('navInvitationLink');
-      if (navLink) navLink.href = getBaseUrl();
+      if (navLink) {
+        const slug = currentInvitationContext === 'groom' ? '/andra' : '/via';
+        navLink.href = `${getBaseUrl()}${slug}`;
+      }
 
       const waTemplate = d.waTemplate || d.wa_template;
       if (waTemplate && document.getElementById('waMessageTemplate')) {
@@ -3872,7 +4430,7 @@ Terima kasih.`;
         document.getElementById('liveStreamUrl').value = liveUrl;
       }
 
-      // Populate schedule fields from first/second schedule entry
+      // Populate schedule fields
       const scheds = d.schedules;
       if (scheds && scheds.length >= 1) {
         const akad = scheds.find(s => s.id === 'akad') || scheds[0];
@@ -3966,7 +4524,8 @@ Terima kasih.`;
       // Read SQL Schema for display
       fetch('/supabase_schema.sql').then(r => r.text()).then(t => {
         sqlSchemaCode = t;
-        document.getElementById('sqlBoxPreview').innerText = t.slice(0, 1000) + '\n... (salin untuk teks lengkap)';
+        const el = document.getElementById('sqlBoxPreview');
+        if (el) el.innerText = t.slice(0, 1000) + '\n... (salin untuk teks lengkap)';
       }).catch(() => {});
 
       // Set input config fields
@@ -3975,27 +4534,9 @@ Terima kasih.`;
 
       initSupabase();
 
-      // Load local settings first
-      const saved = localStorage.getItem('wedding_settings_data');
-      if (saved) {
-        try { populateForm(JSON.parse(saved)); } catch (e) {}
-      }
-
-      // Then fetch from Supabase if connected
-      if (supabaseClient) {
-        try {
-          const { data, error } = await supabaseClient.from('invitation_settings').select('*').eq('id', 'default').single();
-          if (data && !error) {
-            populateForm(data);
-          }
-        } catch (err) {
-          console.warn('Could not fetch initial settings from Supabase:', err);
-        }
-      }
-
-      loadGuests();
-      loadWishes();
-      updateAll();
+      // Determine initial context from session storage or default to 'bride'
+      const savedCtx = sessionStorage.getItem('wevitation_active_invitation_context') || 'bride';
+      await switchInvitationContext(savedCtx);
 
       // Restore last active tab or default to Menu Grid Hub
       const lastActiveTab = sessionStorage.getItem('wevitation_active_tab') || 'tab-menu-grid';
