@@ -803,6 +803,22 @@
       border: 1px solid var(--border-light);
       border-radius: var(--radius-sm);
       padding: var(--space-3) var(--space-4);
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      position: relative;
+    }
+
+    .kpi-stat-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .kpi-stat-card.active {
+      background: #FFFFFF;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary), 0 4px 12px rgba(47, 93, 98, 0.12);
     }
 
     .kpi-stat-card.accent-wa {
@@ -810,10 +826,24 @@
       border-color: #BEE3DB;
     }
 
+    .kpi-stat-card.accent-wa:hover {
+      border-color: var(--wa-dark);
+      box-shadow: 0 4px 12px rgba(18, 140, 126, 0.15);
+    }
+
+    .kpi-stat-card.accent-wa.active {
+      background: #FFFFFF;
+      border-color: var(--wa-dark);
+      box-shadow: 0 0 0 2px var(--wa-dark), 0 4px 12px rgba(18, 140, 126, 0.18);
+    }
+
     .kpi-stat-label {
       font-size: 11.5px;
       font-weight: 600;
       color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .kpi-stat-card.accent-wa .kpi-stat-label {
@@ -821,7 +851,7 @@
     }
 
     .kpi-stat-number {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 800;
       color: var(--text);
       margin-top: 2px;
@@ -1828,25 +1858,37 @@
             </div>
           </div>
 
-          <!-- KPI Analytics Cards (Neutral + 1 Accent) -->
+          <!-- KPI Analytics Cards as Interactive Filter Controls -->
           <div class="kpi-stats-grid">
-            <div class="kpi-stat-card">
-              <div class="kpi-stat-label">Total Diundang</div>
+            <div class="kpi-stat-card active" id="kpiCardAll" onclick="setGuestTableFilter('all')" title="Klik untuk menampilkan semua tamu">
+              <div class="kpi-stat-label">
+                <span>Total Diundang</span>
+                <i data-lucide="users" style="width: 13px; height: 13px; opacity: 0.7;"></i>
+              </div>
               <div class="kpi-stat-number" id="statTotalGuests">0</div>
             </div>
 
-            <div class="kpi-stat-card accent-wa">
-              <div class="kpi-stat-label">Terkirim WhatsApp</div>
+            <div class="kpi-stat-card accent-wa" id="kpiCardSent" onclick="setGuestTableFilter('sent')" title="Klik untuk filter tamu yang sudah terkirim WA">
+              <div class="kpi-stat-label">
+                <span>Terkirim WhatsApp</span>
+                <i data-lucide="send" style="width: 13px; height: 13px; opacity: 0.7;"></i>
+              </div>
               <div class="kpi-stat-number" id="statSentGuests">0</div>
             </div>
 
-            <div class="kpi-stat-card">
-              <div class="kpi-stat-label">Konfirmasi Hadir</div>
-              <div class="kpi-stat-number" id="statAttendingCount">0</div>
+            <div class="kpi-stat-card" id="kpiCardHadir" onclick="setGuestTableFilter('hadir')" title="Klik untuk filter tamu yang konfirmasi hadir">
+              <div class="kpi-stat-label">
+                <span>Konfirmasi Hadir</span>
+                <i data-lucide="check-circle-2" style="width: 13px; height: 13px; color: #22863A;"></i>
+              </div>
+              <div class="kpi-stat-number" id="statAttendingCount" style="color: #22863A;">0</div>
             </div>
 
-            <div class="kpi-stat-card">
-              <div class="kpi-stat-label">Ucapan Masuk</div>
+            <div class="kpi-stat-card" id="kpiCardWishes" onclick="setGuestTableFilter('wishes')" title="Klik untuk filter tamu yang sudah mengisi ucapan / doa">
+              <div class="kpi-stat-label">
+                <span>Ucapan Masuk</span>
+                <i data-lucide="message-square-heart" style="width: 13px; height: 13px; color: #D946EF;"></i>
+              </div>
               <div class="kpi-stat-number" id="statTotalWishes">0</div>
             </div>
           </div>
@@ -1939,15 +1981,10 @@ Terima kasih.</textarea>
             </div>
           </div>
 
-          <!-- Guest Filter Bar & List Table -->
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2); flex-wrap: wrap; gap: var(--space-2);">
-            <div style="display: flex; gap: var(--space-1); align-items: center; flex-wrap: wrap;">
-              <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Filter:</span>
-              <button onclick="setGuestTableFilter('all')" id="btnFilterAll" class="btn btn-sm btn-primary">Semua (<span id="countGuestAll">0</span>)</button>
-              <button onclick="setGuestTableFilter('pending')" id="btnFilterPending" class="btn btn-sm btn-light">Belum Terkirim (<span id="countGuestPending">0</span>)</button>
-              <button onclick="setGuestTableFilter('sent')" id="btnFilterSent" class="btn btn-sm btn-light">Terkirim WA (<span id="countGuestSent">0</span>)</button>
-              <button onclick="setGuestTableFilter('hadir')" id="btnFilterHadir" class="btn btn-sm btn-light" style="color: #22863A;">Hadir (<span id="countGuestHadir">0</span>)</button>
-              <button onclick="setGuestTableFilter('tidak_hadir')" id="btnFilterTidak" class="btn btn-sm btn-light" style="color: #DD6B20;">Tidak Hadir (<span id="countGuestTidak">0</span>)</button>
+          <!-- Table Header Controls -->
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2); margin-top: var(--space-4);">
+            <div style="font-size: 13px; font-weight: 700; color: var(--text);" id="tableFilterLabel">
+              Semua Tamu Undangan
             </div>
             <div>
               <button onclick="loadGuests(); loadWishes();" class="btn btn-light btn-sm" style="display: inline-flex; align-items: center; gap: 4px;" title="Refresh Data">
@@ -2666,20 +2703,34 @@ Terima kasih.`;
 
     function setGuestTableFilter(filter) {
       guestFilter = filter;
-      const filters = ['all', 'pending', 'sent', 'hadir', 'tidak_hadir'];
-      filters.forEach(f => {
-        const idMap = {
-          'all': 'btnFilterAll',
-          'pending': 'btnFilterPending',
-          'sent': 'btnFilterSent',
-          'hadir': 'btnFilterHadir',
-          'tidak_hadir': 'btnFilterTidak'
-        };
-        const btn = document.getElementById(idMap[f]);
-        if (btn) {
-          btn.className = (f === filter) ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-light';
+      
+      // Update active state on KPI Stat Cards
+      const cardMap = {
+        'all': 'kpiCardAll',
+        'sent': 'kpiCardSent',
+        'hadir': 'kpiCardHadir',
+        'wishes': 'kpiCardWishes'
+      };
+
+      Object.keys(cardMap).forEach(key => {
+        const el = document.getElementById(cardMap[key]);
+        if (el) {
+          if (key === filter) el.classList.add('active');
+          else el.classList.remove('active');
         }
       });
+
+      // Update table filter title label
+      const labelMap = {
+        'all': 'Semua Tamu Undangan',
+        'sent': 'Tamu Terkirim WhatsApp',
+        'hadir': 'Tamu Konfirmasi Hadir',
+        'wishes': 'Tamu yang Sudah Mengirim Ucapan & Doa'
+      };
+
+      const lbl = document.getElementById('tableFilterLabel');
+      if (lbl) lbl.innerText = labelMap[filter] || 'Daftar Tamu';
+
       renderGuestTable();
     }
 
@@ -2787,34 +2838,21 @@ Terima kasih.`;
     async function updateDashboardStats() {
       const totalGuests = guestsList.length;
       const sentGuests = guestsList.filter(g => g.is_sent).length;
-      
-      const countPending = totalGuests - sentGuests;
-      let countHadir = 0;
-      let countTidak = 0;
 
+      let countHadir = 0;
       guestsList.forEach(g => {
         const w = findGuestWish(g.name);
-        if (w) {
-          const st = w.attendance_status || (w.attending ? 'hadir' : 'tidak_hadir');
-          if (st === 'hadir') countHadir++;
-          else if (st === 'tidak_hadir') countTidak++;
+        if (w && (w.attendance_status === 'hadir' || w.attending === true)) {
+          countHadir++;
         }
       });
 
-      // Update counters in filter buttons
+      // Update KPI Stat Numbers
       const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
       set('statTotalGuests', totalGuests);
       set('statSentGuests', sentGuests);
-      set('countGuestAll', totalGuests);
-      set('countGuestPending', countPending);
-      set('countGuestSent', sentGuests);
-      set('countGuestHadir', countHadir);
-      set('countGuestTidak', countTidak);
-
-      // Wishes overall count
+      set('statAttendingCount', countHadir);
       set('statTotalWishes', wishesList.length);
-      const overallAttending = wishesList.filter(w => w.attendance_status === 'hadir' || w.attending === true).length;
-      set('statAttendingCount', overallAttending);
     }
 
     // Guest & WhatsApp Management
@@ -2852,20 +2890,19 @@ Terima kasih.`;
       const baseUrl = getBaseUrl();
       const filtered = guestsList.filter(g => {
         if (guestFilter === 'sent') return g.is_sent;
-        if (guestFilter === 'pending') return !g.is_sent;
         if (guestFilter === 'hadir') {
           const w = findGuestWish(g.name);
           return w && (w.attendance_status === 'hadir' || w.attending === true);
         }
-        if (guestFilter === 'tidak_hadir') {
+        if (guestFilter === 'wishes') {
           const w = findGuestWish(g.name);
-          return w && (w.attendance_status === 'tidak_hadir' || w.attending === false);
+          return w !== null;
         }
         return true;
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: var(--space-5);">Tidak ada tamu pada filter ini.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: var(--space-5);">Tidak ada tamu pada kategori ini.</td></tr>`;
         return;
       }
 
